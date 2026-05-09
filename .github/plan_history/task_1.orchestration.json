@@ -1,0 +1,130 @@
+{
+  "task_id": "task_1",
+  "status": "completed",
+  "manifest_path": ".github/tasks/task_1.manifest.yaml",
+  "plan_snapshot_path": ".github/plan_history/task_1.plan.snapshot.md",
+  "manifest": {
+    "id": "task_1",
+    "title": "Import high-value ECC agents",
+    "description": "Import six high-value portable agents from Everything Claude Code, adapt them to the local VS Code agent contract, and synchronize the authoritative inventory surfaces.",
+    "change_type": "patch",
+    "base_branch": "main",
+    "plan_index": {
+      "repo_structure": [
+        {
+          "path": ".github/agents",
+          "reason": "New agent definitions are added here using the local .agent.md contract."
+        },
+        {
+          "path": ".github/PLAN.md",
+          "reason": "Authoritative inventory and roadmap must reflect the imported agents."
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "reason": "Always-on agent inventory must stay aligned with what actually exists."
+        },
+        {
+          "path": ".github/tasks",
+          "reason": "Manifest persistence for the approved orchestration record."
+        },
+        {
+          "path": ".github/plan_history",
+          "reason": "Audit record and plan snapshot for this task."
+        }
+      ],
+      "sections": [
+        {
+          "id": "implementation_roadmap",
+          "heading": "Implementation Roadmap",
+          "summary": "P2 roadmap entries for the six pending high-value agent imports.",
+          "lines": [242, 256]
+        }
+      ]
+    },
+    "test_commands": [
+      "rg --line-number \"code-architect|code-explorer|database-reviewer|silent-failure-hunter|pr-test-analyzer|e2e-runner\" .github/PLAN.md .github/copilot-instructions.md",
+      "rg --files .github/agents | rg \"code-architect|code-explorer|database-reviewer|silent-failure-hunter|pr-test-analyzer|e2e-runner\""
+    ],
+    "apply_policy": "require_manual",
+    "risk_level": "medium",
+    "approve_required": false,
+    "assumptions": [
+      {
+        "id": "A1",
+        "description": "Keep canonical ECC agent names unless a local VS Code constraint makes a rename materially better.",
+        "made_by": "GitHub Copilot",
+        "date": "2026-05-08"
+      },
+      {
+        "id": "A2",
+        "description": "Adapt imported agents to the established local frontmatter contract using target/model/tools rather than raw ECC tool declarations.",
+        "made_by": "GitHub Copilot",
+        "date": "2026-05-08"
+      }
+    ],
+    "uncertainties": [
+      {
+        "id": "U1",
+        "description": "The ECC e2e-runner assumes Agent Browser as the primary execution surface, which is not a native dependency of this workspace.",
+        "impact": "Medium risk of mismatched guidance if imported verbatim.",
+        "mitigation": "Rewrite the execution guidance around the local browser and Playwright-capable VS Code tool surface while preserving the testing intent."
+      },
+      {
+        "id": "U2",
+        "description": "The database-reviewer agent is PostgreSQL-specific and may need scope wording that clarifies its intended use in this language-agnostic workflow repo.",
+        "impact": "Low risk of inventory ambiguity.",
+        "mitigation": "Keep the canonical name and explicitly describe the specialization in the agent description."
+      }
+    ]
+  },
+  "payloads_sent": [
+    {
+      "phase": "implementation",
+      "summary": "Imported six approved agent definitions and synchronized the plan and global instructions."
+    }
+  ],
+  "subagent_responses": [],
+  "dry_run_results": [],
+  "apply_results": [
+    {
+      "status": "success",
+      "summary": "Added six agent files plus manifest and audit artifacts; updated PLAN.md and copilot-instructions.md to reflect the imports.",
+      "files_changed": [
+        ".github/tasks/task_1.manifest.yaml",
+        ".github/plan_history/task_1.orchestration.json",
+        ".github/plan_history/task_1.plan.snapshot.md",
+        ".github/agents/code-architect.agent.md",
+        ".github/agents/code-explorer.agent.md",
+        ".github/agents/database-reviewer.agent.md",
+        ".github/agents/silent-failure-hunter.agent.md",
+        ".github/agents/pr-test-analyzer.agent.md",
+        ".github/agents/e2e-runner.agent.md",
+        ".github/PLAN.md",
+        ".github/copilot-instructions.md"
+      ],
+      "validation": {
+        "editor_errors": "No errors found in all changed agent and control files.",
+        "presence_checks": "Validated the six agent names in PLAN.md, copilot-instructions.md, and .github/agents/."
+      },
+      "timestamp": "2026-05-08T19:12:13.6021719+02:00"
+    }
+  ],
+  "approvals": [
+    {
+      "source": "vscode_askQuestions",
+      "status": "approved",
+      "answers": {
+        "Scope": "Import all 6 remaining high-value agents",
+        "Naming": "Case-by-case during each import",
+        "Approval": "Approve and proceed"
+      },
+      "timestamp": "2026-05-08T19:08:34.8990380+02:00"
+    }
+  ],
+  "timestamps": {
+    "approved_at": "2026-05-08T19:08:34.8990380+02:00",
+    "created_at": "2026-05-08T19:08:34.8990380+02:00",
+    "completed_at": "2026-05-08T19:12:13.6021719+02:00",
+    "updated_at": "2026-05-08T19:12:13.6021719+02:00"
+  }
+}

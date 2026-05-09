@@ -1,0 +1,27 @@
+[
+  {
+    "header": "Skill Name",
+    "question": "Provide a single-line skill name (lowercase, hyphens).",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Purpose",
+    "question": "One-line purpose: what the skill accomplishes.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "When To Use",
+    "question": "Short trigger phrases or scenarios (comma-separated).",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Output Format",
+    "question": "Preferred output: `SKILL.md` draft | assets | apply_patch",
+    "options": [
+      { "label": "SKILL.md draft" },
+      { "label": "Assets + templates" },
+      { "label": "apply_patch diffs" }
+    ],
+    "allowFreeformInput": false
+  }
+]

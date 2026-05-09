@@ -1,0 +1,27 @@
+id: refactor-models-001
+title: Refactor model heads into src/models/heads/
+description: Move head implementations into a heads submodule and update imports
+change_type: full_content
+base_branch: main
+branch_name: orchestrator/refactor-models-001
+plan_index:
+  repo_structure:
+    - path: src/models
+      reason: "model files and heads"
+  sections:
+    - id: refactor_note
+      heading: "Refactor plan"
+      summary: "Move heads into new package"
+full_content:
+  src/models/heads/__init__.py: "# new heads package\n"
+  src/models/teacher_classifier.py: "# updated file content (move head imports)\n"
+test_commands:
+  - "(Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned) ; .venv\Scripts\python -m pytest tests/ -q"
+apply_policy: require_manual
+risk_level: high
+expected_files_changed_limit: 10
+expected_loc_limit: 2000
+approve_required: true
+delegate:
+  provider: copilot_cli
+  isolation: worktree

@@ -1,0 +1,16 @@
+{
+    "python.analysis.extraPaths": [
+        "./venv/lib/python3.x/site-packages/pyarrow-stubs"
+    ],
+
+    // Enable recursive subagents (Dev → Dev divide-and-conquer, Research → Research parallel topics).
+    // Max nesting depth: 5.
+    "chat.subagents.allowInvocationsFromSubagents": true,
+
+    // Enable custom agents in Copilot CLI worktree sessions.
+    "github.copilot.chat.cli.forkSessions.enabled": true,
+
+    // Enable the skill tool for agents to call skills as tools, for automatic subagent spawn.
+    "github.copilot.chat.skillTool.enabled": true
+
+}

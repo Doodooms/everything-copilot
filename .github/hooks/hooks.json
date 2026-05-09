@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "python .github/hooks/check_blocking_io.py",
+        "windows": "python .github\\hooks\\check_blocking_io.py",
+        "timeout": 10
+      }
+    ]
+  }
+}

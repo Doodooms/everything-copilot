@@ -1,0 +1,1 @@
+official_doc : https://github.com/bybit-exchange/skills/blob/main/SKILL.md
