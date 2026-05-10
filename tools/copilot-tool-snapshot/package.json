@@ -1,0 +1,40 @@
+{
+  "name": "agentic-workflow-copilot-tool-snapshot",
+  "displayName": "Agentic Workflow Copilot Tool Snapshot",
+  "description": "Export and inspect the live Copilot language model tools available in the current VS Code session.",
+  "version": "0.0.1",
+  "publisher": "agentic-workflow-local",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "extensionDependencies": [
+    "GitHub.copilot-chat"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./extension.js",
+  "files": [
+    "extension.js",
+    "package.json",
+    "README.md"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "agenticWorkflow.exportLanguageModelToolsSnapshot",
+        "title": "Agentic Workflow: Export Copilot Tool Snapshot"
+      },
+      {
+        "command": "agenticWorkflow.checkLanguageModelToolName",
+        "title": "Agentic Workflow: Check Copilot Tool Name"
+      }
+    ]
+  }
+}

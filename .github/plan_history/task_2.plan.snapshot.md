@@ -283,4 +283,3 @@ Examples to create:
 | Task ID | Title                                         | Status    |
 |---------|-----------------------------------------------|-----------|
 | task_1  | Rewrite PLAN.md + define capabilities roadmap | Completed |
-| task_2  | Create photovoltaic France launch pack        | Completed |

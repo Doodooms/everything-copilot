@@ -1,0 +1,15 @@
+# Local environments and caches
+.git/
+.venv/
+.gitnexus/
+.memory/
+graphify-out/
+
+# Generated repository artifacts
+.github/plan_history/
+.github/tasks/
+
+# Common noise
+node_modules/
+__pycache__/
+*.pyc

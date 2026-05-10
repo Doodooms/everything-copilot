@@ -1,0 +1,70 @@
+id: task_2
+title: Create photovoltaic France launch pack
+description: Persist the approved French photovoltaic company launch strategy as an auditable orchestration task and a concrete operating document.
+change_type: patch
+base_branch: main
+plan_index:
+  repo_structure:
+    - path: .github/PLAN.md
+      reason: Authoritative workflow references and task history must reflect completed work.
+    - path: .github/tasks
+      reason: Manifest persistence for the approved orchestration record.
+    - path: .github/plan_history
+      reason: Audit record and pre-change plan snapshot for this task.
+    - path: docs/photovoltaic-france
+      reason: User-facing launch planning artifacts live here.
+  sections:
+    - id: support_directories
+      heading: Support Directories
+      summary: Generated manifests and plan-history files are first-class workflow artifacts.
+      lines: [117, 123]
+    - id: feature_workflow
+      heading: For implementing a feature (interactive)
+      summary: The orchestrator flow requires manifest generation, review, and execution.
+      lines: [201, 206]
+    - id: task_history
+      heading: Task History
+      summary: Completed work must be tracked in the authoritative workspace plan.
+      lines: [281, 284]
+test_commands:
+  - test -f .github/tasks/task_2.manifest.yaml
+  - test -f .github/plan_history/task_2.orchestration.json
+  - test -f .github/plan_history/task_2.plan.snapshot.md
+  - test -f docs/photovoltaic-france/business-launch-plan.md
+  - rg --line-number "^id: task_2$" .github/tasks/task_2.manifest.yaml
+  - rg --line-number "task_2" .github/PLAN.md
+  - rg --line-number "^## 24-Month Roadmap$|^## Budget Allocation$|^## Operating Model$|^## KPIs$" docs/photovoltaic-france/business-launch-plan.md
+apply_policy: require_manual
+risk_level: low
+approve_required: false
+assumptions:
+  - id: A1
+    description: The company launches in France with a 600k EUR initial budget and a two-year execution horizon.
+    made_by: GitHub Copilot
+    date: 2026-05-10
+  - id: A2
+    description: The first operating model is sales plus project management with certified installer partners before any large in-house installation team is built.
+    made_by: GitHub Copilot
+    date: 2026-05-10
+  - id: A3
+    description: The first commercial focus is households and small businesses, while agricultural projects remain a later expansion track.
+    made_by: GitHub Copilot
+    date: 2026-05-10
+uncertainties:
+  - id: U1
+    description: Final legal form, insurance package, and certification sequencing still require local professional validation before incorporation.
+    impact: Medium risk of execution delay if treated as settled.
+    mitigation: Use the launch pack as operating guidance and validate incorporation, insurance, and compliance details with local counsel and certified partners.
+  - id: U2
+    description: Internal installation should only be added after the sales funnel, partner quality, and gross margins are stable over repeated projects.
+    impact: Medium risk of premature fixed-cost expansion.
+    mitigation: Keep the first 24 months focused on distribution, project control, and a partner network with measured quality gates.
+skipped_phases:
+  - phase: Research
+    reason: The business constraints and operating direction were already fixed and approved by the user in chat, so no extra research phase was needed for this documentation task.
+    recorded_by: GitHub Copilot
+    timestamp: 2026-05-10T02:20:10+02:00
+  - phase: Commit
+    reason: The user requested workspace implementation only and did not ask for a git commit.
+    recorded_by: GitHub Copilot
+    timestamp: 2026-05-10T02:20:10+02:00

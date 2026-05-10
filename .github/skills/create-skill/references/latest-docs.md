@@ -1,6 +1,7 @@
 # Use Agent Skills in VS Code
 
-`https://code.visualstudio.com/docs/copilot/customization/agent-skills`
+Run a subagent in parallel to fetch the latest docs for skill creation giving him this page as context so he can compare that to the current state of the skill being created and give recommendations on how to align with the latest standards and best practices.
+[latest docs](https://code.visualstudio.com/docs/copilot/customization/agent-skills)  
 
 Agent Skills are folders of instructions, scripts, and resources that GitHub Copilot can load when relevant to perform specialized tasks. Agent Skills is an [open standard](https://agentskills.io) that works across multiple AI agents, including GitHub Copilot in VS Code, GitHub Copilot CLI, and GitHub Copilot cloud agent.
 
@@ -108,6 +109,14 @@ The header is formatted as YAML frontmatter with the following fields:
 | `user-invocable` | No | Controls whether the skill appears as a slash command in the chat menu. Defaults to `true`. Set to `false` to hide the skill from the `/` menu while still allowing the agent to load it automatically. |
 | `disable-model-invocation` | No | Controls whether the agent can automatically load the skill based on relevance. Defaults to `false`. Set to `true` to require manual invocation through the `/` slash command only. |
 | `context` | No | (Experimental) Controls how the skill is loaded. Defaults to inline (the skill's instructions are added to the parent agent's context). Set to `fork` to run the skill in a dedicated subagent context. See [Run a skill in a forked context](#run-a-skill-in-a-forked-context-experimental). |
+
+### Workspace note for this repository
+
+The table above reflects the upstream fields documented in the referenced VS Code material. In this workspace, authoring also relies on these additional conventions:
+
+- `compatibility` is treated as **CRITICAL** whenever a skill depends on behavior that is unavailable in older VS Code or GitHub Copilot versions.
+- `metadata` and `license` are optional local annotations used for authorship, provenance, or repository conventions.
+- The frontmatter `description` is still the **PRIMARY** discovery surface. Body sections such as `## WHEN TO USE`, `## WHEN NOT TO USE`, or short `<definitions>` help the agent after load, but they do **NOT** replace a precise description.
 
 > [!IMPORTANT]
 > When a skill is distributed through a [plugin](/docs/copilot/customization/agent-plugins.md), the plugin name is automatically used as a command prefix (for example, `/my-plugin:test-runner`). Do not manually add namespace prefixes to the skill `name` field. Using prefixes like `myorg/skillname` or `myorg:skillname` causes the skill to silently fail to load.

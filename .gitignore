@@ -1,0 +1,7 @@
+.gitnexus/
+.memory/
+.vscode/copilot-tools.snapshot.json
+.venv/
+graphify-out/manifest.json
+graphify-out/cost.json
+graphify-out/cache/

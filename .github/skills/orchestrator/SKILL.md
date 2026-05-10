@@ -190,9 +190,9 @@ Run-tests (reference pseudocode)
 Agents can reproduce the original `run_tests_docker.sh` behavior by:
 
 ```
-# compute env hash from Dockerfile + requirements.txt
+# compute env hash from Dockerfile + pyproject.toml + uv.lock
 HASH_INPUT=""
-for f in Dockerfile requirements.txt; do
+for f in Dockerfile pyproject.toml uv.lock; do
 	if [[ -f "$f" ]]; then
 		HASH_INPUT+=$(sha256sum "$f" | awk '{print $1}')
 	else

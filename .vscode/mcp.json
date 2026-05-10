@@ -3,8 +3,14 @@
     "gitnexus": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "gitnexus@latest", "mcp"],
+      "args": ["-y", "@duytransipher/gitnexus@latest", "mcp"],
       "env": {}
     },
+    "graphify": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "python", "-m", "graphify.serve", "graphify-out/graph.json"],
+      "env": {}
+    }
   }
 }

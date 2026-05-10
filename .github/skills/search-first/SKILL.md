@@ -1,6 +1,6 @@
 ---
 name: search-first
-description: "Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Prevents reinventing the wheel and reduces dependency bloat. Invokes the researcher agent for non-trivial decisions. Derived from Everything Claude Code (https://github.com/affaan-m/everything-claude-code)."
+description: "Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Prevents reinventing the wheel and reduces dependency bloat. Invokes the researcher agent for non-trivial decisions."
 user-invocable: false
 ---
 

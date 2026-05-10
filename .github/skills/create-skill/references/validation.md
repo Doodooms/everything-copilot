@@ -1,64 +1,51 @@
-# Skill validation checklist
+# Skill validation guide
 
 Purpose
-- Human-facing checklist describing the automatic checks performed by `scripts/validate_skill.py` and what authors should verify before publishing a skill.
+- Explains what `scripts/validate_skill.py` checks and how to fix its output.
+- Use [skill-template.md](../assets/skill-template.md) for the canonical bad and good examples that correspond to the checks below.
 
-How to use
-- Run `python scripts/validate_skill.py .` from the skill folder (requires `typer`, `pyyaml`).
-- Fix items marked ERROR first, then address WARNINGS if they matter for your workflow.
+When to use this file
+- Read it after validation fails or when you need to understand what the validator enforces.
+- In this repository, run the validator with `./.venv/bin/python .github/skills/create-skill/scripts/validate_skill.py --skill-dir <skill_folder>`.
+- If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before running the validator.
 
-1) Files & layout
-- [ ] `SKILL.md` exists at the skill root.
-- [ ] `assets/` exists and contains at least one template (e.g. `skill-template.md`).
-- [ ] `references/` exists and contains documentation (URIs, ask_questions guidance).
-- [ ] `scripts/` exists (optional). If present, `scripts/validate_skill.py` should be runnable locally.
+Automatic checks
+- `SKILL.md` exists at the skill root.
+- YAML frontmatter parses and contains `name`, `description`, and `user-invocable`.
+- A frontmatter `name` that differs from the folder name is reported.
+- `context` without `compatibility` is reported because version-gated behavior should declare explicit compatibility bounds.
+- Missing `<rules>` or `<workflow>` blocks are reported.
+- `SKILL.md` longer than 500 lines is reported.
+- Missing or empty `assets/` or `references/` is reported.
+- Unresolved template leftovers such as `<what this skill does>`, `./references/<guide>.md`, or `./assets/<questions>.json` are reported.
+- Non-frontmatter markdown files are checked for active `#tool:` or `#file:` markers outside fenced code blocks.
+- `#tool:` markers are parsed, checked for trailing punctuation, and validated against the workspace skill-tool alias catalog.
+- Wrong-layer raw tool names such as `copilot_readFile`, `run_in_terminal`, or `vscode_askQuestions` fail validation and include alias suggestions.
+- `#file:` markers are parsed, checked for trailing punctuation, and best-effort checked for existence.
+- Every file under `assets/`, `references/`, and `scripts/` **MUST** be referenced from `SKILL.md`.
+- Duplicate normalized markdown headings are reported.
+- A `## Runtime Inputs` section is reported because it front-loads support files instead of referencing them at point of need.
 
-2) Frontmatter (YAML in top of `SKILL.md`)
-- [ ] YAML frontmatter present and parseable.
-- [ ] Required keys: `name` (string), `description` (string), `user-invocable` (bool).
-- [ ] Optional recommended keys: `argument-hint`, `disable-model-invocation`.
-- [ ] `name` matches the folder name and follows kebab-case (regex: `^[a-z0-9-]{1,64}$`).
-- [ ] `description` <= 1024 characters.
+Fix patterns
+- Missing frontmatter key -> add the missing key to the YAML header.
+- Name mismatch -> rename the folder or change the `name` field so they match.
+- `context` without `compatibility` -> add a `compatibility` field with the minimum VS Code and GitHub Copilot versions you have actually verified.
+- Missing `.venv` or missing validator dependencies -> run `uv sync` from the repository root, then rerun the validator.
+- Missing `<rules>` or `<workflow>` -> restore the canonical structure from [skill-template.md](../assets/skill-template.md).
+- Template leftovers such as `<what this skill does>` or `./references/<guide>.md` -> replace them with concrete wording and real file paths before publishing.
+- Active `#file:` in a support markdown file -> replace it with a markdown link such as `[file](./path)` or `[file](../path)`.
+- Active `#tool:` in a support markdown file -> replace it with plain prose or inline code such as `vscode/askQuestions`.
+- Unknown or wrong-layer `#tool:` -> replace it with the skill-facing alias or namespaced tool accepted by the workspace.
+- Unreferenced support file -> cite the file on the workflow step that consumes it.
+- `Runtime Inputs` warning -> move each `#file:` reference to the step where the agent actually needs that file.
+- Trailing punctuation after `#file:` or `#tool:` -> rewrite the sentence so the reference stands alone.
+- Duplicate headings -> merge the sections or rename one so only one canonical heading remains.
 
-3) Content constraints
-- [ ] `SKILL.md` length <= 500 lines (prefer concise; use `references/` for heavy docs).
-- [ ] Key sections present: Description, rules, workflow (or equivalent steps).
-- [ ] Avoid implementation details (no runnable scripts embedded as instructions).
-- [ ] `#tool:` references present where the skill needs external tools (e.g., `#tool:vscode/askQuestions`).
-- [ ] `#file:` references use relative paths and point to files that exist (best-effort).
+Workspace notes
+- `compatibility` is strongly recommended whenever a skill depends on version-gated behavior.
+- `metadata` and `license` are optional local annotations; keep them concise if you use them.
+- `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` can help post-load routing, but the frontmatter `description` remains the main discovery surface.
 
-4) File-reference policy
-- [ ] `#file:` paths should be one level deep where possible (e.g., `./assets/foo.md`, `./references/bar.md`) — keeps progressive loading predictable.
-- [ ] No absolute or external repository paths inside `#file:`.
-
-5) Assets & examples
-- [ ] `assets/skill-template.md` (or equivalent) provides a working copy-paste example.
-- [ ] If you require structured input, `assets/ask_questions.json` exists (machine template) AND `references/ask_questions.md` explains intent + examples for humans.
-
-6) Tools & permissions
-- [ ] Document which tools the skill expects `#tool:<name>` (e.g., `#tool:vscode/askQuestions`) inside the SKILL body where you instruct agents to use them.
-- [ ] Remind integrators to include the corresponding `tools:` entry in any `.agent.md` that will run this skill (example below).
-
-7) Naming, style & discoverability
-- [ ] Include trigger phrases / “When to use” (help discovery).
-- [ ] Provide at least one example invocation or sample `vscode_askQuestions` payload in `assets/` or `references/`.
-
-8) Validation script expectations (if present)
-- [ ] `scripts/validate_skill.py` runs without error and returns non-zero on fatal validation errors.
-- [ ] The script prints ERRORS and WARNINGS clearly for editors to fix.
-
-9) Audit & documentation
-- [ ] Add a short `references/validation.md` (this file) explaining checks and the quick fix steps.
-- [ ] Keep a `references/URIs.md` with primary external references (docs, style guides).
-
-Common quick-fixes
-- Missing frontmatter → add minimal YAML with `name`, `description`, `user-invocable`.
-- Name mismatch → change `name` or rename folder to kebab-case.
-- Missing assets → copy `assets/skill-template.md` into `assets/`.
-- No `#tool:` where needed → add `#tool:vscode/askQuestions` in procedure step.
-
-Status codes used by the validator
-- ERROR: must fix before publishing.
-- WARNING: recommended fix; not required.
-
-(End of checklist)
+Status codes
+- ERROR: **MUST** fix before publishing.
+- WARNING: structural problem or quality issue that should usually be corrected.

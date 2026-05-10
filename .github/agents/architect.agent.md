@@ -1,7 +1,6 @@
 ---
 name: architect
-description: "Software architecture specialist for system design, scalability, and technical decision-making. Use PROACTIVELY when planning new features, refactoring large systems, or making architectural decisions. Produces ADRs and system design checklists. Derived from Everything Claude Code (https://github.com/affaan-m/everything-claude-code)."
-target: vscode
+description: "Software architecture specialist for system design, scalability, and technical decision-making. Use PROACTIVELY when planning new features, refactoring large systems, or making architectural decisions. Produces ADRs and system design checklists."
 model: Claude Sonnet 4.6 (copilot)
 tools: [read, search, agent, todo]
 ---

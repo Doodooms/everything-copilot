@@ -1,0 +1,1418 @@
+{
+  "nodes": [
+    {
+      "id": "github_skills_create_skill_scripts_validate_skill_py",
+      "label": "validate_skill.py",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_validate_skill_iter_markdown_headings",
+      "label": "iter_markdown_headings()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L67"
+    },
+    {
+      "id": "scripts_validate_skill_normalize_heading",
+      "label": "normalize_heading()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L80"
+    },
+    {
+      "id": "scripts_validate_skill_contains_runtime_inputs_heading",
+      "label": "contains_runtime_inputs_heading()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L87"
+    },
+    {
+      "id": "scripts_validate_skill_has_block_tag",
+      "label": "has_block_tag()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L94"
+    },
+    {
+      "id": "scripts_validate_skill_iter_non_frontmatter_markdown_files",
+      "label": "iter_non_frontmatter_markdown_files()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L98"
+    },
+    {
+      "id": "scripts_validate_skill_iter_relative_markdown_links",
+      "label": "iter_relative_markdown_links()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L108"
+    },
+    {
+      "id": "scripts_validate_skill_normalize_relative_path",
+      "label": "normalize_relative_path()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L121"
+    },
+    {
+      "id": "scripts_validate_skill_iter_code_fence_filtered_lines",
+      "label": "iter_code_fence_filtered_lines()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L127"
+    },
+    {
+      "id": "scripts_validate_skill_find_workspace_root",
+      "label": "find_workspace_root()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L139"
+    },
+    {
+      "id": "scripts_validate_skill_add_toolset_member",
+      "label": "add_toolset_member()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L149"
+    },
+    {
+      "id": "scripts_validate_skill_build_toolset_names",
+      "label": "build_toolset_names()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L162"
+    },
+    {
+      "id": "scripts_validate_skill_load_tool_snapshot",
+      "label": "load_tool_snapshot()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L184"
+    },
+    {
+      "id": "scripts_validate_skill_iter_extension_manifest_paths",
+      "label": "iter_extension_manifest_paths()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L217"
+    },
+    {
+      "id": "scripts_validate_skill_scan_extension_manifests",
+      "label": "scan_extension_manifests()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L229"
+    },
+    {
+      "id": "scripts_validate_skill_load_skill_tool_alias_catalog",
+      "label": "load_skill_tool_alias_catalog()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L293"
+    },
+    {
+      "id": "scripts_validate_skill_load_runtime_tool_catalog",
+      "label": "load_runtime_tool_catalog()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L317"
+    },
+    {
+      "id": "scripts_validate_skill_build_tool_suggestions",
+      "label": "build_tool_suggestions()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L344"
+    },
+    {
+      "id": "scripts_validate_skill_read_frontmatter",
+      "label": "read_frontmatter()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L359"
+    },
+    {
+      "id": "scripts_validate_skill_validate",
+      "label": "validate()",
+      "file_type": "code",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L376"
+    },
+    {
+      "id": "github_skills_orchestrator_scripts_orchestrator_py",
+      "label": "orchestrator.py",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_orchestrator_validate_manifest",
+      "label": "validate_manifest()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "scripts_orchestrator_extract_manifest_info",
+      "label": "extract_manifest_info()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "scripts_orchestrator_validate_payload",
+      "label": "validate_payload()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "scripts_orchestrator_generate_next_task_id",
+      "label": "generate_next_task_id()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L62"
+    },
+    {
+      "id": "scripts_orchestrator_create_manifest_if_missing",
+      "label": "create_manifest_if_missing()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L95"
+    },
+    {
+      "id": "scripts_orchestrator_write_orchestration_record",
+      "label": "write_orchestration_record()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L123"
+    },
+    {
+      "id": "scripts_orchestrator_rationale_1",
+      "label": "Orchestrator helper API moved into the orchestrator skill.  Provides lightweig",
+      "file_type": "rationale",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_orchestrator_rationale_63",
+      "label": "Generate a simple incremental task id by scanning the orchestration     history",
+      "file_type": "rationale",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L63"
+    },
+    {
+      "id": "scripts_orchestrator_rationale_96",
+      "label": "If `manifest` is not a dict, generate a minimal manifest object.      The gene",
+      "file_type": "rationale",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L96"
+    },
+    {
+      "id": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "label": "generate_plan_index.py",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_generate_plan_index_extract_fenced",
+      "label": "extract_fenced()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "scripts_generate_plan_index_extract_header_block",
+      "label": "extract_header_block()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "scripts_generate_plan_index_extract_yaml_key",
+      "label": "extract_yaml_key()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "scripts_generate_plan_index_lines_to_paths",
+      "label": "lines_to_paths()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L34"
+    },
+    {
+      "id": "scripts_generate_plan_index_build_plan_index",
+      "label": "build_plan_index()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "scripts_generate_plan_index_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L51"
+    },
+    {
+      "id": "tools_copilot_tool_snapshot_extension_js",
+      "label": "extension.js",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_vscode",
+      "label": "vscode",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_activate",
+      "label": "activate()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L10"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_deactivate",
+      "label": "deactivate()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L105"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_runsafely",
+      "label": "runSafely()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L107"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_collecttoolsnapshot",
+      "label": "collectToolSnapshot()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L118"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_getlanguagemodeltools",
+      "label": "getLanguageModelTools()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L135"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_serializetool",
+      "label": "serializeTool()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L143"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_buildtoolsets",
+      "label": "buildToolSets()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L156"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_addtoolsetmember",
+      "label": "addToolSetMember()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L179"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_findsuggestions",
+      "label": "findSuggestions()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L194"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_scorenamematch",
+      "label": "scoreNameMatch()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L221"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_registerautomaticsnapshotrefresh",
+      "label": "registerAutomaticSnapshotRefresh()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L244"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_refreshsnapshotsforworkspace",
+      "label": "refreshSnapshotsForWorkspace()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L271"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_waitfortoolregistrytostabilize",
+      "label": "waitForToolRegistryToStabilize()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L299"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_delay",
+      "label": "delay()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L315"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_writesnapshotfile",
+      "label": "writeSnapshotFile()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L319"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_pickworkspacefolder",
+      "label": "pickWorkspaceFolder()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L332"
+    },
+    {
+      "id": "copilot_tool_snapshot_extension_writesnapshotsummary",
+      "label": "writeSnapshotSummary()",
+      "file_type": "code",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L348"
+    }
+  ],
+  "edges": [
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "difflib",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "typer",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "yaml",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_iter_markdown_headings",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_normalize_heading",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_contains_runtime_inputs_heading",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_has_block_tag",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_iter_non_frontmatter_markdown_files",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_iter_relative_markdown_links",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_normalize_relative_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_iter_code_fence_filtered_lines",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_find_workspace_root",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_add_toolset_member",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_build_toolset_names",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_load_tool_snapshot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_iter_extension_manifest_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_scan_extension_manifests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L229",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_load_skill_tool_alias_catalog",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L293",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_load_runtime_tool_catalog",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_build_tool_suggestions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L344",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_read_frontmatter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L359",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_create_skill_scripts_validate_skill_py",
+      "target": "scripts_validate_skill_validate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L376",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_contains_runtime_inputs_heading",
+      "target": "scripts_validate_skill_iter_markdown_headings",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_contains_runtime_inputs_heading",
+      "target": "scripts_validate_skill_normalize_heading",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_iter_non_frontmatter_markdown_files",
+      "target": "scripts_validate_skill_read_frontmatter",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_build_toolset_names",
+      "target": "scripts_validate_skill_add_toolset_member",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_load_tool_snapshot",
+      "target": "scripts_validate_skill_find_workspace_root",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_scan_extension_manifests",
+      "target": "scripts_validate_skill_iter_extension_manifest_paths",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_scan_extension_manifests",
+      "target": "scripts_validate_skill_build_toolset_names",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_load_skill_tool_alias_catalog",
+      "target": "scripts_validate_skill_find_workspace_root",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L294",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_load_skill_tool_alias_catalog",
+      "target": "scripts_validate_skill_read_frontmatter",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_load_runtime_tool_catalog",
+      "target": "scripts_validate_skill_load_tool_snapshot",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_load_runtime_tool_catalog",
+      "target": "scripts_validate_skill_scan_extension_manifests",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_read_frontmatter",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L383",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_iter_code_fence_filtered_lines",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L412",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_has_block_tag",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_iter_relative_markdown_links",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L434",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_normalize_relative_path",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L436",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_iter_non_frontmatter_markdown_files",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L458",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_load_skill_tool_alias_catalog",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L496",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_load_runtime_tool_catalog",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L497",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_build_tool_suggestions",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L504",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_iter_markdown_headings",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L524",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_normalize_heading",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L525",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_validate_skill_validate",
+      "target": "scripts_validate_skill_contains_runtime_inputs_heading",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/create-skill/scripts/validate_skill.py",
+      "source_location": "L538",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_validate_manifest",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_extract_manifest_info",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_validate_payload",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_generate_next_task_id",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_create_manifest_if_missing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_orchestrator_py",
+      "target": "scripts_orchestrator_write_orchestration_record",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_orchestrator_validate_payload",
+      "target": "scripts_orchestrator_validate_manifest",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_orchestrator_create_manifest_if_missing",
+      "target": "scripts_orchestrator_generate_next_task_id",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_orchestrator_rationale_1",
+      "target": "github_skills_orchestrator_scripts_orchestrator_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_orchestrator_rationale_63",
+      "target": "scripts_orchestrator_generate_next_task_id",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_orchestrator_rationale_96",
+      "target": "scripts_orchestrator_create_manifest_if_missing",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/orchestrator.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "re",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_extract_fenced",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_extract_header_block",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_extract_yaml_key",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_lines_to_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_build_plan_index",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "github_skills_orchestrator_scripts_generate_plan_index_py",
+      "target": "scripts_generate_plan_index_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_plan_index_main",
+      "target": "scripts_generate_plan_index_extract_fenced",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_plan_index_main",
+      "target": "scripts_generate_plan_index_extract_header_block",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_plan_index_main",
+      "target": "scripts_generate_plan_index_extract_yaml_key",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_plan_index_main",
+      "target": "scripts_generate_plan_index_lines_to_paths",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_plan_index_main",
+      "target": "scripts_generate_plan_index_build_plan_index",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": ".github/skills/orchestrator/scripts/generate_plan_index.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "vscode",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_vscode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_deactivate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_runsafely",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_collecttoolsnapshot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_getlanguagemodeltools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_serializetool",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_buildtoolsets",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_addtoolsetmember",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_findsuggestions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L194",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_scorenamematch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L221",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_registerautomaticsnapshotrefresh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_refreshsnapshotsforworkspace",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_waitfortoolregistrytostabilize",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_delay",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L315",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_writesnapshotfile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_pickworkspacefolder",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L332",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_copilot_tool_snapshot_extension_js",
+      "target": "copilot_tool_snapshot_extension_writesnapshotsummary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_activate",
+      "target": "copilot_tool_snapshot_extension_registerautomaticsnapshotrefresh",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_collecttoolsnapshot",
+      "target": "copilot_tool_snapshot_extension_getlanguagemodeltools",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_collecttoolsnapshot",
+      "target": "copilot_tool_snapshot_extension_buildtoolsets",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_buildtoolsets",
+      "target": "copilot_tool_snapshot_extension_addtoolsetmember",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_findsuggestions",
+      "target": "copilot_tool_snapshot_extension_scorenamematch",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_refreshsnapshotsforworkspace",
+      "target": "copilot_tool_snapshot_extension_waitfortoolregistrytostabilize",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L278",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_refreshsnapshotsforworkspace",
+      "target": "copilot_tool_snapshot_extension_collecttoolsnapshot",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L280",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_waitfortoolregistrytostabilize",
+      "target": "copilot_tool_snapshot_extension_delay",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "copilot_tool_snapshot_extension_waitfortoolregistrytostabilize",
+      "target": "copilot_tool_snapshot_extension_getlanguagemodeltools",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/copilot-tool-snapshot/extension.js",
+      "source_location": "L305",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

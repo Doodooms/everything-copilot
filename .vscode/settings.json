@@ -11,6 +11,6 @@
     "github.copilot.chat.cli.forkSessions.enabled": true,
 
     // Enable the skill tool for agents to call skills as tools, for automatic subagent spawn.
-    "github.copilot.chat.skillTool.enabled": true
+    "github.copilot.chat.skillTool.enabled": true,
 
 }

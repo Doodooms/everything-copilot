@@ -1,7 +1,9 @@
 ---
 name: graphify
-description: "Explore any codebase, docs, PDFs, or media as a knowledge graph. Use when: starting a new project, mapping unfamiliar code, finding hidden dependencies, exploring cross-cutting concerns. Produces GRAPH_REPORT.md with god-nodes, surprising connections, and confidence-labeled (EXTRACTED/INFERRED) relationships. Requires graphify CLI (pip install graphifyy)."
+description: "What: Build, update, query, and interpret a graphify knowledge graph for this workspace. When to use: mapping an unfamiliar repository, graphify-out is missing or stale, /graphify is invoked, or you need cross-cutting dependency and concept discovery. Do not use for: prompt or skill authoring, or one-off file reads that do not need graph construction."
 user-invocable: false
+context: fork
+compatibility: vscode 1.119.0+, github-copilot 1.119.0+
 ---
 
 # Graphify Skill
@@ -10,90 +12,78 @@ Source: https://github.com/safishamsi/graphify (MIT, Python, VS Code Copilot nat
 
 Purpose: Build and query a knowledge graph over the project to accelerate exploration,
 onboarding, and architectural understanding. All code extraction is local (tree-sitter,
-no API cost). Docs/PDFs/images use an LLM backend.
+no API cost). For markdown-heavy repositories without external API keys, the user-facing [/graphify prompt](../../prompts/graphify.prompt.md) should delegate here and this skill owns the canonical workflow.
 
-# When to Invoke
+## WHEN TO USE
 
 - Starting work on an unfamiliar repository or module
 - Before a large refactor (find hidden dependants via god nodes)
 - When asked "what does X connect to?" or "show me the architecture"
 - Before writing tests (graph reveals untested paths)
+- When the workspace `/graphify` prompt is invoked
 
-# Workflow
+## WHEN NOT TO USE
+
+- Editing a skill, prompt, agent, or MCP server definition
+- Reading a single known file when graphify output would add no value
+
+<definitions>
+
+- **graph state** : The current presence and freshness of `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md` for the requested path.
+- **Copilot workflow** : The no-key graphify path where GitHub Copilot handles semantic extraction and local `graphifyy` handles detect, AST extraction, build, report, and HTML export.
+
+</definitions>
+
+<workflow>
 
 ## Step 1 -- Check existing graph
 
-Check whether `graphify-out/GRAPH_REPORT.md` exists.
-- EXISTS: read it immediately with #tool:read_file. Skip to Step 3.
-- MISSING: proceed to Step 2.
+Check whether `graphify-out/GRAPH_REPORT.md` exists for the requested path.
+- EXISTS and the user asked for interpretation or query only: use #tool:read on the existing report and skip to Step 5.
+- MISSING or the user explicitly asked to rebuild or update: proceed to Step 2.
 
-## Step 2 -- Build the graph
+## Step 2 -- Bootstrap graphify tooling
 
-Run the appropriate extraction command:
+If you need repository-specific setup details, use #tool:read on #file:./references/setup-guide.md
+Use #tool:execute to verify graphify is available from the repo environment with `uv run python -c "import graphify; print('graphify-ok')"`.
+If the import fails, run `uv sync` from the repository root and retry the same import check.
 
-```
-# Code-only (fast, no API cost):
-graphify extract <path>
+## Step 3 -- Execute the canonical graphify workflow
 
-# Code + docs (requires LLM backend):
-graphify extract <path> --backend openai|claude|gemini
+Use #tool:read on #file:./references/copilot-workflow.md and follow the relevant mode from that file.
+Use #tool:read on #file:./assets/semantic-extraction-subagent-prompt.md when dispatching semantic extraction subagents.
+Use #tool:execute for the local graphify commands described there.
+Use #tool:agent to run the semantic extraction subagents in parallel when the workflow reaches the semantic extraction step.
+Use the Copilot workflow as the default for this repository when external backend credentials are not configured.
+Use headless `uv run graphify extract ... --backend ...` only when explicit backend credentials are available.
 
-# VS Code Copilot integration (one-time, writes to VS Code user settings):
-graphify vscode install
-```
+## Step 4 -- Confirm durable outputs
 
-Use the official PyPI package `graphifyy` (double-y). The CLI command remains `graphify`.
+Use #tool:read on #file:./references/output-formats.md if you need the output contract
+Ensure the workflow produced the durable outputs `graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, and `graphify-out/graph.html`.
+Do not keep temporary chunk files after merge.
 
-Add a `.graphifyignore` file to exclude noise (node_modules, build artifacts,
-migrations, generated files). See [.graphifyignore guide](./references/setup-guide.md).
+## Step 5 -- Read and interpret GRAPH_REPORT.md
 
-Commit `graphify-out/` (excluding `manifest.json` and `cost.json`) so all agents
-start with a pre-built map.
+Use #tool:read on the generated `graphify-out/GRAPH_REPORT.md`.
+Always surface:
+1. Top 3 god nodes with their community and degree.
+2. Top 2 surprising connections.
+3. Any knowledge gaps relevant to the current task.
+4. Confidence framing from the report.
 
-## Step 3 -- Read and interpret GRAPH_REPORT.md
+## Step 6 -- Mention query and MCP follow-up
 
-Read `graphify-out/GRAPH_REPORT.md`. It contains:
-- **God Nodes**: highest-degree nodes. These are the load-bearing concepts.
-  Start any investigation here.
-- **Surprising Connections**: cross-module links ranked by unexpectedness.
-  Surface hidden dependencies.
-- **Communities**: Leiden-clustered groups of related nodes with cohesion scores.
-  Use as module boundaries for task scoping.
-- **Knowledge Gaps**: nodes with missing outbound edges -- likely under-tested or
-  undocumented areas.
-- **Suggested Questions**: graph-generated onboarding questions. Use as prompts
-  for deeper investigation.
-- **Confidence stats**: ratio of EXTRACTED (directly found) vs INFERRED (deduced)
-  edges. High INFERRED ratio means the graph has less certain areas.
+If the user wants deeper follow-up, use the graphify query, path, or explain commands from the canonical workflow.
+Mention that MCP access is available through [.vscode/mcp.json](../../../.vscode/mcp.json) once `graphify-out/graph.json` exists.
 
-## Step 4 -- Precision queries via MCP (optional)
+ </workflow>
 
-If `.vscode/mcp.json` includes the graphify server, use MCP tools for precise queries:
-- `query_graph`: keyword or semantic search over nodes and edges
-- `get_node`: full metadata for a specific node (community, source file, confidence)
-- `get_neighbors`: 1-hop neighborhood of a node
-- `shortest_path`: dependency path between two nodes
-
-MCP config: #file:../../../.vscode/mcp.json (see graphify entry)
-
-## Step 5 -- Surface findings
-
-Always report:
-1. Top 3 god nodes with their community and degree
-2. Top 2 surprising connections
-3. Any knowledge gaps relevant to the current task
-4. Confidence level (EXTRACTED% / INFERRED%)
-
-Reference `graphify-out/GRAPH_REPORT.md` as a `#file:` in Copilot Chat for full context.
-
-# Rules
+<rules>
 
 - Never answer architecture questions without first reading GRAPH_REPORT.md.
 - Do not rebuild the graph on every run -- check for existing output first.
+- The canonical graphify workflow lives in #file:./references/copilot-workflow.md and must not be duplicated in prompts.
 - Label all findings with confidence: EXTRACTED or INFERRED.
 - When using the graph for refactor scope, always check god nodes for blast radius.
-
-# References
-
-- [Setup guide and .graphifyignore patterns](./references/setup-guide.md)
-- [Graph output file formats](./references/output-formats.md)
+ </rules>
