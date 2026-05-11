@@ -1,7 +1,20 @@
 .gitnexus/
+.graphify/
 .memory/
-.vscode/copilot-tools.snapshot.json
 .venv/
-graphify-out/manifest.json
-graphify-out/cost.json
-graphify-out/cache/
+node_modules/
+graphify-out/
+
+# Local AHK runtime state; keep .harness/feature_list.json tracked.
+.harness/current.md
+.harness/harness.db
+.harness/harness.db-*
+.harness/scripts/
+
+# Generated local editor/runtime artifacts.
+.vscode/copilot-tools.snapshot.json
+.tmp-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage

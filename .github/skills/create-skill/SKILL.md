@@ -1,6 +1,6 @@
 ---
 name: create-skill
-description: "What: Create or update deterministic VS Code skills with explicit tool and file references. When to use: creating or repairing skills, removing duplicate skill logic, tightening support-file loading, or updating skill frontmatter and validation conventions. Do not use for agents, prompts, MCP servers, or general coding tasks."
+description: "WHAT: Create or update deterministic VS Code skills with explicit tool and file references. USE FOR: creating or repairing skills, removing duplicate skill logic, tightening support-file loading, or updating skill frontmatter and validation conventions. DO NOT USE FOR: agents, prompts, MCP servers, or general coding tasks."
 user-invocable: false
 context: fork
 compatibility: vscode 1.119.0+, github-copilot 1.119.0+
@@ -9,20 +9,18 @@ metadata:
   creator: Doodooms
 license: MIT
 ---
-## WHEN TO USE
-
-- Migrating a skill away from legacy tool or file-reference syntax.
-- Auditing an existing skill folder for dead support files or duplicated guidance.
-- Standardizing a skill so support files load only at point of need.
-- Adding or tightening validator rules for skill authoring.
-
-## WHEN **NOT** TO USE
-- Creating or editing a custom agent, prompt, or MCP server instead of a skill.
-- General coding or debugging tasks that do not change skill authoring behavior.
-- One-off documentation edits that do not affect skill loading, routing, or validation.
-- Runtime tool-registry investigation when no skill package is being authored.
 
 <definitions>
+
+- **skill** : A package of repeatable workflow guidance that a workspace agent can route to and execute. It consists of a `SKILL.md` file with YAML frontmatter and markdown content, plus any number of support files under `assets/`, `references/`, and `scripts/` that are cited from `SKILL.md`.
+
+- **agent** : A process that can execute deterministic workflows, use tools, and read and write files. Agents can invoke skills when they detect a relevant context or receive an explicit user request.
+
+- **prompt** : A reusable text snippet that an agent can conditionally include in its context when invoking a skill or executing a workflow step. Prompts are not deterministic guidance; they are suggestions or examples that the agent may choose to use.
+
+- **tool** : An action the agent can take that has an effect outside of its own internal state. Tools include things like reading a file, executing code, asking the user a question, or invoking another agent. Each tool has a specific syntax for how it is cited from `SKILL.md` and how it is invoked by the agent.
+
+- **mcp server** : A local or remote service that implements the MCP protocol to expose tools, memory, and other capabilities to agents. A skill may depend on certain tools being available from the MCP server, and it should cite those tools with their skill-facing aliases.
 
 - **workflow** : A sequence of deterministic steps that an agent must execute to accomplish a task. A workflow does not contain behavioral instructions ("you are", "your mission is").
 
@@ -31,6 +29,13 @@ license: MIT
 - **support file** : A file located in assets/, references/, or scripts/ that is referenced from SKILL.md. It is never loaded automatically; it must be explicitly cited on the workflow line that consumes it.
 
 </definitions>
+
+<workflow>
+
+## Step 0 - **CONFIRMATION**
+
+1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with **certainty** if this skill should be used.
+2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
 
 <rules>
 
@@ -55,8 +60,6 @@ license: MIT
 - Keep `#file:` references relative and free of trailing punctuation.
 
 </rules>
-
-<workflow>
 
 ## Step 1 - Inspect the current skill state
 

@@ -1,0 +1,5 @@
+harness.db
+harness.db-shm
+harness.db-wal
+current.md
+scripts/

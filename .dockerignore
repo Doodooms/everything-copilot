@@ -1,0 +1,13 @@
+.git
+.venv
+node_modules
+__pycache__/
+*.pyc
+.graphify/
+graphify-out/
+.gitnexus/
+.memory/
+.vscode/copilot-tools.snapshot.json
+.harness/harness.db
+.harness/current.md
+.tmp-ahk-*/

@@ -1,27 +1,38 @@
 ```yaml
 ---
 name: skill-name              # REQUIRED. Lowercase + hyphens only, 1-64 chars. MUST match parent folder name exactly — any deviation = silent load failure, no error shown.
-description: 'What: <what this skill does>. When to use: <trigger phrases or scenarios that should cause the agent to load this skill>. Do not use for: <nearby tasks that should route elsewhere>'
+description: 'WHAT: <what this skill does>. USE FOR: <trigger phrases or scenarios that should cause the agent to load this skill>. DO NOT USE FOR: <nearby tasks that should route elsewhere>' # REQUIRED. The primary discovery surface for the skill. Should be precise and comprehensive enough to guide agent routing without further context. Use the "WHAT:", "USE FOR:", and "DO NOT USE FOR:" structure to clearly delineate the skill's purpose, triggers, and boundaries. 1024 CHARS MAX.
 user-invocable: false          # ALWAYS false — skills are agent-only, never called by humans via slash commands.
+metadata:                   # REQUIRED workspace-local annotation block.
+    creation-date: YYYY-MM-DD
+    creator: UserName
 # context: fork               # UNCOMMENT only if the skill reads many files or runs a lengthy multi-step investigation. Keeps intermediate steps out of the parent context; only the final result is returned. OMIT for short, focused skills that produce an inline edit or direct answer.
 # compatibility: vscode 1.119.0+, github-copilot 1.119.0+ # REQUIRED when the skill relies on version-gated or editor-specific behavior unavailable in older builds.
-# metadata:                   # OPTIONAL workspace-local annotation block.
-#   creation-date: YYYY-MM-DD
-#   creator: UserName
-# license: MIT                # OPTIONAL workspace-local annotation.
+# license: MIT                # Optional workspace-local annotation.
 ---
 ```
 
 ```markdown
+<definitions>
+
+- **definition** : A reusable concept or rule that the workflow references. It lives in a `<definitions>` block near the top of the file so the agent can find it when it needs to apply that concept or rule.
+
+</definitions>
+
+<workflow>
+
+## Step 0 - **CONFIRMATION**
+
+1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with **certainty** if this skill should be used.
+2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
 
 <rules>
 
 - There **MUST** be one source of truth per concept.
 - Name the exact `#tool:` each workflow step requires.
 - Reference support files **ONLY** on the step that uses them.
-</rules>
 
-<workflow>
+</rules>
 
 ## Step 1 - <inspect or prepare>
 Use #tool:read on #file:./references/<guide>.md **ONLY** if this step needs that guide.
@@ -32,7 +43,9 @@ Use #tool:vscode/askQuestions on #file:./assets/<questions>.json **ONLY** if str
 ## Step 3 - <validate or execute>
 Use #tool:execute on the narrowest validation command for the skill output.
 Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside the skill folder.
+
 </workflow>
+
 ```
 
 ## Authoring Notes
@@ -67,19 +80,17 @@ Good:
 ```yaml
 ---
 name: api-helper
-description: "What: Debug failing third-party API integrations. When to use: tracing request or response mismatches, auth failures, or retry behavior. Do not use for: general backend refactors, database work, or unrelated test setup."
+description: "WHAT: Debug failing third-party API integrations. USE FOR: tracing request or response mismatches, auth failures, or retry behavior. DO NOT USE FOR: general backend refactors, database work, or unrelated test setup."
 user-invocable: false
 ---
 ```
 ```markdown
-## WHEN TO USE
-- Investigating failing API requests or responses.
-
-## WHEN **NOT** TO USE
-- Refactoring unrelated backend modules.
 
 <definitions>
+
+- USE tool:read immediately on file:../references/usefor.md
 - **trace artifact** : A log, payload, or response snapshot used by the workflow.
+
 </definitions>
 ```
 

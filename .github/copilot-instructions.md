@@ -3,7 +3,7 @@
 - Only use ASCII-safe characters (NO EMOJIS, NO SPECIAL CHARACTERS).
 - Prefer project-local environments or configured containers when available. Do not require Docker for this workflow repository itself.
 - Any CLI implementation must always be implemented in Python with Typer.
-- This repository's local Python tooling is declared in `pyproject.toml` and locked in `uv.lock`. The current Python dependencies include `graphifyy`, `mcp`, `pyyaml`, and `typer`.
+- This repository's local Python tooling is declared in `pyproject.toml` and locked in `uv.lock`. The current Python dependencies include `graphifyy`, `ladybug`, `mcp`, `pyyaml`, and `typer`.
 - Before running repository Python scripts or validators, ensure the project environment is synced with `uv sync` from the repository root.
 - For graphify on markdown-heavy repositories without external backend credentials, use the workspace `/graphify` prompt as the user-facing entrypoint; it must delegate to the canonical `graphify` skill workflow. Use headless `uv run graphify extract --backend ...` only when explicit backend credentials are configured.
 - Before creating or modifying any skill folder under `.github/skills/`, invoke the `create-skill` skill.

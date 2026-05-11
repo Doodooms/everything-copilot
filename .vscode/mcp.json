@@ -1,5 +1,11 @@
 {
   "servers": {
+    "ahk": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["--no-install", "ahk", "serve"],
+      "env": {}
+    },
     "gitnexus": {
       "type": "stdio",
       "command": "npx",
@@ -9,7 +15,16 @@
     "graphify": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "python", "-m", "graphify.serve", "graphify-out/graph.json"],
+      "args": [
+        "run",
+        "python",
+        "scripts/atomic_index.py",
+        "serve-graphify",
+        "--db-path",
+        ".graphify/lbug",
+        "--report-path",
+        "graphify-out/GRAPH_REPORT.md"
+      ],
       "env": {}
     }
   }

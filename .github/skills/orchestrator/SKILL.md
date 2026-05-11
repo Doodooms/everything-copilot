@@ -11,6 +11,25 @@ Purpose:
 - Persist authoritative manifests to `.github/tasks/` and audit records to `.github/plan_history/`.
 - Provide a machine-friendly `manifest` to guide subagents.
 
+# AHK Integration Contract
+
+When the `ahk` MCP server is connected in the workspace, the Orchestrator uses AHK as the operational task ledger while preserving the existing strategic and audit layers.
+
+- `PLAN.md` remains the strategic source of truth.
+- `.github/tasks/` and `.github/plan_history/` remain the orchestration audit trail.
+- AHK owns operational task state, atomic claiming, action journaling, and health gates.
+
+Expected AHK usage pattern when available:
+
+1. Locate the operational task in AHK with `tasks.get`.
+2. Create it with `tasks.add` if the approved manifest has no matching operational task yet.
+3. Claim it with `tasks.claim` when execution actually begins.
+4. Open an action with `actions.start` before substantive implementation work.
+5. Record progress with `actions.write`, `actions.record_file`, and `actions.record_tool` during implementation and validation.
+6. Close the action with `actions.complete` when the step is done.
+
+The Orchestrator must not let AHK replace `PLAN.md` or the persisted manifest history. AHK is the operational execution surface, not the strategic planning surface.
+
 # Plan Index Policy
 - The manifest MUST include a `plan_index` (compact references into the plan, plus a repo-structure block at plan start).
 - Subagents will use `plan_index` to determine repository files to inspect, so make sure it is accurate and up-to-date.

@@ -1,6 +1,6 @@
 ---
 name: create-mcp
-description: "What: Create or update MCP servers with Go, Rust, or Python as the primary implementation targets. When to use: creating a new MCP server, selecting a language and transport, wiring tool or resource registration, configuring VS Code mcp.json, or fixing MCP setup drift after a rename or refactor."
+description: "WHAT: Create or update MCP servers with Go, Rust, or Python as the primary implementation targets. WHEN TO USE: creating a new MCP server, selecting a language and transport, wiring tool or resource registration, configuring VS Code mcp.json, or fixing MCP setup drift after a rename or refactor."
 user-invocable: false
 disable-model-invocation: false
 ---
@@ -36,14 +36,14 @@ repeating them. Load these runtime inputs explicitly:
 
 ## Step 1 - Load MCP references
 
-Use #tool:copilot_readFile to load #file:./references/URIs.md before you choose an SDK or package path.
-Use #tool:copilot_readFile to load #file:./references/manage_mcp.md before you edit VS Code MCP configuration.
-Use #tool:copilot_readFile to load #file:./assets/language-selection-checklist.md before you select the implementation language.
+Use #tool:read to load #file:./references/URIs.md before you choose an SDK or package path.
+Use #tool:read to load #file:./references/manage_mcp.md before you edit VS Code MCP configuration.
+Use #tool:read to load #file:./assets/language-selection-checklist.md before you select the implementation language.
 
 ## Step 2 - Inspect the current MCP state
 
 If the repository already contains MCP code or was recently renamed, use #tool:explore_subagent to locate current entrypoints, `mcp.json`, and stale references.
-If the exact files are already known, use #tool:copilot_readFile on those files directly.
+If the exact files are already known, use #tool:read on those files directly.
 
 ## Step 3 - Clarify constraints
 

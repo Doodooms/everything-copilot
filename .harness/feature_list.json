@@ -1,0 +1,13 @@
+[
+  {
+    "slug": "revalidate-codegraphcontext-candidate",
+    "title": "Revalidate CodeGraphContext candidate after upstream fix",
+    "description": "Do not re-enable CodeGraphContext in the workspace MCP surface until a pinned upstream version returns real symbol data and passes the deep validation battery.",
+    "acceptance": [
+      "A candidate CodeGraphContext version returns non-zero function or class stats after indexing a disposable repository",
+      "find_code and analyze_code_relationships return real symbol results for the disposable repository and the workspace before any future MCP registration",
+      "The workspace MCP registration, PLAN.md, and README.md are updated only after that validation battery is green"
+    ],
+    "status": "pending"
+  }
+]

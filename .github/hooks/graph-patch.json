@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "uv run python scripts/atomic_index.py hook-post-tool-use --db-path .graphify/lbug --graph-json graphify-out/graph.json",
+        "cwd": ".",
+        "timeout": 30
+      }
+    ],
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "uv run python scripts/atomic_index.py hook-stop --db-path .graphify/lbug --graph-json graphify-out/graph.json",
+        "cwd": ".",
+        "timeout": 60
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "uv run python scripts/atomic_index.py hook-stop --db-path .graphify/lbug --graph-json graphify-out/graph.json",
+        "cwd": ".",
+        "timeout": 60
+      }
+    ]
+  }
+}

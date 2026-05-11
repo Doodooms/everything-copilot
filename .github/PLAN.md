@@ -2,12 +2,13 @@
 
 <rules>
 
-- Read files in #file:../useful-agentic-workflow-docs/ first to understand base agentic-workflow concepts before any other file.
+- Read files in `../useful-agentic-workflow-docs/` first when that directory exists. If it does not exist in the current workspace, use this plan and `README.md` as the bootstrap context.
 - This plan is the single source of truth for what exists and what is planned. Update it after every completed task.
 - All agents and skills listed here MUST exist as files. Ghost references are forbidden.
+- Planned integrations must be marked explicitly as `Planned` or `Watchlist` until their files, config, and docs exist in the workspace.
 </rules>
 
-Last updated: 2026-05-08
+Last updated: 2026-05-11
 Status: Active
 
 ## Vision
@@ -18,8 +19,17 @@ Language-agnostic and reusable for any project. Provides a layered system:
 - **Layer 1 -- Native VS Code/Copilot**: built-in memory tool, Plan agent, chat checkpoints, Copilot CLI background agents, hooks
 - **Layer 2 -- Custom Agents**: specialized personas (Planner, Research, Dev, Quality, Commit, Code Reviewer)
 - **Layer 3 -- Skills Library**: orchestration, TDD, security, knowledge graph, impact analysis, creation wizards
-- **Layer 4 -- MCP Servers**: graphify (codebase graph), gitnexus (impact analysis)
+- **Layer 4 -- MCP Servers**: ahk (task orchestration state), graphify (documentation graph), gitnexus (impact analysis)
 - **Layer 5 -- Scoped Instructions**: file-pattern-specific rules via `.github/instructions/`
+
+Current strategic recommendation for evolving this workspace into `everything-copilot`:
+
+- Keep **GitNexus** as the retained code-impact layer.
+- Keep **Graphify on LadybugDB** as the retained documentation and semantic graph layer.
+- Keep **AHK (`@cardor/agent-harness-kit`)** as the integrated orchestration backbone for backlog, atomic task claiming, action journal, and health gates.
+- Re-evaluate **CodeGraphContext** only after a candidate release returns real symbol data under the deep validation battery.
+- Use the committed **Dockerfile** when a reproducible packaged environment is needed for the active workspace surface.
+- Treat **Bernstein** and **axiom-graph** as later-stage additions, not first-wave dependencies.
 
 ## Core Architecture
 
@@ -30,7 +40,7 @@ GitHub Copilot (VS Code)
    [.github/instructions/]     -- Scoped rules (per file type/folder)
         |
    [Hooks]                     -- Deterministic lifecycle enforcement
-   [.github/hooks/hooks.json]
+     [.github/hooks/graph-patch.json]
         |
    [Orchestrator Skill]        -- Coordinates multi-agent workflows via manifest
         |
@@ -39,8 +49,9 @@ GitHub Copilot (VS Code)
 Planner  Research   Dev    Quality  Commit
    |                           |
 [Skills Library]          [MCP Servers]
-graphify                  graphify (graph.json)
-gitnexus                  gitnexus (impact/context)
+graphify                  ahk (tasks/actions/docs)
+gitnexus                  graphify (graph.json)
+                         gitnexus (impact/context)
 tdd-workflow
 memory
 security-review
@@ -118,19 +129,40 @@ troubleshoot
 
 | Path                  | Purpose                                        |
 |-----------------------|------------------------------------------------|
+| `.claude/`              | AHK-generated provider files and Claude-compatible agent definitions |
 | `.github/instructions/` | Scoped `.instructions.md` files               |
 | `.github/tasks/`        | Generated manifests and task payloads         |
 | `.github/plan_history/` | Orchestration audit trail and plan snapshots  |
+| `.harness/`             | AHK operational backlog, SQLite state, and markdown fallback |
 | `.memory/`              | Optional vault scaffold used by the memory skill |
 
 ## MCP Servers (.vscode/mcp.json)
 
 | Server    | Command                          | Key Tools                                         |
 |-----------|----------------------------------|---------------------------------------------------|
-| graphify  | uv run python -m graphify.serve graphify-out/graph.json | query_graph, get_node, get_neighbors, shortest_path |
+| ahk       | npx --no-install ahk serve       | tasks.get, tasks.claim, actions.start, actions.write, actions.complete, docs.search |
+| graphify  | uv run python scripts/atomic_index.py serve-graphify --db-path .graphify/lbug | query_graph, get_node, get_neighbors, shortest_path |
 | gitnexus  | npx @duytransipher/gitnexus@latest mcp | impact, context, detect_changes, rename            |
 
 Preferred for this repository: run `/graphify .` in Copilot Chat to build `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md` with GitHub Copilot as the semantic extractor. Use headless `uv run graphify extract . --backend <backend>` only when explicit backend credentials are available.
+
+AHK is configured locally via `package.json`, `agent-harness-kit.config.ts`, `health.sh`, and `.harness/feature_list.json`. The integration also commits the generated `AGENTS.md` and `.claude/` provider files so AHK remains reproducible. It uses the AHK package's `claude-code` provider mode only to satisfy the package schema; GitHub Copilot accesses it through the manual `.vscode/mcp.json` registration above.
+
+CodeGraphContext is not part of the active MCP surface. Deep validation against the 0.4.7 candidate found successful indexing with zero extracted symbols and inconsistent backend-selection behavior, so future revalidation is tracked as backlog work instead of an active integration.
+
+## Strategic Integration Priorities
+
+These priorities describe the recommended implementation order for the `everything-copilot` program. They are planning records, not claims that the integrations already exist.
+
+| Priority | Component | Role in target platform | Status | Notes |
+|----------|-----------|-------------------------|--------|-------|
+| 1 | AHK (`@cardor/agent-harness-kit`) | Orchestration backbone: backlog, atomic task claiming, action journal, health gate, dashboard, local MCP task tools | Active | Integrated local MCP server, harness files, and generated provider artifacts |
+| 2 | CodeGraphContext | Live code graph with automatic refresh and MCP-facing graph queries | Planned | Candidate only; 0.4.7 failed deep validation and is not registered in the active workspace MCP surface |
+| 3 | GitNexus | Code impact analysis, symbol relationships, blast-radius reasoning | Active | Retained core layer |
+| 4 | Graphify + LadybugDB + SQLite FTS5 | Documentation graph, semantic retrieval, prompt and skill knowledge graph, raw-text retrieval | Active | LadybugDB remains the primary graph store; `.graphify/docs-fts.db` adds local raw-text retrieval |
+| 5 | Docker portability | Reproducible environment and onboarding support | Active | Dockerfile now packages the validated active workspace surface |
+| 6 | Bernstein | Possible future orchestration upgrade or expansion path | Watchlist | Evaluate after AHK and CodeGraphContext |
+| 7 | axiom-graph | Possible later addition for stale documentation and code-doc drift checks | Watchlist | Targeted follow-up, not core first wave |
 
 ## Memory System
 
@@ -174,7 +206,7 @@ Hooks enforce deterministic policies at lifecycle events. Exit code 0 = allow, n
 
 | File           | Event       | Purpose                                |
 |----------------|-------------|----------------------------------------|
-| hooks.json     | PostToolUse | Run `check_blocking_io.py` after tools |
+| graph-patch.json | PostToolUse, SubagentStop, Stop | Patch Graphify continuously after mutating tool calls, reconcile when subagents stop, and reconcile once more at agent stop |
 
 Use the `create-hook` skill to add new hook policies.
 
@@ -193,18 +225,20 @@ Examples to create:
 
 1. Copy `.github/` into the project root.
 2. Bootstrap local Python tooling with `uv sync`.
-3. In Copilot Chat, run `/graphify .` to build the initial knowledge graph.
-4. Start the MCP servers (see `.vscode/mcp.json`).
-5. Update `.github/PLAN.md` to reflect project-specific goals.
-6. Invoke `memory` skill Orient phase to seed context.
+3. Install local Node dependencies with `npm install` when the project uses AHK.
+4. In Copilot Chat, run `/graphify .` to build the initial knowledge graph.
+5. Start the MCP servers (see `.vscode/mcp.json`).
+6. Update `.github/PLAN.md` to reflect project-specific goals.
+7. Invoke `memory` skill Orient phase to seed context.
 
 ### For implementing a feature (interactive)
 
 1. Open Copilot Chat, invoke the orchestrator prompt (`#prompt:orchestrator.prompt.md`).
 2. Orchestrator reads PLAN.md and produces a manifest; review and approve.
-3. Planner produces a phased plan; Orchestrator dispatches to Research/Dev/Quality/Commit.
-4. Use chat checkpoints to rewind if the agent goes off track.
-5. After completion: run `memory` Persist phase to capture learnings.
+3. When the `ahk` MCP server is connected, the Orchestrator uses AHK as the operational task ledger: locate or add the task, claim it when execution begins, and record actions during implementation and validation.
+4. Planner produces a phased plan; Orchestrator dispatches to Research/Dev/Quality/Commit.
+5. Use chat checkpoints to rewind if the agent goes off track.
+6. After completion: run `memory` Persist phase to capture learnings.
 
 ### For implementing a feature (background / long-running)
 
@@ -252,6 +286,8 @@ Examples to create:
 
 ## Implementation Roadmap
 
+### Workspace Backlog
+
 | Phase | Item                                             | Status      |
 |-------|--------------------------------------------------|-------------|
 | P1    | Create `.github/instructions/` scoped files      | Scaffolded  |
@@ -267,10 +303,24 @@ Examples to create:
 | P2    | Add more hooks (PreToolUse: format check, SessionStart: memory orient) | Planned |
 | P3    | Document Copilot Memory setup guide              | Planned     |
 
+### Everything-Copilot Program
+
+| Phase | Item | Status | Outcome |
+|-------|------|--------|---------|
+| EC0 | Codify strategic tool ranking in PLAN, README, and repo memory | Completed | Source-of-truth docs reflect the adopted direction |
+| EC1 | Integrate AHK as the orchestration backbone | Completed | Shared backlog, atomic task claiming, action journal, health gate, dashboard, MCP task tools |
+| EC2 | Adapt orchestrator, memory, and workflow docs around the AHK task lifecycle | Completed | AHK is part of the documented operating model instead of an isolated add-on |
+| EC3 | Deep-validate CodeGraphContext before integration | Completed | 0.4.7 candidate failed symbol-extraction validation and was quarantined from the active workspace surface |
+| EC4 | Define clean coexistence boundaries across AHK, GitNexus, and Graphify while quarantining unstable candidates | Completed | PLAN and README now describe only the active tool boundaries and track CodeGraphContext as future revalidation work |
+| EC5 | Add Docker portability support for the validated active workspace surface | Completed | Dockerfile now builds uv, npm, the pinned dependencies, and the repository health gate in one reproducible image |
+| EC6 | Evaluate Bernstein as a possible future orchestration upgrade | Watchlist | Revisit only after EC1-EC5 are stable |
+| EC7 | Evaluate axiom-graph for doc drift and stale documentation checks | Watchlist | Optional targeted addition after core platform is stable |
+
 ## External Tool Sources
 
 | Tool                    | Repo                                          | License             |
 |-------------------------|-----------------------------------------------|---------------------|
+| Agent Harness Kit (AHK) | github.com/enmanuelmag/agent-harness-kit      | MIT                 |
 | Graphify                | github.com/safishamsi/graphify                | MIT                 |
 | GitNexus                | github.com/abhigyanpatwari/GitNexus           | PolyForm Noncommercial |
 | Everything Claude Code  | github.com/affaan-m/everything-claude-code    | See repo            |
@@ -284,3 +334,7 @@ Examples to create:
 |---------|-----------------------------------------------|-----------|
 | task_1  | Rewrite PLAN.md + define capabilities roadmap | Completed |
 | task_2  | Create photovoltaic France launch pack        | Completed |
+| task_3  | Define everything-copilot strategic integration roadmap | Completed |
+| task_4  | Integrate AHK into the workspace MCP and workflow stack | Completed |
+| task_5  | Deep-validate the CodeGraphContext candidate and quarantine it from the active workspace surface | Completed |
+| task_6  | Stabilize the active workspace surface and add Docker packaging | Completed |

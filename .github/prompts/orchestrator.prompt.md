@@ -43,6 +43,12 @@ considerations). The Orchestrator will collect any missing structured
 answers using `vscode_askQuestions` and will not dispatch work to subagents
 until the generated manifest has been reviewed or explicitly approved.
 
+When the `ahk` MCP server is connected, the Orchestrator should use AHK as the
+operational task ledger: locate or create the task, claim it when execution
+starts, and record action progress while keeping `.github/PLAN.md`,
+`.github/tasks/`, and `.github/plan_history/` as the strategic and audit source
+of truth.
+
 When persisting a manifest, the Orchestrator will snapshot the current
 `.github/PLAN.md` (if present) into `.github/plan_history/` to preserve the
 prior authoritative plan for audit.
