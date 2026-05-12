@@ -1,0 +1,68 @@
+[
+  {
+    "header": "Agent Slug",
+    "question": "Provide the agent file slug (lowercase, hyphens).",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Purpose",
+    "question": "One sentence: what unique job does this agent perform?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Triggers",
+    "question": "Which phrases or scenarios should cause this agent to be selected?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Required Tools",
+    "question": "Which tools must this agent have?",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      { "label": "read", "recommended": true },
+      { "label": "search", "recommended": true },
+      { "label": "edit" },
+      { "label": "execute" },
+      { "label": "agent" },
+      { "label": "web" },
+      { "label": "todo" },
+      { "label": "vscode/askQuestions" }
+    ]
+  },
+  {
+    "header": "Forbidden Work",
+    "question": "What must this agent avoid doing?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Invocation Mode",
+    "question": "How should this agent be invoked?",
+    "allowFreeformInput": false,
+    "options": [
+      {
+        "label": "Visible in picker and invocable as subagent",
+        "recommended": true
+      },
+      {
+        "label": "Hidden from picker, subagent only"
+      },
+      {
+        "label": "Visible in picker, not invocable as subagent"
+      },
+      {
+        "label": "Internal helper: hidden from picker and blocked from subagent use"
+      }
+    ]
+  },
+  {
+    "header": "Allowed Subagents",
+    "question": "List allowed subagents, `*`, or `none`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Output Contract",
+    "question": "What should this agent return or produce?",
+    "allowFreeformInput": true
+  }
+]

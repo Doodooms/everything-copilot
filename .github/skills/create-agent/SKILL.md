@@ -1,134 +1,96 @@
 ---
 name: create-agent
-description: "Create a custom agent (.agent.md) for a specific job. Use when: defining a new specialist agent, restricting tool access for a persona, building a subagent for orchestration."
+description: "WHAT: Create or update deterministic VS Code custom agent definitions with precise frontmatter, minimal tool access, and clear delegation boundaries. USE FOR: authoring a new `.agent.md`, repairing stale agent metadata, tightening tool or subagent restrictions, or converting an implicit chat persona into a reusable workspace agent. DO NOT USE FOR: creating skills, prompts, MCP servers, or general coding changes unrelated to agent definitions."
 user-invocable: false
-disable-model-invocation: true
+context: fork
+compatibility: vscode 1.119.0+, github-copilot 1.119.0+
+metadata:
+   creation-date: 2026-05-12
+   creator: Doodooms
+license: MIT
 ---
 
-# Create Agent
+<definitions>
 
-Guide the user to create a `.agent.md` in `.github/agents/`.
+- **custom agent** : A reusable `.agent.md` file that defines a specific persona, its tools, optional subagents, and its operating instructions.
 
-## Extract from Conversation
+- **agent contract** : The combination of frontmatter and body text that determines how the agent is routed, what it may do, and what it must return.
 
-Review the conversation history. If the user has been using the agent in a specialized way
-(restricting tools, following a specific persona, focusing on certain file types), extract:
-- The specialized role or persona being assumed
-- Tool preferences (which to use, which to avoid)
-- The domain or job scope
+- **subagent-only agent** : An agent hidden from the picker with `user-invocable: false` but still callable by other agents unless `disable-model-invocation: true` also blocks it.
 
-## Clarify if Needed
+</definitions>
 
-If no clear specialization emerges, ask:
-- What job should this agent do?
-- When should it be picked over the default agent?
-- Which tools should it use (or avoid)?
+<workflow>
 
-## Iterate
+## Step 0 - **CONFIRMATION**
 
-1. Draft the agent file and save it to `.github/agents/<name>.agent.md`.
-2. Identify the most ambiguous or weak parts and ask about those.
-3. Once finalized, summarize what the agent does, suggest example prompts to try it, and propose
-   related customizations to create next.
+1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this skill should be used.
+2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
 
-## Reference: Agent Frontmatter
+<rules>
 
+- Default to workspace-shared agent files under `.github/agents/<slug>.agent.md` unless the user explicitly asks for a different supported scope.
 
+- Keep the tool list minimal. Every extra tool widens the agent's blast radius and weakens routing precision.
 
-```yaml
----
-description: "<required>"    # For agent picker and subagent discovery
-name: "Agent Name"           # Optional, defaults to filename
-tools: [search, web]         # Optional: aliases, MCP (<server>/*), extension tools
-model: "Claude Sonnet 4"     # Optional, uses picker default; supports array for fallback
-agents: [agent1, agent2]     # Optional, restrict allowed subagents by name (omit = all, [] = none)
-user-invocable: false        # Optional, hide from picker for subagent-only routing
-disable-model-invocation: false  # Optional, prevent subagent invocation (default: false)
-handoffs: [...]              # Optional, transitions to other agents
----
-```
+- If the agent declares `agents:`, it **MUST** also include the `agent` tool.
 
-### Invocation Control
+- Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
 
-| Attribute | Default | Effect |
-|-----------|---------|--------|
-| `user-invocable: false` | `true` | Hide from agent picker, only accessible as subagent |
-| `disable-model-invocation: true` | `false` | Prevent other agents from invoking as subagent |
+- `description` is the primary routing surface. It **MUST** describe what the agent does and when to select it.
 
-### Model Fallback
+- Reference support files only on the workflow step that consumes them. Support markdown files must stay free of active `#tool:` and `#file:` markers.
 
-```yaml
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']  # First available model is used
-```
+</rules>
 
-## Tools
+## Step 1 - Inspect the current agent surface
 
-Sources: built-in aliases, specific tools, MCP servers (`<server>/*`), extension tools.
+If the name, scope, or overlap is unclear, use #tool:search under `.github/agents` to avoid duplicates and naming collisions.
+If the target agent already exists and you know the exact file path, use #tool:read on its current `.agent.md` file first.
+Keep candidate support docs as links until a later step actually needs them:
+- [custom agent reference](./references/custom_agent.md) for frontmatter fields, `target`, handoffs, hooks, or model syntax
+- [local agents reference](./references/local_agents.md) for workspace-local VS Code agent behavior
+- [subagent reference](./references/sub_agent.md) for delegation, `agents:`, or subagent restrictions
+- [agents concepts](./references/agents.md) only when the user is conflating agents, skills, prompts, or hooks
 
-**Special**: `[]` = no tools, omit = defaults. Body reference: `#tool:<name>`
+## Step 2 - Capture the missing agent contract
 
-### Tool Aliases
+If the conversation already establishes the persona, tools, constraints, and output shape, extract them directly and do not ask redundant questions.
+Otherwise, use #tool:read on #file:./references/ask_questions.md and #file:./assets/ask_questions.json and then use #tool:vscode/askQuestions to collect only the missing structured answers.
+Ask only for the fields that change behavior: agent slug, unique job, routing triggers, required tools, forbidden tools, invocation mode, delegation needs, and output contract.
+Do **NOT** ask for `model`, `handoffs`, or `hooks` unless the task explicitly needs them.
 
-| Alias | Purpose |
-|-------|---------|
-| `execute` | Run shell commands |
-| `read` | Read file contents |
-| `edit` | Edit files |
-| `search` | Search files or text |
-| `agent` | Invoke custom agents as subagents |
-| `web` | Fetch URLs and web search |
-| `todo` | Manage task lists |
+## Step 3 - Draft the agent file
 
-### Common Patterns
+Use #tool:read on #file:./assets/agent-template.md when writing the target file.
+Use #tool:edit to create or update `.github/agents/<slug>.agent.md`.
+If you are choosing frontmatter fields, `target`, handoffs, hooks, or model configuration, use #tool:read on #file:./references/custom_agent.md before setting those fields
+If you are deciding whether the agent should behave as a workspace local agent in VS Code, use #tool:read on #file:./references/local_agents.md before deciding the scope
+If the agent delegates, restricts `agents:`, or depends on subagent behavior, use #tool:read on #file:./references/sub_agent.md before finalizing delegation rules
+If the user is still conflating agents, skills, prompts, or hooks, use #tool:read on #file:./references/agents.md before finalizing the draft
+Set `description` so it clearly states what the agent does and includes `Use when:` trigger phrases.
+Prefer `target: vscode` for workspace agents unless the user explicitly targets another Copilot surface.
+Add only the tools the agent genuinely needs. Omit `tools` entirely when the default is acceptable; use `tools: []` only when a tool-free agent is intentional.
+If the agent delegates, include `agent` in `tools` and list only the allowed subagents in `agents:`. Use `*` only when broad delegation is intentional.
+Use `user-invocable: false` for helper agents that should stay out of the picker. Use `disable-model-invocation: true` only when the agent must never be invoked as a subagent.
+Add `handoffs` or `hooks` only when the workflow truly benefits and the task calls for them.
 
-```yaml
-tools: [read, search]             # Read-only research
-tools: [myserver/*]               # MCP server only
-tools: [read, edit, search]       # No terminal access
-tools: []                         # Conversational only
-```
+## Step 4 - Review before validation
 
-To discover available tools, check your current tool list or use `#tool:` syntax in the body to reference specific tools.
+Re-read the generated `.agent.md` file with #tool:read before validation.
+If you have not already loaded the frontmatter reference during Step 3, use #tool:read on #file:./references/custom_agent.md before you finalize the draft
+Ensure the body states the role, workflow or approach, hard boundaries, and the expected output contract.
+If the design relies on subagents and you have not already loaded the delegation reference during Step 3, use #tool:read on #file:./references/sub_agent.md before validating
 
-## Template
+## Step 5 - Validate
 
-```markdown
----
-description: "{Use when... trigger phrases for subagent discovery}"
-tools: [{minimal set of tool aliases}]
-user-invocable: false
----
-You are a specialist at {specific task}. Your job is to {clear purpose}.
+Use #tool:execute to run #file:./scripts/validate_agent.py with the repository interpreter: `./.venv/bin/python .github/skills/create-agent/scripts/validate_agent.py --agent-file <agent_file>`.
+If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before validating.
+If validation reports errors or warnings you need help interpreting, use #tool:read on #file:./references/validation.md and apply the matching fix.
+Fix **ALL** ERRORs before proceeding. Address WARNINGs when they point to ambiguous routing, deprecated fields, or overly broad tool access.
 
-## Constraints
-- DO NOT {thing this agent should never do}
-- DO NOT {another restriction}
-- ONLY {the one thing this agent does}
+## Step 6 - Finalize
 
-## Approach
-1. {Step one of how this agent works}
-2. {Step two}
-3. {Step three}
+Summarize what the agent does, where the file lives, which tools and subagents it exposes, and one example prompt that should route to it.
 
-## Output Format
-{Exactly what this agent should return}
-```
-
-## Invocation
-
-- **Manual**: Agent selector in chat
-- **Subagent**: Parent agent delegates based on `description` match (when `infer` allows)
-
-## Core Principles
-
-1. **Single role**: One persona with focused responsibilities per agent
-2. **Minimal tools**: Only include what the role needs—excess tools dilute focus
-3. **Clear boundaries**: Define what the agent should NOT do
-4. **Keyword-rich description**: Include trigger words so parent agents know when to delegate
-
-## Anti-patterns
-
-- **Swiss-army agents**: Too many tools, tries to do everything
-- **Vague descriptions**: "A helpful agent" doesn't guide delegation—be specific
-- **Role confusion**: Description doesn't match body persona
-- **Circular handoffs**: A -> B -> A without progress criteria
+</workflow>
