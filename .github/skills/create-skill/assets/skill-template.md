@@ -55,6 +55,8 @@ Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside 
 - `references/` store human guidance that the workflow loads only when needed.
 - `scripts/` store executable checks or automation.
 - **NEVER** add `## Runtime Inputs`. Cite each file and tool at the step that consumes it.
+- Prefer markdown links such as `[guide](./references/guide.md)` when the workflow is only naming a candidate, optional, or future file. Use `#file:` only when the current step must consume that file immediately.
+- **NEVER** batch 3 or more candidate support-file reads in an early context step. Use markdown links to show the files exist, then defer each `#tool:read` to the point-of-need step.
 - Outside the generated definition snippets, support markdown files **MUST** use markdown links for files and plain or inline-coded tool names. Active `#tool:` and `#file:` markers **MUST ONLY** appear in frontmatter-bearing skill, agent, or prompt bodies.
 - The frontmatter `description` remains the primary discovery surface. `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` help the agent once the skill is loaded, but they do **NOT** replace a precise description.
 - Add `compatibility` whenever the skill depends on version-gated VS Code or Copilot behavior.
@@ -136,6 +138,47 @@ Use #tool:vscode/askQuestions with #file:./assets/ask_questions.json.
 ## Step 4 - Validate
 Use #tool:execute on #file:./scripts/validate_skill.py.
 Use #tool:read on #file:./references/validation.md only while fixing validation output.
+```
+
+## Choosing `#file:` versus markdown links
+
+Bad:
+
+```markdown
+## Step 1 - Inspect options
+Use #file:./references/guide-a.md to note the canonical guidance.
+Use #file:./references/guide-b.md as an alternative.
+```
+
+Good:
+
+```markdown
+## Step 1 - Inspect options
+Review [guide A](./references/guide-a.md) and [guide B](./references/guide-b.md) to decide which file matters.
+
+## Step 3 - Draft
+Use #tool:read on #file:./references/guide-a.md only if the draft needs guide A right now.
+```
+
+## Early-context front-loading example
+
+Bad:
+
+```markdown
+## Step 1 - Gather references
+Use #tool:read on #file:./references/guide-a.md before planning.
+Use #tool:read on #file:./references/guide-b.md before planning.
+Use #tool:read on #file:./assets/checklist.md before planning.
+```
+
+Good:
+
+```markdown
+## Step 1 - Gather context
+Review [guide A](./references/guide-a.md), [guide B](./references/guide-b.md), and [checklist](./assets/checklist.md) to decide which file is relevant.
+
+## Step 3 - Draft
+Use #tool:read on #file:./references/guide-a.md only if the workflow needs guide A.
 ```
 
 ## Support-doc marker example

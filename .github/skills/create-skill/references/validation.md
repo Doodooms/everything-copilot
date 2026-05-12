@@ -25,6 +25,7 @@ Automatic checks
 - Every file under `assets/`, `references/`, and `scripts/` **MUST** be referenced from `SKILL.md`.
 - Duplicate normalized markdown headings are reported.
 - A `## Runtime Inputs` section is reported because it front-loads support files instead of referencing them at point of need.
+- Early context-only workflow steps that batch 3 or more support-file reads before the first real action step are reported as potential front-loading.
 
 Fix patterns
 - Missing frontmatter key -> add the missing key to the YAML header.
@@ -37,7 +38,9 @@ Fix patterns
 - Active `#tool:` in a support markdown file -> replace it with plain prose or inline code such as `vscode/askQuestions`.
 - Unknown or wrong-layer `#tool:` -> replace it with the skill-facing alias or namespaced tool accepted by the workspace.
 - Unreferenced support file -> cite the file on the workflow step that consumes it.
+- Excessive `#file:` usage for candidate or future inputs -> replace those references with markdown links and keep `#file:` only on the step that immediately consumes the file.
 - `Runtime Inputs` warning -> move each `#file:` reference to the step where the agent actually needs that file.
+- Potential front-loading warning -> replace grouped early `#tool:read` calls with markdown links and move each actual `#tool:read` to the later step that truly consumes that support file.
 - Trailing punctuation after `#file:` or `#tool:` -> rewrite the sentence so the reference stands alone.
 - Duplicate headings -> merge the sections or rename one so only one canonical heading remains.
 

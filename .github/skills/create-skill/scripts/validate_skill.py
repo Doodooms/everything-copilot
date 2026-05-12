@@ -52,6 +52,21 @@ WRONG_LAYER_TOOL_SUGGESTIONS = {
     "vscode_askQuestions": ["vscode/askQuestions"],
 }
 REQUIRED_SKILL_BLOCKS = ("rules", "workflow")
+WORKFLOW_STEP_HEADING = re.compile(r"^##\s+Step\s+(\d+)\b", re.IGNORECASE)
+CONTEXT_ONLY_TOOL_NAMES = {
+    "read",
+    "search",
+    "search/codebase",
+    "search/usages",
+}
+SUPPORT_FILE_PREFIXES = (
+    "./references/",
+    "./assets/",
+    "./scripts/",
+    "../references/",
+    "../assets/",
+    "../scripts/",
+)
 TEMPLATE_LEFTOVER_MARKERS = {
     "<what this skill does>": "Unresolved template placeholder `<what this skill does>` found; replace it with the actual skill purpose.",
     "<trigger phrases or scenarios that should cause the agent to load this skill>": "Unresolved template placeholder for discovery text found; replace it with real trigger phrases.",
@@ -93,6 +108,81 @@ def contains_runtime_inputs_heading(text: str) -> bool:
 
 def has_block_tag(text: str, tag_name: str) -> bool:
     return f"<{tag_name}>" in text and f"</{tag_name}>" in text
+
+
+def extract_workflow_text(text: str) -> str | None:
+    match = re.search(r"<workflow>(.*?)</workflow>", text, re.DOTALL | re.IGNORECASE)
+    if not match:
+        return None
+    return match.group(1)
+
+
+def iter_workflow_steps(text: str):
+    workflow_text = extract_workflow_text(text)
+    if not workflow_text:
+        return
+
+    current_heading = None
+    current_step_number = None
+    current_lines: list[str] = []
+
+    for raw_line in workflow_text.splitlines():
+        line = raw_line.rstrip()
+        heading_match = WORKFLOW_STEP_HEADING.match(line.strip())
+        if heading_match:
+            if current_heading is not None and current_step_number is not None:
+                yield current_step_number, current_heading, "\n".join(current_lines)
+            current_heading = line.strip()
+            current_step_number = int(heading_match.group(1))
+            current_lines = []
+            continue
+        if current_heading is not None:
+            current_lines.append(line)
+
+    if current_heading is not None and current_step_number is not None:
+        yield current_step_number, current_heading, "\n".join(current_lines)
+
+
+def extract_tool_refs(text: str) -> list[str]:
+    refs = []
+    for line in iter_code_fence_filtered_lines(text):
+        for match in re.finditer(r"#tool:([^\s`]+)", line):
+            refs.append(match.group(1).rstrip(".,;:"))
+    return refs
+
+
+def extract_support_doc_reads(text: str) -> list[str]:
+    paths = []
+    for line in iter_code_fence_filtered_lines(text):
+        if "#tool:read" not in line:
+            continue
+        for match in re.finditer(r"#file:\s*([^\s`]+)", line):
+            file_ref = match.group(1).rstrip(".,;:")
+            if file_ref.startswith(SUPPORT_FILE_PREFIXES):
+                paths.append(file_ref)
+    return paths
+
+
+def detect_front_loaded_support_reads(text: str) -> list[str]:
+    warnings = []
+    for step_number, heading, step_text in iter_workflow_steps(text) or []:
+        if step_number == 0:
+            continue
+
+        tool_refs = extract_tool_refs(step_text)
+        if not tool_refs:
+            continue
+
+        if any(tool_ref not in CONTEXT_ONLY_TOOL_NAMES for tool_ref in tool_refs):
+            break
+
+        support_doc_reads = sorted(set(extract_support_doc_reads(step_text)))
+        if len(support_doc_reads) >= 3:
+            warnings.append(
+                f"Potential front-loading in {heading}: early context-gathering step reads {len(support_doc_reads)} support files ({', '.join(support_doc_reads)}). Replace most of these with markdown links and defer #tool:read to the step where each file is actually consumed."
+            )
+
+    return warnings
 
 
 def iter_non_frontmatter_markdown_files(skill_dir: Path):
@@ -539,6 +629,8 @@ def validate(skill_dir: Path = Path(".")):
         warnings.append(
             "`## Runtime Inputs` encourages eager loading; cite support files on the workflow step that actually consumes them"
         )
+
+    warnings.extend(detect_front_loaded_support_reads(full_text))
 
     if errors:
         typer.echo("ERRORS:")
