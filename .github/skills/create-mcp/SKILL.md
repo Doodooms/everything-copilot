@@ -1,295 +1,131 @@
 ---
 name: create-mcp
-description: "WHAT: Create or update MCP servers with Go, Rust, or Python as the primary implementation targets. WHEN TO USE: creating a new MCP server, selecting a language and transport, wiring tool or resource registration, configuring VS Code mcp.json, or fixing MCP setup drift after a rename or refactor."
+description: "WHAT: Create or update MCP servers and their VS Code registration with a one-shot workflow that chooses the right language, transport, capability set, and validation path. USE FOR: creating a new MCP server for a specific purpose, choosing between Go, Rust, Python, or an explicit Node.js path, implementing tools, resources, prompts, or apps, configuring mcp.json, or repairing MCP setup drift after a rename or refactor. DO NOT USE FOR: general backend services unrelated to MCP, prompt or agent authoring, or speculative architecture work with no MCP server change."
 user-invocable: false
-disable-model-invocation: false
+context: fork
+compatibility: vscode 1.119.0+, github-copilot 1.119.0+
+metadata:
+  creation-date: 2026-05-14
+  creator: Doodooms
+license: MIT
 ---
 
-# Create MCP Servers
+<definitions>
 
-Use this skill to create or update MCP servers methodically. The canonical decision
-points are defined once below, while the workflow points to those sections instead of
-repeating them. Load these runtime inputs explicitly:
-- #file:./references/URIs.md
-- #file:./references/manage_mcp.md
-- #file:./assets/language-selection-checklist.md
+- **MCP server** : A local or remote server that exposes tools, resources, prompts, or MCP apps through the Model Context Protocol.
+- **MCP contract** : The minimum set of decisions that must be explicit before implementation: purpose, target clients, transport, capability set, security boundary, configuration target, and validation command.
+- **capability set** : The exact MCP surface the server must expose now, such as tools, resources, prompts, apps, and any related auth or hosting requirements.
+- **tool catalog snapshot** : The workspace export in `.vscode/copilot-tools.snapshot.json` that reflects currently available Copilot tools and toolsets. It complements the chat `Configure Tools...` button.
+- **transport boundary** : The separation between MCP business logic and the transport layer so `stdio` and Streamable HTTP can be swapped without rewriting tool, resource, or prompt handlers.
 
-> The SDK API evolves. Check [modelcontextprotocol.io](https://modelcontextprotocol.io)
-> or query Context7 for "MCP" to get current method signatures.
-
-<rules>
-
-- Only reference `#tool:` names that already exist in the runtime or installed extension manifests. Prefer exact names such as `copilot_readFile`, `explore_subagent`, `run_in_terminal`, and `vscode_askQuestions`.
-- Do not place punctuation immediately after a `#file:` reference.
-- Use the Language Selection section below as the canonical decision matrix for choosing between Go, Rust, Python, and the Node.js exception.
-- Node.js must only be used if the user formally requests it, due to its heaviness.
-- If the user's constraints are unclear, use #tool:vscode_askQuestions to clarify deployment target, performance envelope, security sensitivity, and iteration speed before recommending a language.
-- Use #tool:copilot_readFile to load the runtime inputs listed above before drafting or modifying server code.
-- If the codebase is unfamiliar or a rename left stale references behind, use #tool:explore_subagent to locate current MCP entrypoints and configuration files.
-- Prefer official SDKs and pin versions. MCP SDK APIs evolve quickly; always verify the installed version's docs before coding.
-- Keep tool, resource, and prompt logic independent from transport so `stdio` and Streamable HTTP can be swapped at the entrypoint.
-- Start from the smallest tool registration that proves the SDK wiring works before adding resources, auth, or business logic.
-- Use #tool:run_in_terminal to run language-specific install, build, or validation commands after the first edit.
-</rules>
+</definitions>
 
 <workflow>
 
-## Step 1 - Load MCP references
+## Step 0 - **CONFIRMATION**
 
-Use #tool:read to load #file:./references/URIs.md before you choose an SDK or package path.
-Use #tool:read to load #file:./references/manage_mcp.md before you edit VS Code MCP configuration.
-Use #tool:read to load #file:./assets/language-selection-checklist.md before you select the implementation language.
+1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this skill should be used.
+2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
 
-## Step 2 - Inspect the current MCP state
+<rules>
 
-If the repository already contains MCP code or was recently renamed, use #tool:explore_subagent to locate current entrypoints, `mcp.json`, and stale references.
-If the exact files are already known, use #tool:read on those files directly.
+- Use only skill-facing `#tool:` names such as `read`, `agent`, `execute`, and `vscode/askQuestions`.
+- If exact tool names are unclear, use #tool:read on #file:../../../tools/copilot-tool-snapshot/README.md and then use the Command Palette commands `Agentic Workflow: Export Copilot Tool Snapshot` or `Agentic Workflow: Check Copilot Tool Name`. The chat `Configure Tools...` button provides the same live discovery from the UI side.
+- Reference support files only at the workflow step that consumes them. Do **NOT** front-load them in a global runtime-inputs list.
+- Reuse a complete MCP contract from the conversation when it already exists. Use structured questions only for the missing fields.
+- Do **NOT** default to Node.js. Choose Node.js only when the user explicitly asks for it or the surrounding host ecosystem makes that choice mandatory.
+- Keep tools, resources, prompts, and apps aligned to the requested capability set. Do **NOT** promise capabilities and leave them as TODOs.
+- Keep tool, resource, prompt, and app logic independent from transport so `stdio` and Streamable HTTP can be swapped at the entrypoint.
+- Keep secrets out of source code and `mcp.json`. Use environment variables, VS Code input variables, or equivalent indirection instead.
+- Prefer official SDKs and pin versions. MCP SDK APIs evolve quickly; verify the installed version's docs before copying examples verbatim.
+- Start validation with the smallest executable slice that can falsify the current implementation, then widen only if the task changed workspace-wide MCP surfaces.
 
-## Step 3 - Clarify constraints
+</rules>
 
-If the language, deployment target, or transport is not clear from the request and repo state, use #tool:vscode_askQuestions before choosing an implementation path.
+## Step 1 - Inspect the current MCP surface
 
-## Step 4 - Choose the language
+1. Inspect the current MCP implementation and registration surface before you choose an edit path.
+  - If the repository already contains MCP code or was recently renamed, use #tool:agent with a read-only exploration agent to locate current entrypoints, `.vscode/mcp.json`, and stale references.
+  - If the exact files are already known, use #tool:read on those files directly.
+2. Load current host guidance only when it matters.
+  - Use #tool:read on #file:./references/latest-docs.md before drafting when the current MCP or VS Code behavior is unclear.
+  - Use #tool:read on #file:./references/manage_mcp.md only when the task touches VS Code registration, trust, sandboxing, configuration location, or server lifecycle behavior.
 
-Apply the Language Selection section below and the [language selection checklist](./assets/language-selection-checklist.md).
+## Step 2 - Capture the missing MCP contract
 
-## Step 5 - Choose the transport
+1. Reuse the contract that is already explicit in the conversation when it is complete.
+  - If the request already names the server purpose, target clients, transport, capability set, constraints, and validation goal, extract those fields directly and do not ask redundant questions.
+2. Ask structured questions only for the missing fields.
+  - Otherwise, use #tool:read on #file:./references/ask_questions.md and #file:./assets/ask_questions.json and then use #tool:vscode/askQuestions to collect only the missing structured answers.
+3. Ask only for behavior-changing fields.
+  - Server slug and user-facing purpose.
+  - Target clients and transport target.
+  - Required capability set.
+  - External systems, auth, secrets, and sandbox constraints.
+  - Language preference, forbidden languages, and non-negotiable performance or deployment constraints.
+  - Configuration target and validation goal.
+4. Keep the input path singular.
+  - Do **NOT** both derive the full contract from the conversation and run the full questionnaire.
 
-Apply the Transport Selection section below and the operational guidance in [manage MCP servers in VS Code](./references/manage_mcp.md).
+## Step 3 - Choose the implementation path
 
-## Step 6 - Implement the smallest working server
+1. Select the language deliberately.
+  - Use #tool:read on #file:./assets/language-selection-checklist.md when you are choosing between Go, Rust, Python, or the explicit Node.js exception.
+2. Map the requested capability set before coding.
+  - Use #tool:read on #file:./references/server-capabilities.md when the server needs more than one MCP capability or when the request says the server should be complete, full-featured, or one-shot.
+3. Resolve uncertain APIs from canonical docs.
+  - Use #tool:read on #file:./references/URIs.md when you need the official MCP, SDK, or VS Code documentation links for the chosen target.
+  - Re-read #file:./references/latest-docs.md when the required client behavior or SDK API looks newer than the examples in this skill.
+4. Decide the build slice before editing.
+  - Map purpose to the server name and user-facing tool, resource, prompt, or app names.
+  - Map target clients and transport to `stdio`, Streamable HTTP, or both.
+  - Map the configuration target to workspace `mcp.json`, user profile `mcp.json`, remote user config, dev container settings, or no VS Code registration change.
+  - Map the capability set, auth boundary, and validation goal to concrete files, handlers, and executable checks.
 
-Pick one of the language setup blocks below, register a single tool, validate it over `stdio`, then expand to resources, prompts, and HTTP transport as needed.
+## Step 4 - Implement the MCP server package
 
-## Step 7 - Validate
+1. Start from canonical examples, not memory.
+  - Use #tool:read on #file:./assets/minimal-server-examples.md when you need starter code for the selected SDK.
+  - Use #tool:read on #file:./assets/server-good-bad-examples.md when you need to sanity-check capability scope, transport separation, secret handling, or `mcp.json` hygiene before writing code.
+2. Build the requested server in one coherent package.
+  - Create or update the server entrypoint, handler modules, dependency manifest, and registration or configuration files required by the chosen language and host.
+  - Implement each declared capability from the captured contract in this edit slice.
+  - Keep transport wiring thin so `stdio` and Streamable HTTP can be swapped without rewriting the business logic.
+3. Keep configuration and secrets production-safe.
+  - Use environment variables or VS Code input variables instead of hardcoding secrets.
+  - If VS Code registration is required, add only the narrowest `mcp.json` or dev container changes needed for the task.
 
-Use #tool:run_in_terminal to run the narrowest build, install, or smoke-test command for the touched implementation.
-If VS Code integration is part of the task, verify the configuration against [manage MCP servers in VS Code](./references/manage_mcp.md).
+## Step 5 - Review before validation
 
-## Language Selection
+1. Re-read the edited surface before validating.
+  - Read the finished entrypoint, any touched handler files, and `.vscode/mcp.json` when registration changed.
+2. Confirm the implementation still matches the request.
+  - Ensure the implemented capability set matches the declared one.
+  - Ensure the chosen language and transport still match the explicit constraints.
+  - Ensure promised resources, prompts, apps, auth, or remote transport are actually wired, not left as TODOs.
+3. Confirm configuration safety.
+  - Ensure secrets are not hardcoded.
+  - Ensure local servers use trust and sandbox settings deliberately when the host and task require them.
+  - Ensure Node.js was chosen only because the request or host ecosystem required it.
 
-| Primary goal | Recommended language | Why |
-|--------------|----------------------|-----|
-| Reliable default for production | Go | Strong performance, simple deployment, single binary, low operational friction |
-| Maximum performance and safety | Rust | Best control over latency, memory use, and safety-sensitive behavior |
-| Fastest prototype | Python | Smallest time-to-first-server, minimal ceremony, easy experimentation |
-| Existing Node-only stack | Node.js | Use only when the user explicitly requires it |
+## Step 6 - Validate
 
-## Transport Selection
+1. Run the narrowest executable validation for the touched implementation.
+  - Use #tool:execute to run install, build, typecheck, test, or smoke-test commands for the chosen SDK.
+2. Validate VS Code MCP registration when touched.
+  - If `.vscode/mcp.json` changed, use #tool:execute on #file:./scripts/validate_mcp.py with the narrowest relevant `--server` target before you finish.
+  - Re-read #file:./references/manage_mcp.md only when validation output suggests a VS Code registration issue.
+3. Widen validation only when repository integration changed.
+  - If the task changed workspace-wide MCP surfaces, run the repository's broader health or verification command after the narrow server-specific checks.
+4. Fix all executable validation failures before finishing.
 
-| Client Type | Transport |
-|-------------|-----------|
-| Local (Claude Desktop, VS Code) | `stdio` |
-| Remote (Cursor, cloud) | Streamable HTTP |
-| Backward compatibility | Legacy HTTP/SSE |
+## Step 7 - Finalize
 
-Keep server logic (tools + resources) independent of transport so you can plug in
-either in the entrypoint.
+1. Summarize the finished server package.
+  - State the chosen language and transport.
+  - State the implemented capability set.
+  - State where the server is registered.
+  - State which validation commands were run.
+  - Give one example prompt or invocation that should exercise the server.
 
 </workflow>
-
-## When to Use
-
-- Implementing a new MCP server
-- Selecting between Go, Rust, Python, or an explicitly requested Node.js server
-- Adding tools or resources to an existing server
-- Choosing between stdio vs HTTP transport
-- Debugging MCP registration or transport issues
-- Upgrading the MCP SDK version
-
-## Core Concepts
-
-<mcp-concepts>
-- **Tools**: Actions the model can invoke (e.g., search, run a command).
-  Register with `server.tool()` or `registerTool()` depending on SDK version.
-- **Resources**: Read-only data the model can fetch (e.g., file contents, API responses).
-  Register with `server.resource()` or `registerResource()`.
-- **Prompts**: Reusable, parameterized prompt templates the client can surface.
-  Register with `server.prompt()` or equivalent.
-- **Transport**: stdio for local clients (Claude Desktop, VS Code);
-  Streamable HTTP for remote clients (Cursor, cloud).
-</mcp-concepts>
-
-## Server Setup
-
-**API Stability Warning**: MCP SDK APIs are evolving quickly. The examples below are
-minimal current patterns, but method names, decorators, and import paths can change
-between major versions. Verify the exact API against the version you install.
-
-### Go
-
-| Item | Guidance |
-|------|----------|
-| Default fit | Reliable, performant production server |
-| Packaging | Single deployable binary |
-| Install | `go get github.com/modelcontextprotocol/go-sdk@latest` |
-| Tool registration pattern | `mcp.AddTool()` |
-| Notes | Official SDK; verify exact signatures against the installed version |
-
-```go
-package main
-
-import (
-    "context"
-    "log"
-
-    "github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-type AddParams struct {
-    A int `json:"a" jsonschema:"first number"`
-    B int `json:"b" jsonschema:"second number"`
-}
-
-type AddResult struct {
-    Sum int `json:"sum"`
-}
-
-func add(
-    ctx context.Context,
-    req *mcp.CallToolRequest,
-    input AddParams,
-) (*mcp.CallToolResult, AddResult, error) {
-    return nil, AddResult{Sum: input.A + input.B}, nil
-}
-
-func main() {
-    server := mcp.NewServer(&mcp.Implementation{
-        Name:    "my-go-server",
-        Version: "1.0.0",
-    }, nil)
-
-    mcp.AddTool(server, &mcp.Tool{
-        Name:        "add",
-        Description: "Add two integers",
-    }, add)
-
-    if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
-        log.Fatal(err)
-    }
-}
-```
-
-### Rust
-
-| Item | Guidance |
-|------|----------|
-| Default fit | Critical performance and security-sensitive services |
-| Packaging | Single native binary |
-| Install | Add `rmcp`, `tokio`, `serde`, `schemars`, and `anyhow` to `Cargo.toml` |
-| Tool registration pattern | `#[tool]` with `#[tool_router]` |
-| Notes | Official Rust SDK uses proc macros; pin the crate version |
-
-```rust
-use rmcp::{
-    handler::server::wrapper::Parameters,
-    schemars,
-    tool,
-    tool_router,
-    transport::stdio,
-    ServiceExt,
-};
-
-#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
-struct AddParams {
-    a: i32,
-    b: i32,
-}
-
-#[derive(Clone)]
-struct Calculator;
-
-#[tool_router(server_handler)]
-impl Calculator {
-    #[tool(description = "Add two numbers")]
-    fn add(&self, Parameters(AddParams { a, b }): Parameters<AddParams>) -> String {
-        (a + b).to_string()
-    }
-}
-
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    let service = Calculator.serve(stdio()).await?;
-    service.waiting().await?;
-    Ok(())
-}
-```
-
-### Python
-
-| Item | Guidance |
-|------|----------|
-| Default fit | Rapid prototyping and fast iteration |
-| Packaging | Script or module execution with a Python runtime |
-| Install | `pip install "mcp[cli]"` |
-| Tool registration pattern | `@mcp.tool()` via `FastMCP` |
-| Notes | Prefer the stable v1.x API unless you intentionally target v2 |
-
-```python
-from mcp.server.fastmcp import FastMCP
-
-mcp = FastMCP("my-python-server")
-
-
-@mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers."""
-    return a + b
-
-
-if __name__ == "__main__":
-    mcp.run()
-```
-
-## Resource Registration Pattern
-
-After the first tool works, add resources and prompts using the equivalent API in the
-selected SDK. Keep handlers deterministic, return structured errors, and avoid mixing
-transport concerns into the business logic.
-
-## stdio Transport (Local)
-
-Use `stdio` first for local development and validation. It keeps the initial feedback
-loop short and matches the most common local MCP client integrations.
-
-## VS Code mcp.json Configuration
-
-```json
-{
-  "servers": {
-    "my-go-server": {
-      "type": "stdio",
-      "command": "./bin/my-go-server"
-    },
-    "my-rust-server": {
-      "type": "stdio",
-      "command": "./target/release/my-rust-server"
-    },
-    "my-python-server": {
-      "type": "stdio",
-      "command": "python",
-      "args": ["-m", "my_server"]
-    }
-  }
-}
-```
-
-If the user explicitly requests Node.js, configure it as a deliberate exception rather
-than the default path.
-
-## Best Practices
-
-<mcp-rules>
-- **Language choice first**: Decide Go, Rust, or Python before discussing SDK details.
-- **Smallest working tool first**: Register one tool, validate it, then expand the server.
-- **Structured errors**: Return structured error messages the model can interpret; avoid raw stack traces.
-- **Idempotency**: Prefer idempotent tools where possible so retries are safe.
-- **Rate and cost awareness**: For tools that call external APIs, consider rate limits and cost; document them in the tool description.
-- **Versioning**: Pin the MCP SDK version and check release notes before upgrading.
-- **Transport separation**: Keep tool/resource logic separate from transport so you can swap `stdio` and HTTP without changing business logic.
-</mcp-rules>
-
-## Official Resources
-
-- [Official MCP SDK references](./references/URIs.md)
-- [Language selection checklist](./assets/language-selection-checklist.md)

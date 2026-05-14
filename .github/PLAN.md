@@ -129,7 +129,6 @@ troubleshoot
 
 | Path                  | Purpose                                        |
 |-----------------------|------------------------------------------------|
-| `.claude/`              | AHK-generated provider files and Claude-compatible agent definitions |
 | `.github/instructions/` | Scoped `.instructions.md` files               |
 | `.github/tasks/`        | Generated manifests and task payloads         |
 | `.github/plan_history/` | Orchestration audit trail and plan snapshots  |
@@ -146,7 +145,7 @@ troubleshoot
 
 Preferred for this repository: run `/graphify .` in Copilot Chat to build `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md` with GitHub Copilot as the semantic extractor. Use headless `uv run graphify extract . --backend <backend>` only when explicit backend credentials are available.
 
-AHK is configured locally via `package.json`, `agent-harness-kit.config.ts`, `health.sh`, and `.harness/feature_list.json`. The integration also commits the generated `AGENTS.md` and `.claude/` provider files so AHK remains reproducible. It uses the AHK package's `claude-code` provider mode only to satisfy the package schema; GitHub Copilot accesses it through the manual `.vscode/mcp.json` registration above.
+AHK is configured locally via `package.json`, `agent-harness-kit.config.ts`, `health.sh`, `.harness/feature_list.json`, and the manual `.vscode/mcp.json` registration above. It uses the AHK package's `claude-code` provider mode only to satisfy the package schema, but provider-materialized files are intentionally excluded from the tracked repository surface and blocked by the health gate.
 
 CodeGraphContext is not part of the active MCP surface. Deep validation against the 0.4.7 candidate found successful indexing with zero extracted symbols and inconsistent backend-selection behavior, so future revalidation is tracked as backlog work instead of an active integration.
 
@@ -156,7 +155,7 @@ These priorities describe the recommended implementation order for the `everythi
 
 | Priority | Component | Role in target platform | Status | Notes |
 |----------|-----------|-------------------------|--------|-------|
-| 1 | AHK (`@cardor/agent-harness-kit`) | Orchestration backbone: backlog, atomic task claiming, action journal, health gate, dashboard, local MCP task tools | Active | Integrated local MCP server, harness files, and generated provider artifacts |
+| 1 | AHK (`@cardor/agent-harness-kit`) | Orchestration backbone: backlog, atomic task claiming, action journal, health gate, dashboard, local MCP task tools | Active | Integrated local MCP server and Copilot-facing runtime files; provider materializations are intentionally excluded |
 | 2 | CodeGraphContext | Live code graph with automatic refresh and MCP-facing graph queries | Planned | Candidate only; 0.4.7 failed deep validation and is not registered in the active workspace MCP surface |
 | 3 | GitNexus | Code impact analysis, symbol relationships, blast-radius reasoning | Active | Retained core layer |
 | 4 | Graphify + LadybugDB + SQLite FTS5 | Documentation graph, semantic retrieval, prompt and skill knowledge graph, raw-text retrieval | Active | LadybugDB remains the primary graph store; `.graphify/docs-fts.db` adds local raw-text retrieval |

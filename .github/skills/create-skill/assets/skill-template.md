@@ -35,14 +35,20 @@ metadata:                   # REQUIRED workspace-local annotation block.
 </rules>
 
 ## Step 1 - <inspect or prepare>
-Use #tool:read on #file:./references/<guide>.md **ONLY** if this step needs that guide.
+
+1. <describe what this step must inspect or prepare before later work can be correct>.
+2. Use #tool:read on #file:./references/<guide>.md **ONLY** if this step needs that guide.
 
 ## Step 2 - <ask or decide>
-Use #tool:vscode/askQuestions on #file:./assets/<questions>.json **ONLY** if structured input is still missing.
+
+1. <describe the missing decision, ambiguity, or structured input this step resolves>.
+2. Use #tool:vscode/askQuestions on #file:./assets/<questions>.json **ONLY** if structured input is still missing.
 
 ## Step 3 - <validate or execute>
-Use #tool:execute on the narrowest validation command for the skill output.
-Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside the skill folder.
+
+1. <describe the concrete outcome this validation or execution step must produce before the workflow can finish>.
+2. Use #tool:execute on the narrowest validation command for the skill output.
+3. Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside the skill folder.
 
 </workflow>
 
@@ -51,11 +57,15 @@ Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside 
 ## Authoring Notes
 
 - `SKILL.md` **MUST** own workflow. **DO NOT** copy the same checklist or policy into multiple files.
+- Keep each workflow step descriptive. If several actions must occur in order inside one step, use an ordered list instead of a single vague sentence.
 - `assets/` store copyable templates or machine-readable payloads.
 - `references/` store human guidance that the workflow loads only when needed.
 - `scripts/` store executable checks or automation.
 - **NEVER** add `## Runtime Inputs`. Cite each file and tool at the step that consumes it.
+- Prefer markdown links such as `[guide](./references/guide.md)` when the workflow is only naming a candidate, optional, or future file. Use `#file:` only when the current step must consume that file immediately.
+- **NEVER** batch 3 or more candidate support-file reads in an early context step. Use markdown links to show the files exist, then defer each `#tool:read` to the point-of-need step.
 - Outside the generated definition snippets, support markdown files **MUST** use markdown links for files and plain or inline-coded tool names. Active `#tool:` and `#file:` markers **MUST ONLY** appear in frontmatter-bearing skill, agent, or prompt bodies.
+- Support markdown files should keep lightweight hierarchy: one `#` title plus short `##` sections when the doc covers multiple concerns. Prefer `## Purpose`, `## When to use this file`, `## How to use it`, `## Fix patterns`, and `## Status codes` over bare labels.
 - The frontmatter `description` remains the primary discovery surface. `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` help the agent once the skill is loaded, but they do **NOT** replace a precise description.
 - Add `compatibility` whenever the skill depends on version-gated VS Code or Copilot behavior.
 - `metadata` and `license` are optional workspace-local annotations for authorship or provenance.
@@ -88,7 +98,6 @@ user-invocable: false
 
 <definitions>
 
-- USE tool:read immediately on file:../references/usefor.md
 - **trace artifact** : A log, payload, or response snapshot used by the workflow.
 
 </definitions>
@@ -100,9 +109,11 @@ Bad:
 
 ```markdown
 ## Validation Rules
+
 - Run the validator before finishing.
 
 ## Step 4 - Validate
+
 - Run the validator before finishing.
 ```
 
@@ -110,9 +121,11 @@ Good:
 
 ```markdown
 ## Validation Rules
+
 - Run the validator before finishing.
 
 ## Step 4 - Validate
+
 Apply the Validation Rules section above.
 ```
 
@@ -122,6 +135,7 @@ Bad:
 
 ```markdown
 ## Runtime Inputs
+
 - #file:./assets/ask_questions.json
 - #file:./references/validation.md
 - #file:./scripts/validate_skill.py
@@ -131,11 +145,60 @@ Good:
 
 ```markdown
 ## Step 2 - Capture missing details
+
 Use #tool:vscode/askQuestions with #file:./assets/ask_questions.json.
 
 ## Step 4 - Validate
+
 Use #tool:execute on #file:./scripts/validate_skill.py.
 Use #tool:read on #file:./references/validation.md only while fixing validation output.
+```
+
+## Choosing `#file:` versus markdown links
+
+Bad:
+
+```markdown
+## Step 1 - Inspect options
+
+Use #file:./references/guide-a.md to note the canonical guidance.
+Use #file:./references/guide-b.md as an alternative.
+```
+
+Good:
+
+```markdown
+## Step 1 - Inspect options
+
+Review [guide A](./references/guide-a.md) and [guide B](./references/guide-b.md) to decide which file matters.
+
+## Step 3 - Draft
+
+Use #tool:read on #file:./references/guide-a.md only if the draft needs guide A right now.
+```
+
+## Early-context front-loading example
+
+Bad:
+
+```markdown
+## Step 1 - Gather references
+
+Use #tool:read on #file:./references/guide-a.md before planning.
+Use #tool:read on #file:./references/guide-b.md before planning.
+Use #tool:read on #file:./assets/checklist.md before planning.
+```
+
+Good:
+
+```markdown
+## Step 1 - Gather context
+
+Review [guide A](./references/guide-a.md), [guide B](./references/guide-b.md), and [checklist](./assets/checklist.md) to decide which file is relevant.
+
+## Step 3 - Draft
+
+Use #tool:read on #file:./references/guide-a.md only if the workflow needs guide A.
 ```
 
 ## Support-doc marker example
@@ -144,6 +207,7 @@ Bad:
 
 ```markdown
 # Validation notes
+
 Use #tool:read on #file:./references/validation.md.
 ```
 
@@ -151,6 +215,7 @@ Good:
 
 ```markdown
 # Validation notes
+
 See [validation guide](../references/validation.md).
 Use the tool `read` only when the SKILL workflow step instructs it.
 ```

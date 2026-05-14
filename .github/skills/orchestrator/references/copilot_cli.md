@@ -9,8 +9,7 @@ This article covers the key features of Copilot CLI agents, and how to start and
 
 ![Screenshot of Copilot CLI session as a chat editor in VS Code.](../images/background-agents/copilot-cli-session.png)
 
-> [!TIP]
-> Third-party providers like OpenAI Codex also offer background capabilities. Learn more about [third-party agents](/docs/copilot/agents/third-party-agents.md).
+Third-party providers like OpenAI Codex also offer background capabilities. Learn more about [third-party agents](/docs/copilot/agents/third-party-agents.md).
 
 <div class="docs-action" data-show-in-doc="false" data-show-in-sidebar="true" title="Get started with agents">
 Follow a hands-on tutorial to experience local, background, and cloud agents in VS Code.
@@ -39,8 +38,7 @@ To isolate changes from the Copilot CLI agent and prevent interference with your
 
 If you want the changes from the Copilot CLI session to be applied directly to your current workspace, you can choose **Workspace** isolation. In this mode, the agent operates directly in your current workspace, and changes are applied in place.
 
-> [!NOTE]
-> To use Git worktrees and worktree isolation, your workspace needs to be a Git repository.
+Note: to use Git worktrees and worktree isolation, your workspace needs to be a Git repository.
 
 ### Permissions and approvals
 
@@ -73,15 +71,13 @@ To create a new Copilot CLI session in VS Code:
 
     If you use worktree isolation, the agent automatically commits changes to the worktree at the end of each turn, so the session history stays aligned with the commit history.
 
-    > [!TIP]
-    > You can open the worktree of a session by right-clicking it in the session list and selecting **Open Worktree in New Window**. You can also view the worktree in the Source Control view repository explorer (`scm.repositories.explorer`).
+    Tip: you can open the worktree of a session by right-clicking it in the session list and selecting **Open Worktree in New Window**. You can also view the worktree in the Source Control view repository explorer (`scm.repositories.explorer`).
 
 1. Submit your prompt to start the agent. Optionally, add extra context or choose a specific language model and custom agent.
 
 1. Track the session status in the Chat view.
 
-> [!TIP]
-> You can create multiple Copilot CLI sessions to work on different tasks in parallel.
+Tip: you can create multiple Copilot CLI sessions to work on different tasks in parallel.
 
 ## Hand off a local session to Copilot CLI
 
@@ -144,8 +140,7 @@ If your workspace contains multiple Git repositories, VS Code displays a reposit
 
 After the session starts, the repository picker becomes disabled for that session. The worktree appears under the selected repository in the **Worktrees** node in the Source Control Repositories view.
 
-> [!TIP]
-> To view all repositories in your workspace, enable the `setting(scm.repositories.explorer)` setting and open the Source Control view.
+Tip: to view all repositories in your workspace, enable the `setting(scm.repositories.explorer)` setting and open the Source Control view.
 
 ## Use custom agents with Copilot CLI (Experimental)
 
@@ -165,8 +160,7 @@ To use custom agents with Copilot CLI:
 
 1. Enter a prompt and notice that the custom agent is used to handle the task
 
-> [!NOTE]
-> Currently, only custom agents defined in the workspace are available for Copilot CLI sessions. Learn more about [creating a custom agent](/docs/copilot/customization/custom-agents.md#create-a-custom-agent).
+Note: currently, only custom agents defined in the workspace are available for Copilot CLI sessions. Learn more about [creating a custom agent](/docs/copilot/customization/custom-agents.md#create-a-custom-agent).
 
 ## Related resources
 

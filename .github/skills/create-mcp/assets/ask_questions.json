@@ -1,0 +1,146 @@
+[
+  {
+    "header": "Server Slug",
+    "question": "Provide the MCP server name or slug.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Purpose",
+    "question": "What specific job should this MCP server perform?",
+    "message": "Turn this into the server name plus the user-facing tool, resource, prompt, or app names.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Target Clients",
+    "question": "Which clients must consume this server?",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      {
+        "label": "VS Code",
+        "description": "Needs workspace, user-profile, or remote MCP registration.",
+        "recommended": true
+      },
+      {
+        "label": "Claude Desktop"
+      },
+      {
+        "label": "Cursor or another editor client"
+      },
+      {
+        "label": "Mixed clients"
+      }
+    ]
+  },
+  {
+    "header": "Transport Target",
+    "question": "Which transport must the server support?",
+    "allowFreeformInput": false,
+    "options": [
+      {
+        "label": "Local stdio only",
+        "description": "Default for local editor or desktop clients.",
+        "recommended": true
+      },
+      {
+        "label": "Remote Streamable HTTP only"
+      },
+      {
+        "label": "Both stdio and Streamable HTTP"
+      }
+    ]
+  },
+  {
+    "header": "Required Capabilities",
+    "question": "Which MCP capabilities must be implemented now?",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      {
+        "label": "Tools",
+        "description": "Actions or parameterized queries invoked from the client.",
+        "recommended": true
+      },
+      {
+        "label": "Resources",
+        "description": "Read-only context exposed by the server."
+      },
+      {
+        "label": "Prompts",
+        "description": "Slash-invoked prompt templates."
+      },
+      {
+        "label": "Apps",
+        "description": "Interactive UI rendered by supporting clients."
+      }
+    ]
+  },
+  {
+    "header": "External Systems",
+    "question": "Which APIs, files, databases, or services must this server reach?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Auth And Secrets",
+    "question": "What authentication, secrets, or sandbox constraints apply?",
+    "message": "Prefer env vars, VS Code input variables, or remote auth. Never hardcode secrets.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Language Preference",
+    "question": "Which language is preferred, forbidden, or already required by the repo?",
+    "allowFreeformInput": true,
+    "options": [
+      {
+        "label": "Go"
+      },
+      {
+        "label": "Rust"
+      },
+      {
+        "label": "Python"
+      },
+      {
+        "label": "Node.js"
+      },
+      {
+        "label": "No preference",
+        "recommended": true
+      }
+    ]
+  },
+  {
+    "header": "Non-Negotiable Constraints",
+    "question": "List performance, packaging, deployment, security, or hosting constraints.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Configuration Target",
+    "question": "Where should the server be registered?",
+    "allowFreeformInput": false,
+    "options": [
+      {
+        "label": "Workspace `.vscode/mcp.json`",
+        "recommended": true
+      },
+      {
+        "label": "User-profile `mcp.json`"
+      },
+      {
+        "label": "Remote user `mcp.json`"
+      },
+      {
+        "label": "Dev Container `devcontainer.json`"
+      },
+      {
+        "label": "No VS Code registration change"
+      }
+    ]
+  },
+  {
+    "header": "Validation Goal",
+    "question": "Which command or smoke test should prove the server works?",
+    "message": "Capture the narrowest executable check for the chosen language and host.",
+    "allowFreeformInput": true
+  }
+]

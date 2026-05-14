@@ -9,8 +9,7 @@ This article explains how to use the memory tool in VS Code, how to manage memor
 
 ## Memory tool
 
-> [!NOTE]
-> The memory tool is currently in preview. You can enable or disable it with the `setting(github.copilot.chat.tools.memory.enabled)` setting.
+Note: the memory tool is currently in preview. You can enable or disable it with the `setting(github.copilot.chat.tools.memory.enabled)` setting.
 
 The memory tool is a built-in agent tool that allows agents to save and recall notes as they work. You can also explicitly ask the agent to remember something. All data is stored locally on your machine. The memory tool is enabled by default.
 
@@ -75,13 +74,11 @@ VS Code provides commands to view and manage your memory files:
 * **Chat: Show Memory Files**: opens a list of all memory files across scopes. Select a file to view its contents.
 * **Chat: Clear All Memory Files**: removes all memory files across all scopes.
 
-> [!NOTE]
-> Deleting individual memory files is not yet supported. Use **Chat: Clear All Memory Files** to remove all memories, or ask the agent to update a specific memory file to remove outdated information.
+Note: deleting individual memory files is not yet supported. Use **Chat: Clear All Memory Files** to remove all memories, or ask the agent to update a specific memory file to remove outdated information.
 
 ## Copilot Memory
 
-> [!NOTE]
-> Copilot Memory is in preview and is separate from the local memory tool described above.
+Note: Copilot Memory is in preview and is separate from the local memory tool described above.
 
 [Copilot Memory](https://docs.github.com/copilot/how-tos/use-copilot-agents/copilot-memory) is a GitHub-hosted memory system that lets Copilot learn and retain repository-specific insights as it works. Unlike the local memory tool, Copilot Memory is shared across multiple GitHub Copilot surfaces, including Copilot cloud agent, Copilot code review, and Copilot CLI.
 
