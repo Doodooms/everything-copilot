@@ -39,44 +39,75 @@ license: MIT
 
 ## Step 1 - Inspect the current prompt surface
 
-If the name, scope, or overlap is unclear, use #tool:search under #file:../../prompts/ to inspect the workspace `.github/prompts/` directory and avoid duplicates.
-If the target prompt already exists and you know its path, use #tool:read on that `.prompt.md` file first.
-Use the current [prompt template](./assets/prompt-template.md) as the canonical scaffold when you need to confirm the expected body shape.
+1. Inspect the workspace prompt surface before drafting.
+  - If the name, scope, or overlap is unclear, use #tool:search under #file:../../prompts/ to inspect the workspace `.github/prompts/` directory and avoid duplicates.
+  - If the target prompt already exists and you know its path, use #tool:read on that `.prompt.md` file first.
+2. Confirm the canonical prompt shape before you write.
+  - Use the current [prompt template](./assets/prompt-template.md) as the canonical scaffold when you need to confirm the expected body shape.
 
 ## Step 2 - Capture the missing prompt contract
 
-If the conversation already establishes the task, inputs, and expected output, extract them directly and do not ask redundant questions.
-Otherwise, use #tool:read on #file:./references/ask_questions.md and #file:./assets/ask_questions.json and then use #tool:vscode/askQuestions to collect only the missing structured answers.
-Ask only for fields that change behavior: prompt slug, unique job, routing triggers, required inputs, required tools, target agent if any, and output contract.
-Do **NOT** ask for `model` unless the user explicitly needs a model preference.
+1. Reuse the prompt contract already present in the conversation when it is complete.
+  - If the conversation already establishes the task, inputs, and expected output, extract them directly and do not ask redundant questions.
+2. Load the question assets only when details are missing.
+  - Otherwise, use #tool:read on #file:./references/ask_questions.md and #file:./assets/ask_questions.json and then use #tool:vscode/askQuestions to collect only the missing structured answers.
+3. Ask only for behavior-changing fields.
+  - Prompt slug.
+  - Unique job.
+  - Routing triggers.
+  - Required inputs.
+  - Required tools.
+  - Target agent, if any.
+  - Output contract.
+4. Keep optional model selection out unless the task explicitly needs it.
+  - Do **NOT** ask for `model` unless the user explicitly needs a model preference.
 
 ## Step 3 - Draft the prompt file
 
-Use #tool:read on #file:./assets/prompt-template.md when writing the target prompt.
-Use #tool:edit to create or update `.github/prompts/<slug>.prompt.md`.
-Set `description` so it clearly states the prompt's job and includes `Use when:` trigger phrases.
-Set `argument-hint` only when the user needs help knowing what argument to pass.
-Add `tools` only when the prompt truly needs a narrower or broader tool surface than the selected agent would already provide.
-If the prompt needs a specific agent, set `agent` explicitly. Otherwise leave it unset.
-Keep the body direct and readable. For short prompts, `# Task` plus a concise bullet list is enough. For longer prompts, add short `##` sections such as `## Inputs`, `## Constraints`, and `## Output Contract`.
-Use markdown links for referenced files when the prompt is naming context. Use active `#file:` or `#tool:` markers only when the prompt text expects immediate consumption of that file or tool.
+1. Load the canonical prompt scaffold and create the target file.
+  - Use #tool:read on #file:./assets/prompt-template.md when writing the target prompt.
+  - Use #tool:edit to create or update `.github/prompts/<slug>.prompt.md`.
+2. Set frontmatter deliberately before expanding the body.
+  - Set `description` so it clearly states the prompt's job and includes `Use when:` trigger phrases.
+  - Set `argument-hint` only when the user needs help knowing what argument to pass.
+  - Add `tools` only when the prompt truly needs a narrower or broader tool surface than the selected agent would already provide.
+  - If the prompt needs a specific agent, set `agent` explicitly. Otherwise leave it unset.
+3. Keep the body readable and proportionate to the task.
+  - For short prompts, `# Task` plus a concise bullet list is enough.
+  - For longer prompts, add short `##` sections such as `## Inputs`, `## Constraints`, and `## Output Contract`.
+4. Use active markers only for immediate consumption.
+  - Use markdown links for referenced files when the prompt is naming context.
+  - Use active `#file:` or `#tool:` markers only when the prompt text expects immediate consumption of that file or tool.
 
 ## Step 4 - Review before validation
 
-Re-read the generated `.prompt.md` file with #tool:read before validation.
-Ensure the body has one top-level heading and enough `##` sections to avoid becoming visually flat.
-Ensure `description` includes both `What:` and `Use when:` and that one example invocation would obviously route to the prompt.
-If `tools` is present, confirm every listed tool is intentional.
+1. Re-read the generated `.prompt.md` file before validation.
+  - Use #tool:read on the finished draft so you validate the actual file rather than memory.
+2. Confirm the body stays readable.
+  - Ensure the body has one top-level heading and enough `##` sections to avoid becoming visually flat.
+3. Confirm the routing text is explicit.
+  - Ensure `description` includes both `What:` and `Use when:` and that one example invocation would obviously route to the prompt.
+4. Confirm tool scope is intentional.
+  - If `tools` is present, confirm every listed tool is intentional.
 
 ## Step 5 - Validate
 
-Use #tool:execute to run #file:./scripts/validate_prompt.py with the repository interpreter: `./.venv/bin/python .github/skills/create-prompt/scripts/validate_prompt.py --prompt-file <prompt_file>`.
-If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before validating.
-If validation reports structural or routing warnings you need help interpreting, use #tool:read on #file:./references/validation.md and apply the matching fix.
-Fix **ALL** ERRORs before proceeding. Address WARNINGs when they point to weak routing text, flat structure, or overly broad tools.
+1. Run the prompt validator.
+  - Use #tool:execute to run #file:./scripts/validate_prompt.py with the repository interpreter: `./.venv/bin/python .github/skills/create-prompt/scripts/validate_prompt.py --prompt-file <prompt_file>`.
+2. Refresh the repository environment if validation prerequisites are missing.
+  - If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before validating.
+3. Load the fix guide only when the output needs interpretation.
+  - If validation reports structural or routing warnings you need help interpreting, use #tool:read on #file:./references/validation.md and apply the matching fix.
+4. Fix the full validation surface before you proceed.
+  - Fix **ALL** ERRORs before proceeding.
+  - Address WARNINGs when they point to weak routing text, flat structure, or overly broad tools.
 
 ## Step 6 - Finalize
 
-Summarize what the prompt does, where the file lives, which tools or agent it pins, and one example invocation.
+1. Summarize the finished prompt.
+  - State what the prompt does.
+  - State where the file lives.
+  - State which tools or agent it pins.
+  - Give one example invocation.
 
 </workflow>

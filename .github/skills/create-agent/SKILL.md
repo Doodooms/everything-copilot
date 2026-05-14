@@ -51,6 +51,8 @@ license: MIT
    - If the target agent already exists and you know the exact file path, use #tool:read on its current `.agent.md` file first.
 2. Confirm the canonical body shape before you draft.
    - Use the current [agent template](./assets/agent-template.md) as the canonical draft scaffold when you need to confirm the expected body shape.
+3. Confirm current host requirements only when they matter for this draft.
+   - Use #tool:read on #file:./references/latest-docs.md before drafting when you need to confirm current VS Code custom-agent frontmatter, location, or subagent behavior.
 
 ## Step 2 - Capture the missing agent contract
 
