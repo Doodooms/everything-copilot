@@ -76,9 +76,9 @@ Use custom agents as subagents to apply different review perspectives:
 
 ```prompt
 Review the changes in this PR from different angles. Perform these reviews in parallel:
-- Run the security-reviewer agent to check for vulnerabilities
-- Run the performance-reviewer agent to identify bottlenecks
-- Run the accessibility-reviewer agent to verify a11y compliance
+- Run the sec-auditor agent to check for vulnerabilities
+- Run the code-reviewer agent to inspect correctness, maintainability, and test coverage
+- Run the documentalist agent if the change affects user-facing docs, runbooks, or operator guidance
 
 Consolidate findings into a single review summary.
 ```
@@ -325,8 +325,7 @@ After all subagents complete, synthesize findings into a prioritized summary. No
 
 This pattern works because each subagent approaches the code fresh, without being anchored by what other perspectives found. In this example, the orchestrator shapes each subagent's focus area through its prompt. This is a lightweight approach that requires no additional agent files.
 
-> [!TIP]
-> For more control, each review perspective can be its own custom agent with specialized tool access. For example, a security reviewer might use a security-focused MCP server, while a code-quality reviewer might have access to linting CLI tools. This approach lets each perspective use the best tools for its specific focus.
+For more control, each review perspective can be its own custom agent with specialized tool access. For example, a security reviewer might use a security-focused MCP server, while a code-quality reviewer might have access to linting CLI tools. This approach lets each perspective use the best tools for its specific focus.
 
 ## Related resources
 

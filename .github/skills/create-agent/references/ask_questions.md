@@ -1,0 +1,59 @@
+# askQuestions Guidance
+
+Use [ask_questions.json](../assets/ask_questions.json) only when the conversation does not already define the agent contract clearly enough to draft the file.
+
+When to use it:
+
+- The slug, focused role, routing triggers, or routing exclusions are still ambiguous.
+- Tool access, delegation, or invocation mode still changes the contract.
+- The output contract is not explicit enough to draft `## Output Contract` directly.
+
+How to use it:
+
+- Load [ask_questions.json](../assets/ask_questions.json).
+- Use the structured question tool `vscode/askQuestions` with that JSON structure.
+- Ask only the minimum questions needed to finish the `.agent.md` contract.
+- Do not ask questions if the conversation history already fixes the role, routing, tools, and output shape.
+
+Anti-pattern:
+
+- Re-asking for fields the user already specified when the current conversation is sufficient to draft the agent deterministically.# askQuestions Guidance
+
+Use [ask_questions.json](../assets/ask_questions.json) only when the conversation does not already contain a usable agent contract.
+
+## When to use it
+
+- The user wants a new agent, but the role, routing triggers, or tool boundaries are still ambiguous.
+- The user described a persona informally and you need to turn it into deterministic frontmatter and body instructions.
+- Delegation or invocation mode matters and cannot be inferred safely from context.
+
+## How to use it
+
+- Load [ask_questions.json](../assets/ask_questions.json).
+- Use the structured question tool `vscode/askQuestions` with only the fields that are still missing.
+- Ask for required tools and forbidden work before you ask for optional fields such as model or handoffs.
+- If invocation mode or delegation is still fuzzy, review [delegation and invocation guidance](./delegation_and_invocation.md) before you finalize the answers.
+- Skip the questionnaire entirely when the conversation already defines the role, tools, boundaries, and expected output.
+
+## How answers map to the agent file
+
+- Agent slug -> package path `.github/agents/<slug>/<slug>.agent.md` and frontmatter `name`.
+- Purpose + routing triggers + routing exclusions -> frontmatter `description` using `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:`.
+- Routing triggers -> `references/USEFOR.md`.
+- Routing exclusions -> `references/DONOTUSEFOR.md`.
+- Required tools -> frontmatter `tools`.
+- Forbidden work -> `<rules>` -> `## Constraints`.
+- Invocation mode -> `user-invocable` and `disable-model-invocation`.
+- Allowed subagents -> `agents:` and the `agent` tool only when delegation is genuinely required.
+- Output contract -> `<rules>` -> `## Output Contract`.
+- `none` for allowed subagents -> omit `agents:` and remove `agent` from `tools`.
+- Named subagents -> verify they already exist under `.github/agents/` before you commit the draft.
+
+## Minimum contract to capture
+
+- Agent slug and unique purpose
+- Trigger phrases for routing
+- Routing exclusions or nearby tasks the agent must refuse
+- Required and forbidden tools or actions
+- Invocation mode and any subagent allowlist
+- Output contract

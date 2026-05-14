@@ -1,134 +1,175 @@
 ---
 name: create-agent
-description: "Create a custom agent (.agent.md) for a specific job. Use when: defining a new specialist agent, restricting tool access for a persona, building a subagent for orchestration."
+description: "WHAT: Canonical go-to workspace skill for creating, repairing, migrating, reviewing, or validating custom `.agent.md` files. USE FOR: any task that changes agent frontmatter, agent instructions, agent templates, or agent validation rules in this workspace. DO NOT USE FOR: creating skills, prompts, MCP servers, or general coding work unrelated to custom agents."
 user-invocable: false
-disable-model-invocation: true
+context: fork
+compatibility: vscode 1.119.0+, github-copilot 1.119.0+
+metadata:
+   creation-date: 2026-05-12
+   creator: Doodooms
+license: MIT
 ---
 
-# Create Agent
+<definitions>
 
-Guide the user to create a `.agent.md` in `.github/agents/`.
+- **custom agent** : A reusable `.agent.md` file that defines a specific persona, its tools, optional subagents, and its operating instructions.
+- **agent contract** : The combination of frontmatter and body text that determines how the agent is routed, what it may do, and what it must return.
+- **routing surface** : The part of the agent that drives selection: mainly `description`, plus any supporting body wording that clarifies the role after the agent is loaded.
+- **tool boundary** : The line between tools the agent genuinely needs and tools that only widen its permissions.
+- **delegation boundary** : The line between work the agent performs directly and work it should hand off through `agent`, `agents:`, or `handoffs`.
+- **invocation mode** : The frontmatter combination of `user-invocable` and `disable-model-invocation` that controls picker visibility and subagent eligibility.
+- **subagent-only agent** : An agent hidden from the picker with `user-invocable: false` but still callable by other agents unless `disable-model-invocation: true` also blocks it.
+- **self-contained agent** : A single `.agent.md` file whose Step 0 routing rules, refusal boundary, workflow, and output contract all live inside that file without sibling routing documents.
 
-## Extract from Conversation
+</definitions>
 
-Review the conversation history. If the user has been using the agent in a specialized way
-(restricting tools, following a specific persona, focusing on certain file types), extract:
-- The specialized role or persona being assumed
-- Tool preferences (which to use, which to avoid)
-- The domain or job scope
+<workflow>
 
-## Clarify if Needed
+## Step 0 - **CONFIRMATION**
 
-If no clear specialization emerges, ask:
-- What job should this agent do?
-- When should it be picked over the default agent?
-- Which tools should it use (or avoid)?
+# Code Reviewer Use Cases
 
-## Iterate
+Use the code-reviewer agent when the task is primarily about judging a change rather than making one.
 
-1. Draft the agent file and save it to `.github/agents/<name>.agent.md`.
-2. Identify the most ambiguous or weak parts and ask about those.
-3. Once finalized, summarize what the agent does, suggest example prompts to try it, and propose
-   related customizations to create next.
+- Review a diff or edited files before merge.
+- Check whether tests cover the real behavior change.
+- Look for correctness, maintainability, and regression issues.
+- Apply language-specific review depth to TypeScript, Python, Go, or Rust changes.
 
-## Reference: Agent Frontmatter
+# Code Reviewer Non-Use Cases
 
+Do not use the code-reviewer agent when the task is mainly about producing or changing artifacts.
 
+- Writing or editing code.
+- Planning a feature or architecture.
+- Researching external APIs or libraries.
+- Reproducing a failure and fixing it.
+- Performing a dedicated security audit or infrastructure workflow.
 
-```yaml
----
-description: "<required>"    # For agent picker and subagent discovery
-name: "Agent Name"           # Optional, defaults to filename
-tools: [search, web]         # Optional: aliases, MCP (<server>/*), extension tools
-model: "Claude Sonnet 4"     # Optional, uses picker default; supports array for fallback
-agents: [agent1, agent2]     # Optional, restrict allowed subagents by name (omit = all, [] = none)
-user-invocable: false        # Optional, hide from picker for subagent-only routing
-disable-model-invocation: false  # Optional, prevent subagent invocation (default: false)
-handoffs: [...]              # Optional, transitions to other agents
----
-```
+<rules>
 
-### Invocation Control
+- This is the default skill for agent work in this workspace. Use it before improvising agent edits or loading stale external agent-customization guidance.
+- Default to a single self-contained agent file at `.github/agents/<slug>.agent.md`.
+- Keep routing rules inside the `.agent.md` file itself. Do **NOT** require sibling `references/USEFOR.md` or `references/DONOTUSEFOR.md` files for new agents.
+- For new drafts, use `<definitions>`, `<workflow>`, and `<rules>` as the canonical wrapper vocabulary. Do **NOT** invent extra XML-style tags.
+- Keep the tool list minimal. Every extra tool widens the agent's blast radius and weakens routing precision.
+- If the agent declares `agents:`, it **MUST** also include the `agent` tool.
+- If the draft does **NOT** delegate, omit `agents:` and remove `agent` from `tools`.
+- Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
+- `description` is the primary routing surface. It **MUST** use `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:` so the agent advertises both scope and refusal boundary before Step 0 runs.
+- Every new agent **MUST** include a Step 0 confirmation with embedded `### USE FOR` and `### DO **NOT** USE FOR` sections and a structured refusal path.
+- If routing still feels ambiguous after drafting, produce one example prompt that should route to the agent and verify that the `description` clearly covers that prompt.
+- Reference support files only on the workflow step that consumes them. Support markdown files must stay free of active `#tool:` and `#file:` markers.
 
-| Attribute | Default | Effect |
-|-----------|---------|--------|
-| `user-invocable: false` | `true` | Hide from agent picker, only accessible as subagent |
-| `disable-model-invocation: true` | `false` | Prevent other agents from invoking as subagent |
+</rules>
 
-### Model Fallback
+## Step 1 - Inspect the current agent surface
 
-```yaml
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']  # First available model is used
-```
+1. Inspect the workspace agent surface before drafting.
+   - If the name, scope, or overlap is unclear, use #tool:search in the workspace `.github/agents/` directory to avoid duplicates and naming collisions.
+   - If the target agent already exists and you know the exact file path, use #tool:read on its current `.agent.md` file first.
+2. Confirm current host requirements only when they matter for this draft.
+   - Use #tool:read on #file:./references/latest-docs.md before drafting when you need to confirm current VS Code custom-agent frontmatter, location, or subagent behavior.
+   - Review [custom agent docs](./references/custom_agent.md), [local agent docs](./references/local_agents.md), [subagent docs](./references/sub_agent.md), and the [agents overview](./references/agents.md) only for the specific ambiguity you still need to resolve.
+3. Confirm the canonical body shape before you draft.
+   - Use the current [agent template](./assets/agent-template.md) as the canonical draft scaffold when you need to confirm the expected body shape.
 
-## Tools
+## Step 2 - Capture the missing agent contract
 
-Sources: built-in aliases, specific tools, MCP servers (`<server>/*`), extension tools.
+1. Reuse the contract already present in the conversation when it is complete.
+   - If the conversation already establishes the persona, tools, constraints, and output shape, extract them directly and do not ask redundant questions.
+2. Load guidance and the structured questionnaire only when details are missing.
+   - **Otherwise**, review [askQuestions guidance](./references/ask_questions.md).
+   - If invocation mode or delegation is still unclear, also review [delegation and invocation guidance](./references/delegation_and_invocation.md).
+   - If structured questions are still needed, use #tool:read on #file:./assets/ask_questions.json and then use #tool:vscode/askQuestions to collect only the missing structured answers.
+3. Ask only for behavior-changing fields.
+   - Agent slug.
+   - Unique job.
+   - Routing triggers.
+   - Routing exclusions.
+   - Required tools.
+   - Forbidden tools.
+   - Invocation mode.
+   - Delegation needs.
+   - Output contract.
+4. Keep optional fields out unless the task explicitly needs them.
+   - Do **NOT** ask for `model`, `handoffs`, or `hooks` unless the task explicitly needs them.
 
-**Special**: `[]` = no tools, omit = defaults. Body reference: `#tool:<name>`
+## Step 3 - Draft the self-contained agent file
 
-### Tool Aliases
+1. Load the canonical drafting scaffold and create the target file.
+   - Use #tool:read on #file:./assets/agent-template.md when writing the target file.
+   - Use #tool:edit to create or update `.github/agents/<slug>.agent.md`.
+2. Set frontmatter deliberately before expanding the body.
+   - Set `description` so it clearly states what the agent does and includes explicit `USE FOR:` and `DO NOT USE FOR:` routing clauses.
+   - Prefer `target: vscode` for workspace agents unless the user explicitly targets another Copilot surface.
+   - Add only the tools the agent genuinely needs. Omit `tools` entirely when the default is acceptable; use `tools: []` only when a tool-free agent is intentional.
+   - If the agent delegates, include `agent` in `tools` and list only the allowed subagents in `agents:`. Use `*` only when broad delegation is intentional.
+   - Use `user-invocable: false` for helper agents that should stay out of the picker. Use `disable-model-invocation: true` only when the agent must never be invoked as a subagent.
+   - Add `handoffs` or `hooks` only when the workflow truly benefits and the task calls for them.
+3. Confirm live tool names before finalizing frontmatter when needed.
+   - If tool names are unclear, review the `tools/copilot-tool-snapshot` workflow README and then use the Command Palette commands `Agentic Workflow: Export Copilot Tool Snapshot` or `Agentic Workflow: Check Copilot Tool Name`.
+   - The chat `Configure Tools...` button exposes the same live availability from the UI side.
+4. Map captured answers directly into the draft.
+   - slug -> filename and frontmatter `name`
+   - unique job + routing triggers + routing exclusions -> frontmatter `description` with `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:`
+   - routing triggers -> Step 0 `### USE FOR`
+   - routing exclusions -> Step 0 `### DO **NOT** USE FOR`
+   - required tools -> frontmatter `tools`
+   - forbidden work -> `<rules>` -> `## Constraints`
+   - invocation mode -> `user-invocable` and `disable-model-invocation`
+   - allowed subagents -> `agents:` and the `agent` tool only when delegation is genuinely required
+   - output contract -> `<rules>` -> `## Output Contract`
+5. Resolve tricky delegation or invocation decisions before finalizing the draft.
+   - If invocation mode or delegation still feels tricky while drafting, review [delegation and invocation guidance](./references/delegation_and_invocation.md) before setting `agent`, `agents:`, `user-invocable`, or `disable-model-invocation`.
+6. Keep the generated body aligned with the canonical structure.
+   - Keep the draft agent-shaped with `<definitions>`, then a `<workflow>` wrapper containing `## Step 0 - **CONFIRMATION**`, embedded `### USE FOR` and `### DO **NOT** USE FOR`, `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
+   - Inside the workflow, prefer ordered `1. 2. 3.` lists when actions must happen in sequence.
+   - Keep routing, refusal, and output requirements inside the `.agent.md` file itself instead of splitting them into sibling support files.
+7. Use the template wrappers as scaffolding for new drafts.
+   - Existing legacy agents may keep their older shape unless the task explicitly rewrites them.
 
-| Alias | Purpose |
-|-------|---------|
-| `execute` | Run shell commands |
-| `read` | Read file contents |
-| `edit` | Edit files |
-| `search` | Search files or text |
-| `agent` | Invoke custom agents as subagents |
-| `web` | Fetch URLs and web search |
-| `todo` | Manage task lists |
+## Step 4 - Review before validation
 
-### Common Patterns
+1. Re-read the generated `.agent.md` file before validation.
+   - Use #tool:read on the finished draft so you validate the actual file rather than memory.
+2. Confirm the self-contained file structure is complete.
+   - Ensure the agent is a single `.agent.md` file under `.github/agents/`.
+   - Ensure Step 0 embeds `### USE FOR` and `### DO **NOT** USE FOR` inside that file.
+3. Confirm the body shape matches the canonical contract.
+   - Ensure the body keeps the canonical step-based contract: `## Step 0 - **CONFIRMATION**`, embedded routing sections, `## Role`, `<rules>` with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
+4. Confirm the refusal path is machine-actionable.
+   - Ensure Step 0 refuses mismatches with a JSON payload containing `status: refused`, `agent`, `reason`, and `suggested_alternative`.
+5. Confirm the routing surface is explicit.
+   - Ensure `description` includes `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:`.
+   - Ensure the embedded Step 0 `### USE FOR` and `### DO **NOT** USE FOR` sections agree with that `description`.
+   - Ensure one concrete example prompt would actually route to this agent.
+6. Confirm delegation is intentionally scoped.
+   - If `agent` appears in `tools`, confirm `agents:` is explicit or that broad delegation is truly intentional.
+7. Preserve wrappers when you used the canonical scaffold.
+   - If you used the template wrappers for a new draft, keep `<workflow>` around the full runtime contract and `<rules>` around `## Responsibilities`, `## Constraints`, plus `## Output Contract`.
 
-```yaml
-tools: [read, search]             # Read-only research
-tools: [myserver/*]               # MCP server only
-tools: [read, edit, search]       # No terminal access
-tools: []                         # Conversational only
-```
+## Step 5 - Validate
 
-To discover available tools, check your current tool list or use `#tool:` syntax in the body to reference specific tools.
+1. Run the agent validator.
+   - Use #tool:execute to run #file:./scripts/validate_agent.py with the repository interpreter: `./.venv/bin/python .github/skills/create-agent/scripts/validate_agent.py --agent-file <agent_file>`.
+2. Refresh the repository environment if validation prerequisites are missing.
+   - If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before validating.
+3. Load the fix guide only when the output needs interpretation.
+   - If validation reports errors or warnings you need help interpreting, use #tool:read on #file:./references/validation.md and apply the matching fix.
+4. Fix the full validation surface instead of weakening the contract.
+   - If validation flags unknown tools, broad delegation, missing embedded routing sections, or missing subagents, fix the agent contract instead of weakening the validator.
+   - When tool names are the issue, use the `copilot-tool-snapshot` workflow or the chat `Configure Tools...` button before you guess.
+   - Fix **ALL** ERRORs before proceeding.
+   - Address WARNINGs when they point to ambiguous routing, deprecated fields, broad delegation, or legacy routing-file mode.
 
-## Template
+## Step 6 - Finalize
 
-```markdown
----
-description: "{Use when... trigger phrases for subagent discovery}"
-tools: [{minimal set of tool aliases}]
-user-invocable: false
----
-You are a specialist at {specific task}. Your job is to {clear purpose}.
+1. Summarize the finished agent package.
+   - State what the agent does.
+   - State where the file lives.
+   - State which tools and subagents it exposes.
+   - Give one example prompt that should route to it.
+   - Add one short sentence explaining why the `description` matches that prompt.
 
-## Constraints
-- DO NOT {thing this agent should never do}
-- DO NOT {another restriction}
-- ONLY {the one thing this agent does}
-
-## Approach
-1. {Step one of how this agent works}
-2. {Step two}
-3. {Step three}
-
-## Output Format
-{Exactly what this agent should return}
-```
-
-## Invocation
-
-- **Manual**: Agent selector in chat
-- **Subagent**: Parent agent delegates based on `description` match (when `infer` allows)
-
-## Core Principles
-
-1. **Single role**: One persona with focused responsibilities per agent
-2. **Minimal tools**: Only include what the role needs—excess tools dilute focus
-3. **Clear boundaries**: Define what the agent should NOT do
-4. **Keyword-rich description**: Include trigger words so parent agents know when to delegate
-
-## Anti-patterns
-
-- **Swiss-army agents**: Too many tools, tries to do everything
-- **Vague descriptions**: "A helpful agent" doesn't guide delegation—be specific
-- **Role confusion**: Description doesn't match body persona
-- **Circular handoffs**: A -> B -> A without progress criteria
+</workflow>
