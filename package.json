@@ -14,6 +14,7 @@
     "docker:build": "docker build -t agentic-workflow:latest .",
     "docker:test:workspace:stability": "docker run --rm agentic-workflow:latest bash -lc \"npm run test:workspace:stability\"",
     "docker:run": "docker run --rm -it agentic-workflow:latest",
+    "lint:create-surfaces": "uv run python scripts/customization_lint.py create-surfaces --root .",
     "test:ahk:e2e": "uv run pytest tests/test_ahk_integration.py -q",
     "test:graphify:fts": "uv run pytest tests/test_atomic_index_fts.py -q",
     "test:workspace:stability": "bash health.sh && npx --no-install ahk sync --direction in && npx --no-install ahk status && uv run pytest tests/test_ahk_integration.py tests/test_atomic_index_fts.py -q"

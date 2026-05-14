@@ -18,13 +18,15 @@ Use [ask_questions.json](../assets/ask_questions.json) only when the conversatio
 
 ## How answers map to the agent file
 
-- Agent slug -> filename `.github/agents/<slug>.agent.md` and frontmatter `name`.
-- Purpose + routing triggers -> frontmatter `description` using `What:` and `Use when:`.
+- Agent slug -> package path `.github/agents/<slug>/<slug>.agent.md` and frontmatter `name`.
+- Purpose + routing triggers + routing exclusions -> frontmatter `description` using `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:`.
+- Routing triggers -> `references/USEFOR.md`.
+- Routing exclusions -> `references/DONOTUSEFOR.md`.
 - Required tools -> frontmatter `tools`.
-- Forbidden work -> `## Constraints`.
+- Forbidden work -> `<rules>` -> `## Constraints`.
 - Invocation mode -> `user-invocable` and `disable-model-invocation`.
 - Allowed subagents -> `agents:` and the `agent` tool only when delegation is genuinely required.
-- Output contract -> `## Output Contract`.
+- Output contract -> `<rules>` -> `## Output Contract`.
 - `none` for allowed subagents -> omit `agents:` and remove `agent` from `tools`.
 - Named subagents -> verify they already exist under `.github/agents/` before you commit the draft.
 
@@ -32,6 +34,7 @@ Use [ask_questions.json](../assets/ask_questions.json) only when the conversatio
 
 - Agent slug and unique purpose
 - Trigger phrases for routing
+- Routing exclusions or nearby tasks the agent must refuse
 - Required and forbidden tools or actions
 - Invocation mode and any subagent allowlist
 - Output contract

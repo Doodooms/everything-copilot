@@ -3,12 +3,14 @@
 ## Purpose
 
 - Explains what `scripts/validate_skill.py` checks and how to fix its output.
+- `scripts/validate_skill.py` now uses the shared Markdown and template linter at `scripts/customization_lint.py` for the structural checks, then applies skill-specific catalog validation on top.
 - Use [skill-template.md](../assets/skill-template.md) for the canonical bad and good examples that correspond to the checks below.
 
 ## When to use this file
 
 - Read it after validation fails or when you need to understand what the validator enforces.
 - In this repository, run the validator with `./.venv/bin/python .github/skills/create-skill/scripts/validate_skill.py --skill-dir <skill_folder>`.
+- For the fast create-* feedback loop, run `uv run python scripts/customization_lint.py create-surfaces --root .` or `npm run lint:create-surfaces`.
 - If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before running the validator.
 
 ## Automatic checks
@@ -25,10 +27,13 @@
 - Non-frontmatter markdown files are checked for active `#tool:` or `#file:` markers outside fenced code blocks.
 - `#tool:` markers are parsed, checked for trailing punctuation, and validated against the workspace skill-tool alias catalog.
 - Wrong-layer raw tool names such as `copilot_readFile`, `run_in_terminal`, or `vscode_askQuestions` fail validation and include alias suggestions.
+- If `.vscode/copilot-tools.snapshot.json` is missing, validation warns and falls back to installed extension manifests. For live discovery, use the chat `Configure Tools...` button or the `copilot-tool-snapshot` commands.
 - `#file:` markers are parsed, checked for trailing punctuation, and best-effort checked for existence.
 - Every file under `assets/`, `references/`, and `scripts/` **MUST** be referenced from `SKILL.md`.
+- Canonical create-surface skills such as `create-skill`, `create-agent`, `create-prompt`, and `create-mcp` must include a non-empty `scripts/` directory with executable validation or automation.
 - Duplicate normalized markdown headings are reported.
 - A `## Runtime Inputs` section is reported because it front-loads support files instead of referencing them at point of need.
+- Every `## Step X - ...` block inside `<workflow>` must start with an ordered `1.` action and keep runtime instructions inside numbered items instead of bare prose.
 - Early context-only workflow steps that batch 3 or more support-file reads before the first real action step are reported as potential front-loading.
 
 ## Fix patterns
@@ -43,9 +48,12 @@
 - Active `#file:` in a support markdown file -> replace it with a markdown link such as `[file](./path)` or `[file](../path)`.
 - Active `#tool:` in a support markdown file -> replace it with plain prose or inline code such as `vscode/askQuestions`.
 - Unknown or wrong-layer `#tool:` -> replace it with the skill-facing alias or namespaced tool accepted by the workspace.
+- Snapshot warning -> refresh `.vscode/copilot-tools.snapshot.json` with `Agentic Workflow: Export Copilot Tool Snapshot`, check a candidate name with `Agentic Workflow: Check Copilot Tool Name`, or inspect the live UI with the chat `Configure Tools...` button.
 - Unreferenced support file -> cite the file on the workflow step that consumes it.
+- Missing `scripts/` on a canonical create-surface skill -> add a real validator or automation helper under `scripts/` and reference it from the workflow step that executes it.
 - Excessive `#file:` usage for candidate or future inputs -> replace those references with markdown links and keep `#file:` only on the step that immediately consumes the file.
 - `Runtime Inputs` warning -> move each `#file:` reference to the step where the agent actually needs that file.
+- Plain-text step body -> rewrite the step so it starts with `1. ...` and keep the remaining runtime instructions inside ordered items, using nested `-` bullets only as supporting detail.
 - Potential front-loading warning -> replace grouped early `#tool:read` calls with markdown links and move each actual `#tool:read` to the later step that truly consumes that support file.
 - Trailing punctuation after `#file:` or `#tool:` -> rewrite the sentence so the reference stands alone.
 - Duplicate headings -> merge the sections or rename one so only one canonical heading remains.

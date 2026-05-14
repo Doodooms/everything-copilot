@@ -35,14 +35,20 @@ metadata:                   # REQUIRED workspace-local annotation block.
 </rules>
 
 ## Step 1 - <inspect or prepare>
-Use #tool:read on #file:./references/<guide>.md **ONLY** if this step needs that guide.
+
+1. <describe what this step must inspect or prepare before later work can be correct>.
+2. Use #tool:read on #file:./references/<guide>.md **ONLY** if this step needs that guide.
 
 ## Step 2 - <ask or decide>
-Use #tool:vscode/askQuestions on #file:./assets/<questions>.json **ONLY** if structured input is still missing.
+
+1. <describe the missing decision, ambiguity, or structured input this step resolves>.
+2. Use #tool:vscode/askQuestions on #file:./assets/<questions>.json **ONLY** if structured input is still missing.
 
 ## Step 3 - <validate or execute>
-Use #tool:execute on the narrowest validation command for the skill output.
-Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside the skill folder.
+
+1. <describe the concrete outcome this validation or execution step must produce before the workflow can finish>.
+2. Use #tool:execute on the narrowest validation command for the skill output.
+3. Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside the skill folder.
 
 </workflow>
 
@@ -51,6 +57,7 @@ Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside 
 ## Authoring Notes
 
 - `SKILL.md` **MUST** own workflow. **DO NOT** copy the same checklist or policy into multiple files.
+- Keep each workflow step descriptive. If several actions must occur in order inside one step, use an ordered list instead of a single vague sentence.
 - `assets/` store copyable templates or machine-readable payloads.
 - `references/` store human guidance that the workflow loads only when needed.
 - `scripts/` store executable checks or automation.
@@ -91,7 +98,6 @@ user-invocable: false
 
 <definitions>
 
-- USE tool:read immediately on file:../references/usefor.md
 - **trace artifact** : A log, payload, or response snapshot used by the workflow.
 
 </definitions>

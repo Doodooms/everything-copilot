@@ -6,6 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR_PATH = REPO_ROOT / ".github" / "skills" / "create-skill" / "scripts" / "validate_skill.py"
+LINTER_PATH = REPO_ROOT / "scripts" / "customization_lint.py"
 
 
 def test_validator_warns_on_front_loaded_support_reads(tmp_path: Path) -> None:
@@ -26,6 +27,33 @@ def test_validator_allows_point_of_need_links_without_front_loading_warning(tmp_
 
     assert result.returncode == 0, (result.stdout + result.stderr).strip()
     assert "Potential front-loading" not in result.stdout
+
+
+def test_validator_rejects_plain_text_workflow_steps(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "plain-text-steps"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        step_one_body_override=(
+            "Inspect nearby skills before drafting.\n"
+            "Use #tool:search under `.github/skills` to inspect nearby skills."
+        ),
+    )
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "must start with an ordered `1.` action" in result.stdout
+
+
+def test_validator_rejects_canonical_create_surface_without_scripts(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "create-mcp"
+    _write_skill(skill_dir, front_loaded=False, include_scripts=False)
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "must include a non-empty `scripts/` directory" in result.stdout
 
 
 def test_validator_rejects_template_assets_without_split_yaml_and_markdown_fences(
@@ -59,7 +87,24 @@ def test_validator_rejects_template_assets_with_reordered_canonical_sections(
 
     assert result.returncode == 3, (result.stdout + result.stderr).strip()
     assert "./assets/agent-template.md" in result.stdout
-    assert "markdown headings in this order" in result.stdout
+    assert "in canonical order" in result.stdout
+
+
+def test_validator_rejects_agent_template_with_reordered_post_sections(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "reordered-agent-post-template"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        template_assets={"agent-template.md": _agent_template_with_reordered_post_sections()},
+    )
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "./assets/agent-template.md" in result.stdout
+    assert "post-template headings in this order" in result.stdout
 
 
 def test_validator_rejects_skill_template_with_reordered_reference_sections(
@@ -87,7 +132,8 @@ def test_validator_resolves_parent_relative_file_references(tmp_path: Path) -> N
         skill_dir,
         front_loaded=False,
         step_one_body_override=(
-            "Use #tool:search under #file:../../agents/ to inspect existing agents before drafting."
+            "1. Inspect existing agents before drafting.\n"
+            "   - Use #tool:search under #file:../../agents/ to inspect existing agents before drafting."
         ),
     )
 
@@ -110,6 +156,24 @@ def test_live_create_prompt_skill_directory_validates() -> None:
     assert result.returncode == 0, (result.stdout + result.stderr).strip()
 
 
+def test_live_create_mcp_skill_directory_validates() -> None:
+    result = _run_validator(REPO_ROOT / ".github" / "skills" / "create-mcp")
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+
+
+def test_live_create_surface_linter_passes() -> None:
+    result = subprocess.run(
+        [sys.executable, str(LINTER_PATH), "create-surfaces", "--root", str(REPO_ROOT)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+
+
 def _run_validator(skill_dir: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(VALIDATOR_PATH), "--skill-dir", str(skill_dir)],
@@ -126,10 +190,12 @@ def _write_skill(
     front_loaded: bool,
     template_assets: dict[str, str] | None = None,
     step_one_body_override: str | None = None,
+    include_scripts: bool = True,
 ) -> None:
     (skill_dir / "assets").mkdir(parents=True, exist_ok=True)
     (skill_dir / "references").mkdir(parents=True, exist_ok=True)
-    (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
+    if include_scripts:
+        (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
 
     files = {
         skill_dir / "references" / "USEFOR.md": "# WHEN TO USE\n\n- Test fixture.\n",
@@ -137,8 +203,9 @@ def _write_skill(
         skill_dir / "references" / "guide.md": "# Guide\n\nPoint-of-need guidance.\n",
         skill_dir / "references" / "validation.md": "# Validation\n\nFix warnings here.\n",
         skill_dir / "assets" / "ask_questions.json": "[]\n",
-        skill_dir / "scripts" / "noop.py": "print('ok')\n",
     }
+    if include_scripts:
+        files[skill_dir / "scripts" / "noop.py"] = "print('ok')\n"
     for asset_name, content in (template_assets or {}).items():
         files[skill_dir / "assets" / asset_name] = content
 
@@ -150,24 +217,31 @@ def _write_skill(
         references = ", ".join(
             f"[{asset_name}](./assets/{asset_name})" for asset_name in sorted(template_assets)
         )
-        template_links = f"\nAvailable templates: {references}."
+        template_links = (
+            "\n3. Review the available templates when they matter for this draft.\n"
+            f"   - Available templates: {references}."
+        )
 
     if step_one_body_override is not None:
         step_one_body = step_one_body_override.strip()
     elif front_loaded:
         step_one_body = textwrap.dedent(
             """
-            Use #tool:search under `.github/skills` to inspect nearby skills.
-            Use #tool:read on #file:./references/guide.md before planning.
-            Use #tool:read on #file:./references/validation.md before planning.
-            Use #tool:read on #file:./assets/ask_questions.json before planning.
+            1. Inspect nearby skills before planning.
+               - Use #tool:search under `.github/skills` to inspect nearby skills.
+            2. Load the candidate support files that this fixture intentionally front-loads.
+               - Use #tool:read on #file:./references/guide.md before planning.
+               - Use #tool:read on #file:./references/validation.md before planning.
+               - Use #tool:read on #file:./assets/ask_questions.json before planning.
             """
         ).strip()
     else:
         step_one_body = textwrap.dedent(
             """
-            Use #tool:search under `.github/skills` to inspect nearby skills.
-            Review [guide](./references/guide.md), [validation notes](./references/validation.md), and [question payload](./assets/ask_questions.json) to decide what might be needed later.
+            1. Inspect nearby skills before drafting.
+               - Use #tool:search under `.github/skills` to inspect nearby skills.
+            2. Review candidate references without front-loading them.
+               - Review [guide](./references/guide.md), [validation notes](./references/validation.md), and [question payload](./assets/ask_questions.json) to decide what might be needed later.
             """
         ).strip()
 
@@ -199,8 +273,10 @@ def _write_skill(
 
         ## Step 2 - Validate
 
-        Use #tool:read on #file:./references/guide.md only if the guide is still needed.
-        Use #tool:execute on #file:./scripts/noop.py when validating the draft.
+          1. Load the guide only if this validation step still needs it.
+              - Use #tool:read on #file:./references/guide.md only if the guide is still needed.
+          2. Run the narrow validation command.
+              - Use #tool:execute on #file:./scripts/noop.py when validating the draft.
 
         </workflow>
         """
@@ -215,7 +291,7 @@ def _legacy_agent_template() -> str:
         ```markdown
         ---
         name: legacy-agent
-        description: "What: Legacy single-fence example. Use when: tests need a broken template."
+        description: "WHAT: Legacy single-fence example. USE FOR: tests need a broken template. DO NOT USE FOR: production routing."
         target: vscode
         tools: [read]
         ---
@@ -251,7 +327,7 @@ def _reordered_agent_template() -> str:
         ```yaml
         ---
         name: reordered-agent
-        description: "What: Reordered sections example. Use when: tests need a structurally broken template."
+        description: "WHAT: Reordered sections example. USE FOR: tests need a structurally broken template. DO NOT USE FOR: production routing."
         target: vscode
         tools: [read]
         ---
@@ -264,18 +340,22 @@ def _reordered_agent_template() -> str:
 
         </definitions>
 
-        # Role
+        <workflow>
+
+        ## Step 0 - **CONFIRMATION**
+
+        1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md.
+        2. If the task does not match, return: `{"status": "refused", "agent": "reordered-agent", "reason": "test fixture", "suggested_alternative": "planner"}`.
+
+        ## Step 1 - Gather context
+
+        1. Read the task.
+
+        ## Role
 
         You are the Reordered agent.
 
-        <workflow>
-
-        ## Workflow
-
-        1. Read the task.
-        2. Return the result.
-
-        </workflow>
+        <rules>
 
         ## Responsibilities
 
@@ -288,11 +368,112 @@ def _reordered_agent_template() -> str:
         ## Output Contract
 
         - Return a draft.
+
+        </rules>
+
+        ## Step 2 - Apply the method
+
+        1. Continue.
+
+        ## Step 3 - Return the result
+
+        1. Return a draft.
+
+        </workflow>
         ```
 
-        Notes
+        ## Authoring Notes
 
         - Preserve the outer wrapper, but not the section order.
+
+        ## Discovery and routing example
+
+        Bad:
+
+        ```yaml
+        ---
+        name: vague-agent
+        description: Helpful agent.
+        ---
+        ```
+
+        Good:
+
+        ```yaml
+        ---
+        name: precise-agent
+        description: "WHAT: Do one thing. USE FOR: that one thing is needed. DO NOT USE FOR: unrelated work."
+        ---
+        ```
+
+        ## Step 0 refusal example
+
+        Bad:
+
+        ```markdown
+        ## Step 0 - **CONFIRMATION**
+        1. Continue if unsure.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 0 - **CONFIRMATION**
+        1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md.
+        2. If the task does not match, return a refusal JSON payload with `"status": "refused"`, `"agent"`, `"reason"`, and `"suggested_alternative"`.
+        ```
+
+        ## Workflow specificity example
+
+        Bad:
+
+        ```markdown
+        ## Step 1 - Gather context
+        1. Read things.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 1 - Gather only the context needed for the task.
+        1. Read the validated inputs named in the task.
+        ```
+
+        ## Delegation boundary example
+
+        Bad:
+
+        ```yaml
+        ---
+        tools: [read, agent]
+        agents: [*]
+        ---
+        ```
+
+        Good:
+
+        ```yaml
+        ---
+        tools: [read]
+        ---
+        ```
+
+        ## Output contract example
+
+        Bad:
+
+        ```markdown
+        ## Output Contract
+        - Be helpful.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Output Contract
+        - If Step 0 rejects the task, return the refusal JSON payload.
+        - If Step 0 accepts the task, return the promised artifact.
+        ```
         """
     ).strip() + "\n"
 
@@ -446,6 +627,161 @@ def _reordered_skill_template() -> str:
         ```markdown
         # Validation notes
         See [validation guide](../references/validation.md).
+        ```
+        """
+    ).strip() + "\n"
+
+
+def _agent_template_with_reordered_post_sections() -> str:
+    return textwrap.dedent(
+        """
+        ```yaml
+        ---
+        name: precise-agent
+        description: "WHAT: Exercise post-template validation. USE FOR: tests need a canonical agent template with bad trailing docs order. DO NOT USE FOR: production routing."
+        target: vscode
+        tools: [read]
+        ---
+        ```
+
+        ```markdown
+        <definitions>
+
+        - **focused role** : A test role.
+
+        </definitions>
+
+        <workflow>
+
+        ## Step 0 - **CONFIRMATION**
+
+        1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md.
+        2. If the task does not match, return: `{"status": "refused", "agent": "precise-agent", "reason": "test fixture", "suggested_alternative": "planner"}`.
+
+        ## Role
+
+        You are the Precise agent.
+
+        <rules>
+
+        ## Responsibilities
+
+        - Keep the primary role explicit.
+
+        ## Constraints
+
+        - Stay inside the role.
+
+        ## Output Contract
+
+        - Return a draft.
+
+        </rules>
+
+        ## Step 1 - Gather context
+
+        1. Read the task.
+
+        ## Step 2 - Apply the method
+
+        1. Return the result.
+
+        ## Step 3 - Finish
+
+        1. Stop.
+
+        </workflow>
+        ```
+
+        ## Step 0 refusal example
+
+        Bad:
+
+        ```markdown
+        ## Step 0 - **CONFIRMATION**
+        1. Continue if unsure.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 0 - **CONFIRMATION**
+        1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md.
+        ```
+
+        ## Authoring Notes
+
+        - These headings are intentionally out of order.
+
+        ## Discovery and routing example
+
+        Bad:
+
+        ```yaml
+        ---
+        name: vague-agent
+        description: Helpful agent.
+        ---
+        ```
+
+        Good:
+
+        ```yaml
+        ---
+        name: precise-agent
+        description: "WHAT: Do one thing. USE FOR: that one thing is needed. DO NOT USE FOR: unrelated work."
+        ---
+        ```
+
+        ## Workflow specificity example
+
+        Bad:
+
+        ```markdown
+        ## Step 1 - Gather context
+        1. Do the work.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 1 - Gather only the context needed for the task.
+        1. Read the validated inputs named in the task.
+        ```
+
+        ## Delegation boundary example
+
+        Bad:
+
+        ```yaml
+        ---
+        tools: [read, agent]
+        agents: [*]
+        ---
+        ```
+
+        Good:
+
+        ```yaml
+        ---
+        tools: [read]
+        ---
+        ```
+
+        ## Output contract example
+
+        Bad:
+
+        ```markdown
+        ## Output Contract
+        - Be helpful.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Output Contract
+        - Return a concise result.
         ```
         """
     ).strip() + "\n"

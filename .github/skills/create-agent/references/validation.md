@@ -16,8 +16,13 @@
 - The file ends with `.agent.md`.
 - YAML frontmatter parses and the body is not empty.
 - `description` exists and is a non-empty string.
-- `description` is checked for both `What:` and `Use when:` guidance because routing weakens when either part is missing.
-- The body contains the core agent sections `# Role`, `## Responsibilities`, `## Workflow` or `## Approach`, `## Constraints`, and `## Output Contract` in canonical order.
+- `description` is checked for `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:` guidance because routing weakens when the scope or refusal boundary is implicit.
+- Canonical step-based agents are checked for `<definitions>`, a `<workflow>` wrapper, `## Step 0 - **CONFIRMATION**`, `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, `## Output Contract`, and `## Step 1/2/3` in canonical order.
+- Canonical step-based agents must read `references/USEFOR.md` plus `references/DONOTUSEFOR.md`, refuse mismatches, and return a JSON refusal payload with `status`, `agent`, `reason`, and `suggested_alternative`.
+- Canonical step-based agents must live in a dedicated package directory so `./references/USEFOR.md` and `./references/DONOTUSEFOR.md` resolve per-agent.
+- Legacy heading-only agents are still accepted for compatibility, but they are reported as using the older contract.
+- `<role>` wrappers are rejected in generated agents.
+- Unresolved template placeholders are rejected when angle-bracket drafting text is still present.
 - `tools` are checked against the workspace tool catalog, with suggestions for wrong-layer names such as `vscode_askQuestions`.
 - `tools`, `agents`, `handoffs`, `hooks`, and `model` use the expected shapes.
 - `agents:` requires the `agent` tool.
@@ -25,24 +30,31 @@
 - `handoffs[*].agent` targets must resolve to existing workspace agent names and must not point back to the current agent.
 - `agent` in `tools` without an `agents:` allowlist is reported as a warning because it grants broad delegation.
 - Deprecated `infer` is reported as a warning.
-- Descriptions that omit `Use when:` are reported as a warning because routing becomes weaker.
+- Descriptions that omit `USE FOR:` or `DO NOT USE FOR:` are reported as warnings because routing becomes weaker.
 - Duplicate tools and overly broad tool lists are reported as warnings.
 - Files outside `.github/agents/` are reported as warnings because this repository defaults to workspace agents there.
+- When `.vscode/copilot-tools.snapshot.json` is missing, validation warns and falls back to installed extension manifests. For live tool discovery, use the chat `Configure Tools...` button or the `copilot-tool-snapshot` commands.
 
 ## Fix patterns
 
 - Missing frontmatter -> add the YAML header before the body.
 - Empty `description` -> write a concise sentence that states what the agent does and when it should be chosen.
-- Missing `What:` or `Use when:` -> rewrite `description` so it clearly states the job and the routing triggers.
-- Missing core sections -> restore the agent-specific contract from [agent-template.md](../assets/agent-template.md): role, responsibilities, workflow or approach, constraints, and output contract.
+- Missing `WHAT:`, `USE FOR:`, or `DO NOT USE FOR:` -> rewrite `description` so it clearly states the job, the routing triggers, and the refusal boundary.
+- Missing Step 0 contract -> restore the canonical structure from [agent-template.md](../assets/agent-template.md): Step 0 confirmation, Role, `<rules>`, then Step 1/2/3.
+- Missing routing files -> create `references/USEFOR.md` and `references/DONOTUSEFOR.md` beside the agent file.
+- Flat single-file path for a strict Step 0 agent -> move it to `.github/agents/<slug>/<slug>.agent.md` so the routing files live next to the agent.
 - Workflow sections out of order -> restore the canonical agent section order from [agent-template.md](../assets/agent-template.md) instead of improvising a new layout.
-- Unknown or wrong-layer tool name -> replace it with a workspace agent-facing tool name accepted by the validator.
+- Broken `<workflow>` or `<rules>` wrapper -> either remove the partial wrapper or restore the full pair exactly as shown in [agent-template.md](../assets/agent-template.md).
+- Missing refusal guidance -> Step 0 or `## Output Contract` must include the JSON refusal payload with `status`, `agent`, `reason`, and `suggested_alternative`.
+- `<role>` wrapper -> replace it with the canonical `## Role` heading inside the workflow body.
+- Unresolved template placeholder -> replace every angle-bracket drafting instruction with real agent-specific content before finalizing.
+- Unknown or wrong-layer tool name -> replace it with a workspace agent-facing tool name accepted by the validator. If the live name is unclear, use the chat `Configure Tools...` button or the `copilot-tool-snapshot` workflow before guessing.
 - `agent` without `agents:` -> add an explicit allowlist or remove `agent` from `tools`.
 - `agents:` without `agent` in `tools` -> add `agent` to `tools` or remove `agents:`.
-- Unknown subagent or handoff target -> point it to an existing `.github/agents/<slug>.agent.md` name or remove the reference.
+- Unknown subagent or handoff target -> point it to an existing `.github/agents/**/<slug>.agent.md` name or remove the reference.
 - Self-referencing `agents:` or `handoffs` target -> remove the self-reference and route to another existing agent instead.
 - Deprecated `infer` -> replace it with `user-invocable` and `disable-model-invocation`.
-- Warning about routing text -> add `Use when:` phrases to `description`.
+- Warning about routing text -> add `USE FOR:` and `DO NOT USE FOR:` clauses to `description`.
 - Warning about broad tools -> remove tools the agent does not need.
 - Warning about file location -> move the file to `.github/agents/` unless a different scope was explicitly requested.
 

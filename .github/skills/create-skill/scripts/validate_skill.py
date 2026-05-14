@@ -2,9 +2,18 @@ from pathlib import Path
 import difflib
 import json
 import re
+import sys
 
 import typer
 import yaml
+
+
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SHARED_SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SHARED_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SHARED_SCRIPTS_DIR))
+
+from customization_lint import lint_skill_markdown
 
 
 app = typer.Typer()
@@ -71,12 +80,23 @@ TEMPLATE_LEFTOVER_MARKERS = {
     "<what this skill does>": "Unresolved template placeholder `<what this skill does>` found; replace it with the actual skill purpose.",
     "<trigger phrases or scenarios that should cause the agent to load this skill>": "Unresolved template placeholder for discovery text found; replace it with real trigger phrases.",
     "<inspect or prepare>": "Unresolved workflow step placeholder `<inspect or prepare>` found; replace template step titles with concrete steps.",
+    "<describe what this step must inspect or prepare before later work can be correct>": "Unresolved workflow placeholder found; replace it with the actual inspection or preparation requirement.",
     "<ask or decide>": "Unresolved workflow step placeholder `<ask or decide>` found; replace template step titles with concrete steps.",
+    "<describe the missing decision, ambiguity, or structured input this step resolves>": "Unresolved workflow placeholder found; replace it with the actual decision or missing input this step resolves.",
     "<validate or execute>": "Unresolved workflow step placeholder `<validate or execute>` found; replace template step titles with concrete steps.",
+    "<describe the concrete outcome this validation or execution step must produce before the workflow can finish>": "Unresolved workflow placeholder found; replace it with the actual validation or execution outcome.",
     "./references/<guide>.md": "Template file reference `./references/<guide>.md` found; replace it with a real support-file path or remove it.",
     "./assets/<questions>.json": "Template file reference `./assets/<questions>.json` found; replace it with a real support-file path or remove it.",
     "./scripts/<validator>.py": "Template file reference `./scripts/<validator>.py` found; replace it with a real validator path or remove it.",
 }
+EXPECTED_AGENT_TEMPLATE_POST_HEADINGS = [
+    "Authoring Notes",
+    "Discovery and routing example",
+    "Step 0 refusal example",
+    "Workflow specificity example",
+    "Delegation boundary example",
+    "Output contract example",
+]
 EXPECTED_SKILL_TEMPLATE_POST_HEADINGS = [
     "Authoring Notes",
     "Discovery and routing example",
@@ -295,29 +315,35 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
     errors = []
     stripped_lines = [line.strip() for line in content.splitlines() if line.strip()]
 
+    if "<role>" in stripped_lines or "</role>" in stripped_lines:
+        errors.append("must not introduce a `<role>` wrapper in the canonical agent markdown example")
+        return errors
+
     required_tokens = [
         "<definitions>",
         "</definitions>",
-        "# Role",
-        "## Responsibilities",
         "<workflow>",
-        "## Workflow",
-        "</workflow>",
+        "## Step 0 - **CONFIRMATION**",
+        "## Role",
+        "<rules>",
+        "## Responsibilities",
         "## Constraints",
         "## Output Contract",
+        "</rules>",
+        "</workflow>",
     ]
     token_positions = {}
     for token in required_tokens:
         try:
             token_positions[token] = stripped_lines.index(token)
         except ValueError:
-            if token in {"<definitions>", "<workflow>", "</workflow>"}:
+            if token in {"<definitions>", "<workflow>", "</workflow>", "<rules>", "</rules>"}:
                 errors.append(
-                    "must keep <definitions> and a <workflow> wrapper in the canonical agent markdown example"
+                    "must keep <definitions>, a <workflow> wrapper, and a <rules> wrapper in the canonical agent markdown example"
                 )
             else:
                 errors.append(
-                    "must keep # Role, ## Responsibilities, ## Workflow, ## Constraints, and ## Output Contract headings in the canonical agent markdown example"
+                    "must keep Step 0, Role, Responsibilities, Constraints, Output Contract, and Step 1/2/3 headings in the canonical agent markdown example"
                 )
             return errors
 
@@ -331,26 +357,52 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
             "must keep at least one definition bullet in <definitions> using `- **term** : definition`"
         )
 
-    headings = list(iter_markdown_headings(content))
-    if headings != ["Role", "Responsibilities", "Workflow", "Constraints", "Output Contract"]:
+    step_lines = [line for line in stripped_lines if WORKFLOW_STEP_HEADING.match(line)]
+    step_patterns = [
+        r"^##\s+Step\s+0\s+-\s+\*\*CONFIRMATION\*\*$",
+        r"^##\s+Step\s+1\s+-\s+.+$",
+        r"^##\s+Step\s+2\s+-\s+.+$",
+        r"^##\s+Step\s+3\s+-\s+.+$",
+    ]
+    if len(step_lines) != len(step_patterns) or any(
+        not re.fullmatch(pattern, line)
+        for pattern, line in zip(step_patterns, step_lines)
+    ):
         errors.append(
-            "must keep markdown headings in this order: # Role, ## Responsibilities, ## Workflow, ## Constraints, ## Output Contract"
+            "must keep canonical agent markdown sections in this order: ## Step 0 - **CONFIRMATION**, ## Role, ## Responsibilities, ## Constraints, ## Output Contract, ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
         )
         return errors
 
+    if "#file:./references/USEFOR.md" not in content or "#file:./references/DONOTUSEFOR.md" not in content:
+        errors.append(
+            "must keep Step 0 reading both `#file:./references/USEFOR.md` and `#file:./references/DONOTUSEFOR.md` in the canonical agent markdown example"
+        )
+
+    lowered_content = content.lower()
+    if "cannot handle this task" not in lowered_content or "suggested alternative" not in lowered_content:
+        errors.append(
+            "must keep the Step 0 refusal message with a reason and `Suggested alternative:` in the canonical agent markdown example"
+        )
+
+    step_positions = {line: stripped_lines.index(line) for line in step_lines}
     if not (
         token_positions["<definitions>"]
         < token_positions["</definitions>"]
-        < token_positions["# Role"]
-        < token_positions["## Responsibilities"]
         < token_positions["<workflow>"]
-        < token_positions["## Workflow"]
-        < token_positions["</workflow>"]
+        < step_positions[step_lines[0]]
+        < token_positions["## Role"]
+        < token_positions["<rules>"]
+        < token_positions["## Responsibilities"]
         < token_positions["## Constraints"]
         < token_positions["## Output Contract"]
+        < token_positions["</rules>"]
+        < step_positions[step_lines[1]]
+        < step_positions[step_lines[2]]
+        < step_positions[step_lines[3]]
+        < token_positions["</workflow>"]
     ):
         errors.append(
-            "must keep <definitions>, # Role, ## Responsibilities, <workflow>, ## Workflow, </workflow>, ## Constraints, and ## Output Contract in canonical order"
+            "must keep <definitions>, <workflow>, Step 0, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, and </workflow> in canonical order"
         )
 
     return errors
@@ -441,10 +493,11 @@ def validate_template_asset(relative_path: str, text: str) -> list[str]:
         for markdown_error in validate_agent_template_markdown_block(fences[1][1]):
             errors.append(f"Template asset ./{relative_path} {markdown_error}")
 
-        trailing_lines = [line.strip() for line in remainder.splitlines() if line.strip()]
-        if not trailing_lines or trailing_lines[0] != "Notes":
+        post_headings = list(iter_markdown_headings(remainder))
+        if post_headings != EXPECTED_AGENT_TEMPLATE_POST_HEADINGS:
             errors.append(
-                f"Template asset ./{relative_path} must keep the trailing Notes section after the closing ```markdown fence"
+                f"Template asset ./{relative_path} must keep post-template headings in this order: "
+                + ", ".join(EXPECTED_AGENT_TEMPLATE_POST_HEADINGS)
             )
 
     if asset_name == "skill-template.md":
@@ -513,7 +566,9 @@ def load_tool_snapshot(skill_dir: Path):
 
     snapshot_path = workspace_root / TOOL_SNAPSHOT_PATH
     if not snapshot_path.exists():
-        return None, None
+        return None, (
+            f"Workspace tool snapshot not found: {snapshot_path}. Validation will fall back to installed extension manifests. For live Copilot tool discovery, use the chat `Configure Tools...` button or run `Agentic Workflow: Export Copilot Tool Snapshot` / `Agentic Workflow: Check Copilot Tool Name`."
+        )
 
     try:
         data = json.loads(snapshot_path.read_text(encoding="utf-8"))
@@ -722,107 +777,10 @@ def validate(skill_dir: Path = Path(".")):
                 "Frontmatter uses `context` without `compatibility`; declare compatibility bounds for version-gated behavior"
             )
 
-    lines = full_text.splitlines()
-    if len(lines) > 500:
-        warnings.append(f"SKILL.md is {len(lines)} lines (recommended <500)")
-
-    assets = skill_dir / "assets"
-    if not assets.exists() or not any(assets.iterdir()):
-        warnings.append("No files in `assets/` — include at least one template")
-
-    refs = skill_dir / "references"
-    if not refs.exists() or not any(refs.iterdir()):
-        warnings.append("No files in `references/` — include docs or examples")
-
-    filtered_lines = list(iter_code_fence_filtered_lines(full_text))
-    filtered_text = "\n".join(filtered_lines)
-
-    for tag_name in REQUIRED_SKILL_BLOCKS:
-        if not has_block_tag(filtered_text, tag_name):
-            warnings.append(
-                f"Missing <{tag_name}> block; use the canonical structure from assets/skill-template.md"
-            )
-
-    for marker, message in TEMPLATE_LEFTOVER_MARKERS.items():
-        if marker in filtered_text:
-            errors.append(message)
-
-    file_refs = []
-    file_ref_has_trailing_punctuation = False
-    for match in re.finditer(r"#file:\s*([^\s`]+)", filtered_text):
-        raw_ref = match.group(1)
-        clean_ref = raw_ref.rstrip(".,;:")
-        if clean_ref != raw_ref:
-            file_ref_has_trailing_punctuation = True
-        file_refs.append(clean_ref)
-
-    markdown_links = list(iter_relative_markdown_links(full_text))
-    referenced_paths = {
-        normalize_relative_path(path)
-        for path in [*file_refs, *markdown_links]
-        if path.startswith("./") or path.startswith("../")
-    }
-    for file_ref in file_refs:
-        parts = Path(file_ref).parts
-        if len(parts) > 2 and not file_ref.startswith(("./", "../")):
-            warnings.append(f"#file reference appears deep: {file_ref}")
-
-        candidate = resolve_skill_relative_path(skill_dir, file_ref)
-        if not candidate.exists():
-            warnings.append(f"#file reference not found (best-effort): {file_ref}")
-
-    support_dirs = [skill_dir / "assets", skill_dir / "references", skill_dir / "scripts"]
-    for support_dir in support_dirs:
-        if not support_dir.exists():
-            continue
-        for candidate in sorted(path for path in support_dir.rglob("*") if path.is_file()):
-            relative_candidate = candidate.relative_to(skill_dir).as_posix()
-            if relative_candidate not in referenced_paths:
-                warnings.append(f"Support file is not referenced from SKILL.md: ./{relative_candidate}")
-
-    for support_doc in iter_non_frontmatter_markdown_files(skill_dir):
-        _, support_text = read_frontmatter(support_doc)
-        filtered_support_text = "\n".join(iter_code_fence_filtered_lines(support_text))
-        relative_support_doc = support_doc.relative_to(skill_dir).as_posix()
-
-        if re.search(r"#file:\s*([^\s`]+)", filtered_support_text):
-            errors.append(
-                f"Active #file marker found in non-frontmatter markdown file: ./{relative_support_doc}. Use markdown links such as [file](./path) or [file](../path) in support docs."
-            )
-
-        if re.search(r"#tool:([^\s`]+)", filtered_support_text):
-            errors.append(
-                f"Active #tool marker found in non-frontmatter markdown file: ./{relative_support_doc}. Reserve #tool for frontmatter-bearing skill, agent, or prompt definitions and use inline tool names in support docs."
-            )
-
-        if Path(relative_support_doc).parts[:1] == ("assets",) and Path(relative_support_doc).name in {
-            "agent-template.md",
-            "skill-template.md",
-        }:
-            errors.extend(validate_template_asset(relative_support_doc, support_text))
-
-    tool_ref_has_trailing_punctuation = False
-    tool_refs = []
-    for match in re.finditer(r"#tool:([^\s`]+)", filtered_text):
-        raw_ref = match.group(1)
-        clean_ref = raw_ref.rstrip(".,;:")
-        if clean_ref != raw_ref:
-            tool_ref_has_trailing_punctuation = True
-        tool_refs.append(clean_ref)
-
-    if not tool_refs:
-        warnings.append(
-            "No `#tool:` references found; ensure you reference required tools (e.g., #tool:vscode/askQuestions)"
-        )
-
-    raw_tool_markers = len(re.findall(r"#tool:", filtered_text))
-    if raw_tool_markers > len(tool_refs):
-        warnings.append("One or more `#tool:` markers appear malformed or empty")
-
-    if tool_ref_has_trailing_punctuation:
-        warnings.append(
-            "One or more `#tool:` references are followed by punctuation; keep tool references free of trailing commas or periods"
-        )
+    lint_result = lint_skill_markdown(skill_dir, full_text)
+    errors.extend(lint_result.errors)
+    warnings.extend(lint_result.warnings)
+    tool_refs = lint_result.data.get("tool_refs", [])
 
     skill_tool_catalog, _ = load_skill_tool_alias_catalog(skill_dir)
     runtime_tool_catalog, runtime_tool_catalog_warnings = load_runtime_tool_catalog(skill_dir)
@@ -845,33 +803,6 @@ def validate(skill_dir: Path = Path(".")):
         warnings.append(
             "No workspace skill-tool alias catalog was available; #tool references could not be checked deterministically."
         )
-
-    if file_ref_has_trailing_punctuation:
-        warnings.append(
-            "One or more `#file:` references are followed by punctuation; keep file references free of trailing commas or periods"
-        )
-
-    normalized_heading_counts = {}
-    for heading in iter_markdown_headings(full_text):
-        normalized = normalize_heading(heading)
-        if not normalized:
-            continue
-        normalized_heading_counts[normalized] = normalized_heading_counts.get(normalized, 0) + 1
-
-    duplicate_headings = sorted(
-        heading for heading, count in normalized_heading_counts.items() if count > 1
-    )
-    for heading in duplicate_headings:
-        warnings.append(
-            f"Potential duplicate section heading after normalization: '{heading}' appears multiple times; keep one canonical section and reference it elsewhere"
-        )
-
-    if contains_runtime_inputs_heading(full_text):
-        warnings.append(
-            "`## Runtime Inputs` encourages eager loading; cite support files on the workflow step that actually consumes them"
-        )
-
-    warnings.extend(detect_front_loaded_support_reads(full_text))
 
     if errors:
         typer.echo("ERRORS:")

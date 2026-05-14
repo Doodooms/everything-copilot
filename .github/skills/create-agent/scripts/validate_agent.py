@@ -10,6 +10,18 @@ from typing import Any
 import typer
 import yaml
 
+
+REPO_ROOT = Path(__file__).resolve().parents[4]
+SHARED_SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SHARED_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SHARED_SCRIPTS_DIR))
+
+from customization_lint import (
+    lint_agent_frontmatter,
+    lint_agent_markdown_contract,
+    split_frontmatter as lint_split_frontmatter,
+)
+
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n?(.*)\Z", re.DOTALL)
@@ -55,6 +67,17 @@ WRONG_LAYER_TOOL_SUGGESTIONS = {
     "runSubagent": ["agent"],
     "search_subagent": ["agent", "search/codebase"],
     "vscode_askQuestions": ["vscode/askQuestions"],
+}
+STEP_HEADING_PATTERN = re.compile(r"^##\s+Step\s+(\d+)\b", re.IGNORECASE)
+AGENT_TEMPLATE_LEFTOVER_MARKERS = {
+    "<one-sentence summary of the agent's unique job>": "Unresolved template placeholder for the agent job found; replace it with the actual role.",
+    "<trigger phrases or scenarios that should route work to this agent>": "Unresolved routing placeholder found; replace it with real trigger phrases.",
+    "<describe the first thing the agent should do": "Unresolved workflow placeholder found; replace the Step 1 drafting instruction with a real first action.",
+    "<describe the second thing the agent should do": "Unresolved workflow placeholder found; replace the Step 1 drafting instruction with a real second action.",
+    "<describe the third thing the agent should do": "Unresolved workflow placeholder found; replace the Step 2 drafting instruction with a real third action.",
+    "<describe the fourth thing the agent should do": "Unresolved workflow placeholder found; replace the Step 2 drafting instruction with a real fourth action.",
+    "<describe the fifth thing the agent should do": "Unresolved workflow placeholder found; replace the Step 3 drafting instruction with a real fifth action.",
+    "<describe the sixth thing the agent should do": "Unresolved workflow placeholder found; replace the Step 3 drafting instruction with a real sixth action.",
 }
 
 
@@ -169,7 +192,9 @@ def _load_tool_snapshot(agent_file: Path) -> tuple[dict[str, Any] | None, str | 
 
     snapshot_path = workspace_root / TOOL_SNAPSHOT_PATH
     if not snapshot_path.exists():
-        return None, None
+        return None, (
+            f"Workspace tool snapshot not found: {snapshot_path}. Validation will fall back to installed extension manifests. For live Copilot tool discovery, use the chat `Configure Tools...` button or run `Agentic Workflow: Export Copilot Tool Snapshot` / `Agentic Workflow: Check Copilot Tool Name`."
+        )
 
     try:
         data = json.loads(snapshot_path.read_text(encoding="utf-8"))
@@ -341,7 +366,196 @@ def _load_workspace_agent_names(agent_file: Path) -> tuple[set[str] | None, list
     return agent_names, []
 
 
-def _validate_agent_body_sections(body: str, errors: list[str]) -> None:
+def _validate_optional_wrapper(
+    stripped_lines: list[str],
+    *,
+    tag: str,
+    before_token: str,
+    first_heading: str,
+    last_heading: str,
+    after_token: str | None,
+    errors: list[str],
+) -> None:
+    open_tag = f"<{tag}>"
+    close_tag = f"</{tag}>"
+    has_open = open_tag in stripped_lines
+    has_close = close_tag in stripped_lines
+
+    if has_open != has_close:
+        errors.append(
+            f"Agent body must either omit `{open_tag}` entirely or use both `{open_tag}` and `{close_tag}` around the wrapped section."
+        )
+        return
+
+    if not has_open:
+        return
+
+    try:
+        before_index = stripped_lines.index(before_token)
+        open_index = stripped_lines.index(open_tag)
+        first_heading_index = stripped_lines.index(first_heading)
+        last_heading_index = stripped_lines.index(last_heading)
+        close_index = stripped_lines.index(close_tag)
+    except ValueError:
+        return
+
+    if after_token is None:
+        is_valid = open_index < first_heading_index < last_heading_index < close_index
+    else:
+        try:
+            after_index = stripped_lines.index(after_token)
+        except ValueError:
+            return
+        if first_heading_index == last_heading_index:
+            is_valid = (
+                before_index
+                < open_index
+                < first_heading_index
+                < close_index
+                < after_index
+            )
+        else:
+            is_valid = (
+                before_index
+                < open_index
+                < first_heading_index
+                < last_heading_index
+                < close_index
+                < after_index
+            )
+
+    if not is_valid:
+        if first_heading == last_heading:
+            heading_text = first_heading
+        else:
+            heading_text = f"{first_heading} and {last_heading}"
+        errors.append(
+            f"Agent body must keep `{open_tag}` and `{close_tag}` wrapped tightly around {heading_text}."
+        )
+
+
+def _has_definition_bullet(body: str) -> bool:
+    definitions_match = re.search(r"<definitions>(.*?)</definitions>", body, re.DOTALL | re.IGNORECASE)
+    if not definitions_match:
+        return False
+    return bool(
+        re.search(
+            r"^\s*-\s+\*\*[^*]+\*\*\s*:\s+\S+",
+            definitions_match.group(1),
+            re.MULTILINE,
+        )
+    )
+
+
+def _looks_like_step_confirmation_agent(stripped_lines: list[str], body: str) -> bool:
+    return (
+        any(STEP_HEADING_PATTERN.match(line) for line in stripped_lines)
+        or "## Role" in stripped_lines
+        or "#file:./references/USEFOR.md" in body
+        or "#file:./references/DONOTUSEFOR.md" in body
+    )
+
+
+def _validate_step_confirmation_agent_body(body: str, agent_file: Path, errors: list[str]) -> None:
+    stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
+    required_tokens = [
+        "<definitions>",
+        "</definitions>",
+        "<workflow>",
+        "## Step 0 - **CONFIRMATION**",
+        "## Role",
+        "<rules>",
+        "## Responsibilities",
+        "## Constraints",
+        "## Output Contract",
+        "</rules>",
+        "</workflow>",
+    ]
+    token_positions: dict[str, int] = {}
+    for token in required_tokens:
+        try:
+            token_positions[token] = stripped_lines.index(token)
+        except ValueError:
+            errors.append(
+                "Canonical Step 0 agents must include <definitions>, <workflow>, ## Step 0 - **CONFIRMATION**, ## Role, <rules> with ## Responsibilities, ## Constraints, ## Output Contract, and closing wrappers."
+            )
+            return
+
+    if not _has_definition_bullet(body):
+        errors.append(
+            "Canonical Step 0 agents must keep at least one definition bullet in <definitions> using `- **term** : definition`."
+        )
+
+    step_lines = [line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)]
+    step_patterns = [
+        r"^##\s+Step\s+0\s+-\s+\*\*CONFIRMATION\*\*$",
+        r"^##\s+Step\s+1\s+-\s+.+$",
+        r"^##\s+Step\s+2\s+-\s+.+$",
+        r"^##\s+Step\s+3\s+-\s+.+$",
+    ]
+    if len(step_lines) != len(step_patterns) or any(
+        not re.fullmatch(pattern, line)
+        for pattern, line in zip(step_patterns, step_lines)
+    ):
+        errors.append(
+            "Canonical Step 0 agents must keep headings in this order: ## Step 0 - **CONFIRMATION**, ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
+        )
+        return
+
+    step_positions = {line: stripped_lines.index(line) for line in step_lines}
+    if not (
+        token_positions["<definitions>"]
+        < token_positions["</definitions>"]
+        < token_positions["<workflow>"]
+        < step_positions[step_lines[0]]
+        < token_positions["## Role"]
+        < token_positions["<rules>"]
+        < token_positions["## Responsibilities"]
+        < token_positions["## Constraints"]
+        < token_positions["## Output Contract"]
+        < token_positions["</rules>"]
+        < step_positions[step_lines[1]]
+        < step_positions[step_lines[2]]
+        < step_positions[step_lines[3]]
+        < token_positions["</workflow>"]
+    ):
+        errors.append(
+            "Canonical Step 0 agents must keep this order: <definitions>, <workflow>, Step 0, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, </workflow>."
+        )
+
+    if "<role>" in stripped_lines or "</role>" in stripped_lines:
+        errors.append("Canonical Step 0 agents must not use `<role>` wrappers; use the `## Role` heading instead.")
+
+    if "# Role" in stripped_lines:
+        errors.append("Canonical Step 0 agents must use `## Role` inside the workflow block, not `# Role`.")
+
+    if "#file:./references/USEFOR.md" not in body or "#file:./references/DONOTUSEFOR.md" not in body:
+        errors.append(
+            "Canonical Step 0 agents must read both `#file:./references/USEFOR.md` and `#file:./references/DONOTUSEFOR.md` during confirmation."
+        )
+
+    lowered_body = body.lower()
+    if "cannot handle this task" not in lowered_body or "suggested alternative" not in lowered_body:
+        errors.append(
+            "Canonical Step 0 agents must define a refusal response that says the agent cannot handle the task and includes `Suggested alternative:` guidance."
+        )
+
+    if agent_file.parent.name == "agents":
+        errors.append(
+            "Canonical Step 0 agents must live in a dedicated package directory such as `.github/agents/<slug>/<slug>.agent.md` so `./references/USEFOR.md` and `./references/DONOTUSEFOR.md` resolve per-agent."
+        )
+        return
+
+    for support_name in ("USEFOR.md", "DONOTUSEFOR.md"):
+        support_path = agent_file.parent / "references" / support_name
+        if not support_path.exists():
+            relative_support_path = _relative_to_cwd(support_path)
+            errors.append(
+                f"Canonical Step 0 agents must include a sibling routing file: {relative_support_path}"
+            )
+
+
+def _validate_legacy_agent_body_sections(body: str, errors: list[str]) -> None:
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
     required_tokens = ["# Role", "## Responsibilities", "## Constraints", "## Output Contract"]
     token_positions: dict[str, int] = {}
@@ -375,6 +589,39 @@ def _validate_agent_body_sections(body: str, errors: list[str]) -> None:
             "Agent body must keep the canonical order: # Role, ## Responsibilities, ## Workflow or ## Approach, ## Constraints, ## Output Contract."
         )
 
+    _validate_optional_wrapper(
+        stripped_lines,
+        tag="workflow",
+        before_token="## Responsibilities",
+        first_heading=workflow_heading,
+        last_heading=workflow_heading,
+        after_token="## Constraints",
+        errors=errors,
+    )
+    _validate_optional_wrapper(
+        stripped_lines,
+        tag="rules",
+        before_token=workflow_heading,
+        first_heading="## Constraints",
+        last_heading="## Output Contract",
+        after_token=None,
+        errors=errors,
+    )
+
+    if "<role>" in stripped_lines or "</role>" in stripped_lines:
+        errors.append("Agent body must not use `<role>` wrappers; use the `# Role` heading instead.")
+
+def _validate_agent_body_sections(body: str, agent_file: Path, errors: list[str], warnings: list[str]) -> None:
+    stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
+    if _looks_like_step_confirmation_agent(stripped_lines, body):
+        _validate_step_confirmation_agent_body(body, agent_file, errors)
+        return
+
+    _validate_legacy_agent_body_sections(body, errors)
+    warnings.append(
+        "Agent body uses the legacy contract without Step 0 confirmation. New agents should use the canonical Step 0 refusal workflow with sibling `references/USEFOR.md` and `references/DONOTUSEFOR.md` files."
+    )
+
 
 @app.command()
 def validate_agent(
@@ -405,7 +652,7 @@ def validate_agent(
 
     text = agent_file.read_text(encoding="utf-8")
     try:
-        frontmatter, body = _split_frontmatter(text)
+        frontmatter, body = lint_split_frontmatter(text)
     except ValueError as exc:
         errors.append(str(exc))
         frontmatter = {}
@@ -415,15 +662,16 @@ def validate_agent(
     if not _is_non_empty_string(description):
         errors.append("`description` is required and must be a non-empty string.")
     else:
-        lowered_description = description.lower()
-        if "what:" not in lowered_description:
-            warnings.append("`description` should include `What:` to state the agent's primary job clearly.")
-        if "use when:" not in lowered_description:
-            warnings.append("`description` should include `Use when:` phrases for reliable routing.")
+        lint_result = lint_agent_frontmatter(frontmatter)
+        warnings.extend(lint_result.warnings)
 
     name = frontmatter.get("name")
     if name is not None and not _is_non_empty_string(name):
         errors.append("`name`, when present, must be a non-empty string.")
+
+    for marker, message in AGENT_TEMPLATE_LEFTOVER_MARKERS.items():
+        if marker in text:
+            errors.append(message)
 
     argument_hint = frontmatter.get("argument-hint")
     if argument_hint is not None and not _is_non_empty_string(argument_hint):
@@ -560,7 +808,9 @@ def validate_agent(
     if not body:
         errors.append("Agent body is empty.")
     else:
-        _validate_agent_body_sections(body, errors)
+        lint_result = lint_agent_markdown_contract(body, agent_file)
+        errors.extend(lint_result.errors)
+        warnings.extend(lint_result.warnings)
 
     if frontmatter.get("user-invocable") is False and frontmatter.get("disable-model-invocation") is True:
         warnings.append(

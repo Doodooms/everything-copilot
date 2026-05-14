@@ -7,13 +7,19 @@
   {
     "header": "Purpose",
     "question": "One sentence: what unique job does this agent perform?",
-    "message": "This answer becomes the `What:` part of the frontmatter `description`.",
+    "message": "This answer becomes the `WHAT:` part of the frontmatter `description`.",
     "allowFreeformInput": true
   },
   {
     "header": "Routing Triggers",
     "question": "Which phrases or scenarios should cause this agent to be selected?",
-    "message": "These phrases become the `Use when:` portion of the frontmatter `description`.",
+    "message": "These phrases become the `USE FOR:` portion of the frontmatter `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Exclusions",
+    "question": "Which nearby tasks or scenarios should this agent refuse?",
+    "message": "These answers become both the `DO NOT USE FOR:` clause in `description` and `references/DONOTUSEFOR.md`, helping Step 0 reject bad delegation early.",
     "allowFreeformInput": true
   },
   {
@@ -66,7 +72,7 @@
   {
     "header": "Allowed Subagents",
     "question": "List allowed subagents, `*`, or `none`.",
-    "message": "Use `none` when the agent does not delegate. If you list names, they must match existing `.github/agents/<slug>.agent.md` files.",
+    "message": "Use `none` when the agent does not delegate. If you list names, they must match existing `.github/agents/**/<slug>.agent.md` files.",
     "allowFreeformInput": true
   },
   {
