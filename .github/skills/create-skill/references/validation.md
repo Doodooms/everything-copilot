@@ -34,7 +34,9 @@
 - Duplicate normalized markdown headings are reported.
 - A `## Runtime Inputs` section is reported because it front-loads support files instead of referencing them at point of need.
 - Every `## Step X - ...` block inside `<workflow>` must start with an ordered `1.` action and keep runtime instructions inside numbered items instead of bare prose.
+- `SKILL.md` must not keep more than 20 non-empty content lines after `</workflow>`; long matrices, checklists, setup guides, and reference appendices belong in `assets/` or `references/`.
 - Early context-only workflow steps that batch 3 or more support-file reads before the first real action step are reported as potential front-loading.
+- When a concept is repeated in both `SKILL.md` and a support markdown file, validation warns so one file can remain the canonical source.
 
 ## Fix patterns
 
@@ -54,6 +56,8 @@
 - Excessive `#file:` usage for candidate or future inputs -> replace those references with markdown links and keep `#file:` only on the step that immediately consumes the file.
 - `Runtime Inputs` warning -> move each `#file:` reference to the step where the agent actually needs that file.
 - Plain-text step body -> rewrite the step so it starts with `1. ...` and keep the remaining runtime instructions inside ordered items, using nested `-` bullets only as supporting detail.
+- Excessive post-workflow appendix -> move the repeated reference material into `assets/` or `references/`, keep only the workflow contract in `SKILL.md`, and leave no more than 20 non-empty content lines after `</workflow>`.
+- Duplicate concept warning -> choose one canonical location, usually the support file, then replace the repeated `SKILL.md` prose with a short pointer to that file.
 - Potential front-loading warning -> replace grouped early `#tool:read` calls with markdown links and move each actual `#tool:read` to the later step that truly consumes that support file.
 - Trailing punctuation after `#file:` or `#tool:` -> rewrite the sentence so the reference stands alone.
 - Duplicate headings -> merge the sections or rename one so only one canonical heading remains.

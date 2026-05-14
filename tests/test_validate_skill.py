@@ -56,6 +56,44 @@ def test_validator_rejects_canonical_create_surface_without_scripts(tmp_path: Pa
     assert "must include a non-empty `scripts/` directory" in result.stdout
 
 
+def test_validator_rejects_excessive_post_workflow_reference_sections(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "post-workflow-skill"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        post_workflow_text=_current_create_mcp_style_reference_appendix(),
+    )
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "lignes après </workflow>" in result.stdout
+
+
+def test_validator_warns_on_duplicate_concepts_between_skill_and_support_files(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "duplicate-concepts"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        post_workflow_text=(
+            "## Language Selection\n\n"
+            "Review [language selection checklist](./assets/language-selection-checklist.md) before choosing the implementation language.\n"
+        ),
+        extra_files={
+            "assets/language-selection-checklist.md": (
+                "# MCP Language Selection Checklist\n\n"
+                "Use this checklist before choosing the implementation language.\n"
+            )
+        },
+    )
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+    assert "Language Selection" in result.stdout
+    assert "Gardez une seule source" in result.stdout
+
+
 def test_validator_rejects_template_assets_without_split_yaml_and_markdown_fences(
     tmp_path: Path,
 ) -> None:
@@ -162,6 +200,20 @@ def test_live_create_mcp_skill_directory_validates() -> None:
     assert result.returncode == 0, (result.stdout + result.stderr).strip()
 
 
+def test_current_create_mcp_style_reference_appendix_fails_validation(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "create-mcp"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        post_workflow_text=_current_create_mcp_style_reference_appendix(),
+    )
+
+    result = _run_validator(skill_dir)
+
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "lignes après </workflow>" in result.stdout
+
+
 def test_live_create_surface_linter_passes() -> None:
     result = subprocess.run(
         [sys.executable, str(LINTER_PATH), "create-surfaces", "--root", str(REPO_ROOT)],
@@ -191,6 +243,8 @@ def _write_skill(
     template_assets: dict[str, str] | None = None,
     step_one_body_override: str | None = None,
     include_scripts: bool = True,
+    post_workflow_text: str = "",
+    extra_files: dict[str, str] | None = None,
 ) -> None:
     (skill_dir / "assets").mkdir(parents=True, exist_ok=True)
     (skill_dir / "references").mkdir(parents=True, exist_ok=True)
@@ -208,8 +262,11 @@ def _write_skill(
         files[skill_dir / "scripts" / "noop.py"] = "print('ok')\n"
     for asset_name, content in (template_assets or {}).items():
         files[skill_dir / "assets" / asset_name] = content
+    for relative_path, content in (extra_files or {}).items():
+        files[skill_dir / Path(relative_path)] = content
 
     for path, content in files.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
 
     template_links = ""
@@ -245,6 +302,9 @@ def _write_skill(
             """
         ).strip()
 
+    normalized_post_workflow_text = textwrap.dedent(post_workflow_text).strip()
+    post_workflow_block = f"\n\n{normalized_post_workflow_text}" if normalized_post_workflow_text else ""
+
     skill_text = textwrap.dedent(
         f"""
         ---
@@ -279,10 +339,51 @@ def _write_skill(
               - Use #tool:execute on #file:./scripts/noop.py when validating the draft.
 
         </workflow>
+                {post_workflow_block}
         """
     ).strip() + "\n"
 
     (skill_dir / "SKILL.md").write_text(skill_text, encoding="utf-8")
+
+
+def _current_create_mcp_style_reference_appendix() -> str:
+    return textwrap.dedent(
+        """
+        ## Language Selection
+
+        | Primary goal | Recommended language | Why |
+        |--------------|----------------------|-----|
+        | Reliable default for production | Go | Strong performance, simple deployment, single binary, low operational friction |
+        | Maximum performance and safety | Rust | Best control over latency, memory use, and safety-sensitive behavior |
+        | Fastest prototype | Python | Smallest time-to-first-server, minimal ceremony, easy experimentation |
+        | Existing Node-only stack | Node.js | Use only when the user explicitly requires it |
+
+        ## Transport Selection
+
+        | Client Type | Transport |
+        |-------------|-----------|
+        | Local (Claude Desktop, VS Code) | `stdio` |
+        | Remote (Cursor, cloud) | Streamable HTTP |
+        | Backward compatibility | Legacy HTTP/SSE |
+
+        Keep server logic independent of transport.
+
+        ## Core Concepts
+
+        - Tools are model-invokable actions.
+        - Resources are read-only context.
+        - Prompts are reusable prompt templates.
+
+        ## Server Setup
+
+        Prefer official SDKs and validate the installed version before coding.
+
+        ## Official Resources
+
+        - [Official MCP SDK references](./references/URIs.md)
+        - [Language selection checklist](./assets/language-selection-checklist.md)
+        """
+    ).strip()
 
 
 def _legacy_agent_template() -> str:
