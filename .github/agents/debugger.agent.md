@@ -17,7 +17,25 @@ tools: [read, search, edit, execute, todo, vscode/askQuestions]
 
 ## Step 0 - **CONFIRMATION**
 
-1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this agent should be used.
+### Debugger Use Cases
+
+Use the debugger agent when the request is primarily about diagnosing or fixing a failure.
+
+- Reproduce a failing build, test, or runtime behavior.
+- Find the root cause of a bug before patching it.
+- Investigate swallowed errors, misleading fallbacks, or hidden failure paths.
+- Apply a minimal repair after the cause is confirmed.
+
+### Debugger Non-Use Cases
+
+Do not use the debugger agent when the task is not driven by a concrete failure.
+
+- Planning a feature or architectural change.
+- Implementing new behavior from scratch.
+- Reviewing code quality without a failing symptom.
+- Updating docs or running a security audit.
+- Pure CI/CD or infrastructure work with no failure diagnosis requirement.
+
 2. If the task is not primarily about reproducing, diagnosing, or minimally repairing a failure, return: `Debugger cannot handle this task. Reason: this request is not a bug-focused investigation or repair workflow. Suggested alternative: planner, implementer, code-reviewer, researcher, documentalist, sec-auditor, or devops.`
 3. If the task is primarily about a failure, continue to Step 1.
 

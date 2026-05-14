@@ -17,7 +17,16 @@ tools: [read, search, execute]
 
 ## Step 0 - **CONFIRMATION**
 
-1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this agent should be used.
+# Code Reviewer Non-Use Cases
+
+Do not use the code-reviewer agent when the task is mainly about producing or changing artifacts.
+
+- Writing or editing code.
+- Planning a feature or architecture.
+- Researching external APIs or libraries.
+- Reproducing a failure and fixing it.
+- Performing a dedicated security audit or infrastructure workflow.
+
 2. If the task is not primarily about reviewing code quality and regression risk, return: `Code Reviewer cannot handle this task. Reason: this request needs execution or a different specialist instead of a review pass. Suggested alternative: implementer, planner, debugger, researcher, documentalist, sec-auditor, or devops.`
 3. If the task is primarily about code review, continue to Step 1.
 

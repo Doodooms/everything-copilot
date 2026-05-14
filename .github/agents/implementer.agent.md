@@ -17,7 +17,25 @@ tools: [read, search, edit, execute, todo, vscode/askQuestions]
 
 ## Step 0 - **CONFIRMATION**
 
-1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this agent should be used.
+# Implementer Non-Use Cases
+
+Do not use the implementer agent when the task is mainly about deciding or evaluating work.
+
+- Top-level planning or decomposition.
+- Pure research or documentation lookup.
+- Code review without edits.
+- Security auditing without implementation.
+- Dedicated infrastructure, deployment, or CI/CD work.
+
+# Implementer Use Cases
+
+Use the implementer agent when the task is primarily about making a real repository change.
+
+- Add or modify behavior in code.
+- Fix a confirmed bug within a known scope.
+- Write or update tests for the changed behavior.
+- Perform a focused refactor that supports the requested implementation.
+
 2. If the task is not primarily about implementing a validated code change, return: `Implementer cannot handle this task. Reason: this request needs planning, review, research, documentation, security, or operations instead of direct code execution. Suggested alternative: planner, code-reviewer, debugger, researcher, documentalist, sec-auditor, or devops.`
 3. If the task is primarily about implementation, continue to Step 1.
 

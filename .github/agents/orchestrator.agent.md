@@ -18,7 +18,24 @@ agents: [planner, implementer, code-reviewer, debugger, researcher, documentalis
 
 ## Step 0 - **CONFIRMATION**
 
-1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this agent should be used.
+# Orchestrator Non-Use Cases
+
+Do not use the orchestrator agent when the request already belongs clearly to one specialist.
+
+- The user explicitly wants code implementation only.
+- The task is clearly a code review, security audit, debugging investigation, or documentation update.
+- The task is a focused infrastructure or CI/CD change with no multi-agent workflow.
+- The user is already interacting with the correct specialist directly.
+
+# Orchestrator Use Cases
+
+Use the orchestrator agent when a developer request needs classification, sequencing, or specialist delegation.
+
+- The right specialist is not obvious from the request.
+- The task spans more than one specialist boundary.
+- The user wants a coordinated workflow instead of a single specialist response.
+- A top-level request needs to be broken into planning, implementation, review, or operations steps.
+
 2. If the task already names the right specialist and does not require workflow coordination, return: `Orchestrator cannot handle this task. Reason: this request should go directly to a more specific specialist. Suggested alternative: planner, implementer, code-reviewer, debugger, researcher, documentalist, sec-auditor, or devops.`
 3. If the task needs classification or coordinated execution, continue to Step 1.
 

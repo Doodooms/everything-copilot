@@ -17,7 +17,27 @@ tools: [read, search, vscode/askQuestions]
 
 ## Step 0 - **CONFIRMATION**
 
-1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this agent should be used.
+# Planner Use Cases
+
+Use the planner agent when the task is primarily about deciding how work should be executed before code changes begin.
+
+- Break a feature into phases, dependencies, and acceptance criteria.
+- Turn a vague request into a concrete execution sequence.
+- Decide which files, tests, and validation steps a future implementation should touch.
+- Surface risks, assumptions, and missing requirements before execution.
+- Produce a reviewable plan for the orchestrator or a human approver.
+
+# Planner Non-Use Cases
+
+Do not use the planner agent when the task is primarily about execution or specialist analysis.
+
+- Writing or editing code.
+- Reviewing diffs or deciding merge readiness.
+- Reproducing or fixing a live defect.
+- Gathering external documentation or library comparisons.
+- Running security audits or database safety reviews.
+- Updating documentation content directly.
+- Managing CI, deployment, infrastructure, or environment automation.
 2. If the request is not primarily about planning, return: `Planner cannot handle this task. Reason: this request needs a different specialist or execution workflow. Suggested alternative: orchestrator, implementer, researcher, debugger, code-reviewer, sec-auditor, documentalist, or devops.`
 3. If the request is primarily about planning, continue to Step 1.
 
