@@ -1,8 +1,180 @@
-# agentic-workflow
+# Everything Copilot
 
-This repository stores a deterministic GitHub Copilot workflow: skills, agents, prompts, instructions, hooks, and MCP configuration that can be reused across projects.
+Everything Copilot is not an AI framework. It is the engineering layer for GitHub Copilot agent workflows in VS Code. It adds deterministic structure, mechanical validation, and context-aware dispatch so Copilot agents behave reliably, auditably, and scalably across projects.
 
-## Prerequisites
+This repository is the working reference implementation. It ships the core compiler skills, the validator layer that keeps them honest, the operational AHK and MCP integration, and the graph workflow used to keep the workspace explorable.
+
+Current status: `create-skill`, `create-agent`, `create-mcp`, and their validator surfaces are stable. AHK, Graphify, GitNexus, Docker, and the `/init` entrypoint are operational. Broader memory, graph, and consumer-surface ideas remain under active design.
+
+## What Is Stable Today
+
+| Surface | Status | Role |
+|---------|--------|------|
+| `create-skill` | Stable | Creates deterministic skills with point-of-need loading and structural validation |
+| `create-agent` | Stable | Creates custom agents with precise frontmatter, minimal tool surfaces, and explicit delegation |
+| `create-mcp` | Stable | Creates MCP servers and validates their VS Code registration |
+| Validator layer | Stable | Enforces structure, routing guardrails, duplicate-guidance control, and MCP config shape |
+| AHK integration | Operational | Provides the task ledger, action journal, health gate, and MCP task surface |
+| Graphify and GitNexus | Operational | Provide semantic exploration, raw-text retrieval, and blast-radius analysis |
+
+## Why Deterministic Orchestration Matters
+
+Most agent systems mix persona, workflow, and context into a single prompt. That leads to four recurring failures:
+
+- Context pollution from loading too much material too early
+- Dispatch drift when an agent responds outside its scope
+- Weak recovery because the system relies on heuristics instead of checks
+- Monolithic instructions that become impossible to maintain safely
+
+Everything Copilot separates those concerns instead of blending them:
+
+- Skills define how a repeatable workflow executes
+- Agents define who executes it and which tools or subagents are allowed
+- Prompts remain optional suggestions, not the control plane
+- Validators provide mechanical governance instead of wishful prompting
+
+## Design Principles
+
+- Deterministic over heuristic
+- Explicit over implicit
+- Load late, not early
+- Validate mechanically
+- Minimize tool blast radius
+- One concept, one canonical home
+
+## Core Architecture
+
+### Skills
+
+A skill is a repeatable procedure. In this repository, a skill is a folder with a `SKILL.md` workflow plus support files under `assets/`, `references/`, and `scripts/`.
+
+Key rules:
+
+- A skill defines how to execute work, not a persona
+- Support files are loaded only at the point of need
+- The frontmatter `description` drives discovery, while the body drives execution
+
+### Agents
+
+An agent is a specialized persona with explicit tools, optional subagents, and invocation rules. It decides when to route to a skill and how to synthesize the result.
+
+Key rules:
+
+- Every new agent includes a Step 0 confirmation that rejects out-of-scope work
+- Tool lists stay minimal because every extra tool widens the blast radius
+- Delegation is explicit and validated instead of informal
+
+### Prompts
+
+A prompt is reusable guidance that may be included conditionally. Prompts are suggestions, not deterministic orchestration surfaces.
+
+### MCP Servers
+
+MCP servers expose tools, resources, prompts, and related capabilities through a standard interface over stdio or remote transport.
+
+Design rules in this repository:
+
+- Prefer Go or Rust for production-oriented servers
+- Use Python for fast prototypes or repo-local tooling
+- Allow Node.js only when the ecosystem or task requires it
+- Keep transport wiring thin and the validation path explicit
+
+### Validators And Governance
+
+The validators are the core differentiator in this repository. They do not just check formatting; they enforce architectural constraints.
+
+### Memory, Graphs, And External Context
+
+The broader direction is a layered context system:
+
+- Native Copilot memory where the platform provides it
+- Repository-local notes under `.memory/`
+- Graphify for semantic and raw-text retrieval over the workspace
+- GitNexus for code-impact and blast-radius analysis
+
+The long-term graph and memory architecture is still evolving, but the operational surfaces above already exist in this repository.
+
+## Mechanical Validation
+
+The repository ships regression-tested validators for the most important compiler surfaces:
+
+- Invalid or missing frontmatter on skills, agents, prompts, and MCP configuration
+- Unsupported tool names or invalid tool aliases
+- Missing Step 0 confirmation or malformed agent body structure
+- Eager loading and front-loading of support files instead of point-of-need reads
+- Duplicate guidance between canonical files and support docs
+- Missing or stale support-file references from `SKILL.md`
+- Invalid create-surface package layout for skills such as `create-skill`, `create-agent`, and `create-mcp`
+- Invalid `.vscode/mcp.json` server shape, including malformed local or remote server entries
+
+These checks are regression-tested in [tests/test_validate_skill.py](tests/test_validate_skill.py), [tests/test_validate_agent.py](tests/test_validate_agent.py), [tests/test_validate_prompt.py](tests/test_validate_prompt.py), and [tests/test_validate_mcp.py](tests/test_validate_mcp.py).
+
+## Why XML For Workflows?
+
+The repository uses XML-style wrapper tags for control surfaces and Markdown for prose.
+
+- XML gives explicit boundaries. A closing tag such as `</workflow>` is unambiguous in a way Markdown headings are not.
+- XML is extraction-safe for downstream orchestration and validation.
+- XML does not conflict with Markdown prose, code blocks, or heading hierarchies.
+- JSON remains the right format for strict payloads and tool-call data.
+
+Repository convention: structural wrapper tags such as `<definitions>`, `<workflow>`, and `<rules>` stay attribute-free. Priority is expressed by ordering and wording such as MUST, ONLY, and NEVER.
+
+## Real Workflow Example
+
+Typical path for an implementation task in this repository:
+
+```text
+User request
+	|
+	v
+/init or orchestrator routing
+	|
+	v
+Plan or manifest generation
+	|
+	v
+User review or approval
+	|
+	v
+Implementation agent or builder flow
+	|
+	v
+Validator and review pass
+	|
+	v
+Documentation and close-out
+```
+
+When the `ahk` MCP server is connected, the task is also recorded in the operational ledger under `.harness/` while `.github/PLAN.md`, `.github/tasks/`, and `.github/plan_history/` remain the strategic and audit source of truth.
+
+## Repository Layout
+
+```text
+everything-copilot/
+|-- .github/
+|   |-- agents/
+|   |-- hooks/
+|   |-- instructions/
+|   |-- prompts/
+|   |-- skills/
+|   `-- PLAN.md
+|-- .harness/
+|-- .memory/
+|-- .vscode/
+|   `-- mcp.json
+|-- scripts/
+|-- tests/
+|-- tools/
+|-- Dockerfile
+|-- agent-harness-kit.config.ts
+|-- health.sh
+`-- README.md
+```
+
+## Setup
+
+### Prerequisites
 
 - VS Code with a compatible GitHub Copilot extension
 - `uv`
@@ -10,7 +182,7 @@ This repository stores a deterministic GitHub Copilot workflow: skills, agents, 
 - Node.js 22.5+
 - npm 9+
 
-## Setup
+### Quick Start
 
 From the repository root, run:
 
@@ -21,78 +193,88 @@ npm install
 
 This creates or updates the local `.venv` from [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock), then installs the pinned local Node-based AHK dependency from [package.json](package.json).
 
-## Recommended Evolution Path
+Then open the repository in VS Code and use `/init` in Copilot Chat to enter the workspace orchestration flow.
 
-This repository is evolving toward an `everything-copilot` platform in phases. The current recommendation order is:
+## Current Operational Surfaces
 
-1. **AHK (`@cardor/agent-harness-kit`) is now integrated** as the orchestration backbone for backlog management, atomic task claiming, action journaling, health gates, and a dashboard.
-2. **Re-evaluate CodeGraphContext only after an upstream fix** because the 0.4.7 candidate failed deep symbol-extraction validation and is not part of the active workspace surface.
-3. **Keep GitNexus** as the retained code-impact and blast-radius layer.
-4. **Keep Graphify on LadybugDB** as the retained documentation and semantic graph layer.
-5. **Use the committed Dockerfile** when you want a reproducible packaged environment for the active workspace surface.
-6. **Evaluate Bernstein and axiom-graph later** as follow-up additions, not first-wave dependencies.
+### AHK
 
-Current state versus plan:
+This repository integrates AHK locally through [package.json](package.json), [agent-harness-kit.config.ts](agent-harness-kit.config.ts), and [.harness/feature_list.json](.harness/feature_list.json).
 
-- Active today: AHK, Graphify, GitNexus, hooks, skills, prompts, instructions, uv-managed Python tooling, and a pinned local Node dependency for AHK.
-- Quarantined candidate: CodeGraphContext 0.4.7 was removed from the active MCP surface after deep validation found successful indexing with zero extracted symbols.
-- Packaged environment: [Dockerfile](Dockerfile) now builds the active workspace surface with uv, Node.js 24, npm, and the repository health gate.
-- Planned next: any later watchlist tools.
-- Source of truth: [.github/PLAN.md](.github/PLAN.md).
-
-## AHK
-
-This repository now integrates AHK locally through the pinned dependency in [package.json](package.json), the harness config in [agent-harness-kit.config.ts](agent-harness-kit.config.ts), and the operational backlog in [.harness/feature_list.json](.harness/feature_list.json).
-
-The tracked Copilot-facing AHK runtime surface is:
+Tracked Copilot-facing AHK runtime surface:
 
 - [agent-harness-kit.config.ts](agent-harness-kit.config.ts)
 - [health.sh](health.sh)
 - [.harness/feature_list.json](.harness/feature_list.json)
 - [.vscode/mcp.json](.vscode/mcp.json)
 
-AHK's current role in this workspace is operational, not strategic:
+AHK's role here is operational, not strategic:
 
-- AHK is the shared backlog, action journal, health gate, and MCP task surface.
-- [.github/PLAN.md](.github/PLAN.md) remains the strategic source of truth for what exists and what is planned.
-- `.github/tasks/` and `.github/plan_history/` remain the audit trail for orchestrated changes.
+- AHK is the shared backlog, action journal, health gate, and MCP task surface
+- [.github/PLAN.md](.github/PLAN.md) remains the strategic source of truth
+- `.github/tasks/` and `.github/plan_history/` remain the audit trail for orchestrated changes
 
-AHK itself currently supports `claude-code` and `opencode` providers in its config schema. This workspace keeps `provider: 'claude-code'` only to satisfy the package contract, while GitHub Copilot uses the manual MCP server registration in [.vscode/mcp.json](.vscode/mcp.json). Provider-materialized files from `ahk build` or `ahk init` are intentionally excluded from this repository; [health.sh](health.sh) fails if they appear.
+AHK currently supports `claude-code` and `opencode` providers in its config schema. This workspace keeps `provider: 'claude-code'` only to satisfy the package contract, while GitHub Copilot uses the manual MCP server registration in [.vscode/mcp.json](.vscode/mcp.json). Provider-materialized files from `ahk build` or `ahk init` are intentionally excluded from this repository; [health.sh](health.sh) fails if they appear.
 
-Useful AHK commands from the repository root:
+Useful commands from the repository root:
 
 ```bash
 npm run ahk:health
 npm run ahk:sync
 npm run ahk:status
 npm run ahk:dashboard
-```
-
-The workspace MCP registration starts AHK locally with:
-
-```bash
 npx --no-install ahk serve
 ```
 
-The focused AHK integration test suite is:
+Focused validation:
 
 ```bash
 uv run pytest tests/test_ahk_integration.py -q
-```
-
-The broader active-tool stability battery is:
-
-```bash
 npm run test:workspace:stability
 ```
 
-The focused Graphify raw-text retrieval battery is:
+### Graphify And GitNexus
+
+This repository uses `graphifyy` as the semantic graph tool for workspace exploration. It is installed through the root uv project and is intended to map the repository's Markdown-heavy orchestration content, not just its small amount of code.
+
+Preferred mode in this repository: use the workspace `/graphify` prompt in Copilot Chat. That prompt uses GitHub Copilot itself as the semantic extraction backend, so no external API keys are required.
+
+```text
+/graphify .
+```
+
+That prompt lives in [.github/prompts/graphify.prompt.md](.github/prompts/graphify.prompt.md) and serves as the user-facing entrypoint to the canonical Graphify workflow in [.github/skills/graphify/SKILL.md](.github/skills/graphify/SKILL.md).
+
+Headless build path from the repository root:
+
+```bash
+uv run graphify extract . --backend <backend>
+```
+
+Use the headless command only when external backend credentials are configured.
+
+This repository keeps Graphify's primary store in Ladybug at `.graphify/lbug`, maintains `graphify-out/graph.json` as a compatibility mirror, and keeps a repo-local SQLite FTS5 index at `.graphify/docs-fts.db` for raw-text retrieval over the same Graphify-tracked files.
+
+Useful commands:
+
+```bash
+uv run python scripts/atomic_index.py migrate-graphify --force
+scripts/patch-graphify.sh README.md
+uv run python scripts/atomic_index.py search-docs "graph patch"
+uv run python scripts/atomic_index.py serve-graphify --db-path .graphify/lbug
+uv run python scripts/atomic_index.py graph-patch-status
+uv run python scripts/atomic_index.py reconcile-graphs
+```
+
+Automatic patching is enforced by [.github/hooks/graph-patch.json](.github/hooks/graph-patch.json). The same workflow boundary also tracks GitNexus staleness after mutating Git commands. GitNexus remains the retained blast-radius layer, while Graphify remains the retained semantic and raw-text exploration layer.
+
+Focused validation:
 
 ```bash
 npm run test:graphify:fts
 ```
 
-## CodeGraphContext Candidate
+### CodeGraphContext Status
 
 CodeGraphContext is not part of the active workspace integration.
 
@@ -104,77 +286,7 @@ Deep validation against the 0.4.7 release found multiple issues that make it uns
 
 Because of that, the workspace does not register CodeGraphContext in [.vscode/mcp.json](.vscode/mcp.json), the default health gate does not depend on it, and the operational backlog tracks only future revalidation after an upstream fix.
 
-GitNexus remains the retained blast-radius layer, and Graphify remains the retained documentation and semantic knowledge graph layer.
-
-## Graphify
-
-This repository uses `graphifyy` as the semantic graph tool for workspace exploration. It is installed through the root uv project and is intended to map the repository's markdown-heavy orchestration content, not just its small amount of code.
-
-Preferred mode in this repository: use the workspace `/graphify` prompt in Copilot Chat. That prompt uses GitHub Copilot itself as the semantic extraction backend, so no external API keys are required.
-
-Build the graph in Copilot Chat with:
-
-```text
-/graphify .
-```
-
-That prompt lives in [.github/prompts/graphify.prompt.md](.github/prompts/graphify.prompt.md) and serves as the user-facing entrypoint to the canonical graphify workflow in [.github/skills/graphify/SKILL.md](.github/skills/graphify/SKILL.md).
-
-Build the graph from the repository root:
-
-```bash
-uv run graphify extract . --backend <backend>
-```
-
-Use the headless command above only when you explicitly have external backend credentials configured. For this repository, most important content lives in `.md` files, so the Copilot-native `/graphify` prompt is the default path.
-
-This repository now keeps Graphify's primary store in Ladybug at `.graphify/lbug`, maintains `graphify-out/graph.json` as a compatibility mirror, and keeps a repo-local SQLite FTS5 index at `.graphify/docs-fts.db` for raw-text retrieval over the same Graphify-tracked files.
-
-Bootstrap or refresh the local Ladybug store from the current JSON graph with:
-
-```bash
-uv run python scripts/atomic_index.py migrate-graphify --force
-```
-
-Patch a single changed file into the Ladybug store without rebuilding the full Graphify graph with:
-
-```bash
-scripts/patch-graphify.sh README.md
-```
-
-That patch path updates `.graphify/lbug` first and then rewrites `graphify-out/graph.json` from the DB snapshot so existing JSON-based tooling can keep reading the mirror.
-
-Search the raw-text index directly from the repository root with:
-
-```bash
-uv run python scripts/atomic_index.py search-docs "graph patch"
-```
-
-Automatic agent-time patching is enforced by the workspace hook at [.github/hooks/graph-patch.json](.github/hooks/graph-patch.json). It runs after successful mutating tool calls, again when each subagent stops, and again when the top-level agent stops, so Graphify stays patched continuously during agent and subagent editing without spawning a second model-driven subagent.
-
-The same `hook-post-tool-use` command now adapts GitNexus's upstream Claude `PostToolUse` staleness check to GitHub Copilot's hook payload. After successful terminal `git commit`, `merge`, `rebase`, `cherry-pick`, or `pull` commands, it compares `HEAD` with `.gitnexus/meta.json` and injects a stale-index notice into the conversation when GitNexus still needs `analyze`.
-
-If you want MCP tool access after the graph exists, the workspace MCP config starts graphify from the local uv environment with:
-
-```bash
-uv run python scripts/atomic_index.py serve-graphify --db-path .graphify/lbug
-```
-
-That same Graphify MCP server now exposes `search_docs` for FTS-backed raw-text retrieval alongside the existing graph tools.
-
-`scripts/patch-gitnexus.sh` exists for the same workflow boundary, but it intentionally exits instead of mutating `.gitnexus/lbug` when the installed GitNexus CLI does not expose a safe incremental analyze path. It will not trigger a full rebuild implicitly, and the hook records pending or stale GitNexus drift instead.
-
-For manual inspection or repair of the automatic workflow, use `uv run python scripts/atomic_index.py graph-patch-status` or `uv run python scripts/atomic_index.py reconcile-graphs`. `graph-patch-status` now reports both the Ladybug graph state and the SQLite text-index state. The workspace skill [.github/skills/graph-patch/SKILL.md](.github/skills/graph-patch/SKILL.md) documents that repair workflow.
-
-Optional VS Code Copilot Chat integration:
-
-```bash
-uv run graphify vscode install
-```
-
-That command installs graphify's vendor-managed user-level Copilot skill. It is optional here because the repository already provides a workspace-local `/graphify` prompt.
-
-## Daily usage
+## Daily Usage
 
 1. Open the repository in VS Code.
 2. Read [.github/PLAN.md](.github/PLAN.md) for the repository structure and operating model.
@@ -182,7 +294,7 @@ That command installs graphify's vendor-managed user-level Copilot skill. It is 
 4. Run `npm run test:workspace:stability` when you want to validate the active workspace tool surface before agent work.
 5. Use Copilot Chat with the repository skills, prompts, agents, and MCP servers.
 
-## Running repository Python tooling
+## Running Repository Python Tooling
 
 Prefer `uv run` so commands use the repository environment without manual activation.
 
@@ -197,31 +309,19 @@ If you prefer direct interpreter paths after syncing, `./.venv/bin/python` remai
 
 ## Docker
 
-This repository now includes a Docker build for the active workspace surface.
-
-Build the image from the repository root with:
+This repository includes a Docker build for the active workspace surface.
 
 ```bash
 npm run docker:build
-```
-
-Validate the packaged workspace surface inside the built image with:
-
-```bash
 npm run docker:test:workspace:stability
-```
-
-Start an interactive shell in the packaged workspace with:
-
-```bash
 npm run docker:run
 ```
 
 The image installs uv, Node.js 24, npm, syncs the Python environment from [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock), installs the pinned AHK dependency from [package.json](package.json), and runs [health.sh](health.sh) during the build.
 
-## Updating dependencies
+## Updating Dependencies
 
-Use `uv` to modify the manifest, then refresh the lockfile.
+Use `uv` to modify the Python manifest, then refresh the lockfile.
 
 ```bash
 uv add <package>
@@ -230,7 +330,7 @@ uv lock
 uv sync
 ```
 
-Commit both [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock) when dependencies change.
+Commit both [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock) when Python dependencies change.
 
 Use `npm` to modify the local AHK dependency surface.
 
@@ -250,8 +350,7 @@ Commit [Dockerfile](Dockerfile) and [.dockerignore](.dockerignore) when the pack
 - `uv sync` removes packages that are not declared in [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock).
 - `npm install` installs the pinned local AHK dependency declared in [package.json](package.json).
 - The committed AHK workspace files are [agent-harness-kit.config.ts](agent-harness-kit.config.ts), [health.sh](health.sh), [.harness/feature_list.json](.harness/feature_list.json), and [.vscode/mcp.json](.vscode/mcp.json). Provider-materialized files are intentionally excluded.
-- CodeGraphContext is intentionally not registered in [.vscode/mcp.json](.vscode/mcp.json) until a future candidate passes the deep validation battery.
 - `graphify` is managed by the root uv project in this repository.
 - `gitnexus` remains an external prerequisite managed outside the root uv project; the workspace adapts the upstream hook semantics in Python, but does not declare a root PyPI dependency for GitNexus.
 - `ahk` is managed as a pinned local Node development dependency and exposed to Copilot through [.vscode/mcp.json](.vscode/mcp.json).
-- For markdown-heavy graphify runs without external API keys, use the workspace [/graphify prompt](.github/prompts/graphify.prompt.md).
+- For Markdown-heavy Graphify runs without external API keys, use the workspace [/graphify prompt](.github/prompts/graphify.prompt.md).
