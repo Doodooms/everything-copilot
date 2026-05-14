@@ -1,0 +1,50 @@
+[
+  {
+    "header": "Prompt Slug",
+    "question": "Provide the prompt file slug (lowercase, hyphens).",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Purpose",
+    "question": "One sentence: what unique task should this prompt perform?",
+    "message": "This answer becomes the `What:` part of the prompt `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Triggers",
+    "question": "Which phrases or scenarios should cause this prompt to be used?",
+    "message": "These phrases become the `Use when:` part of the prompt `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Expected Inputs",
+    "question": "What argument, selection, files, or context does this prompt expect?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Required Tools",
+    "question": "Which tools must this prompt expose, if any?",
+    "message": "Leave it minimal. Omit tools entirely when the default agent surface is enough.",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      { "label": "read", "recommended": true },
+      { "label": "search", "recommended": true },
+      { "label": "edit" },
+      { "label": "execute" },
+      { "label": "web" },
+      { "label": "todo" }
+    ]
+  },
+  {
+    "header": "Target Agent",
+    "question": "Should this prompt pin a specific agent, or use the default agent?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Output Contract",
+    "question": "What should this prompt ask the model to return?",
+    "message": "Map this answer into the `## Output Contract` section.",
+    "allowFreeformInput": true
+  }
+]

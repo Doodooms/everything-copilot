@@ -1,0 +1,84 @@
+[
+  {
+    "header": "Agent Slug",
+    "question": "Provide the agent file slug (lowercase, hyphens).",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Purpose",
+    "question": "One sentence: what unique job does this agent perform?",
+    "message": "This answer becomes the `WHAT:` part of the frontmatter `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Triggers",
+    "question": "Which phrases or scenarios should cause this agent to be selected?",
+    "message": "These phrases become the `USE FOR:` portion of the frontmatter `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Exclusions",
+    "question": "Which nearby tasks or scenarios should this agent refuse?",
+    "message": "These answers become both the `DO NOT USE FOR:` clause in `description` and `references/DONOTUSEFOR.md`, helping Step 0 reject bad delegation early.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Required Tools",
+    "question": "Which tools must this agent have?",
+    "message": "Keep the set minimal. Add `agent` only when the agent truly delegates to other agents.",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      { "label": "read", "description": "Inspect files or generated drafts.", "recommended": true },
+      { "label": "search", "description": "Find candidate files, symbols, or collisions.", "recommended": true },
+      { "label": "edit" },
+      { "label": "execute" },
+      { "label": "agent", "description": "Needed only if this agent delegates to other agents." },
+      { "label": "web" },
+      { "label": "todo" },
+      { "label": "vscode/askQuestions" }
+    ]
+  },
+  {
+    "header": "Forbidden Work",
+    "question": "What must this agent avoid doing?",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Invocation Mode",
+    "question": "How should this agent be invoked?",
+    "message": "This answer maps to `user-invocable` and `disable-model-invocation`.",
+    "allowFreeformInput": false,
+    "options": [
+      {
+        "label": "Visible in picker and invocable as subagent",
+        "description": "Usually omit both fields unless the repository requires explicit values.",
+        "recommended": true
+      },
+      {
+        "label": "Hidden from picker, subagent only",
+        "description": "Set `user-invocable: false`."
+      },
+      {
+        "label": "Visible in picker, not invocable as subagent",
+        "description": "Set `disable-model-invocation: true`."
+      },
+      {
+        "label": "Internal helper: hidden from picker and blocked from subagent use",
+        "description": "Set `user-invocable: false` and `disable-model-invocation: true`."
+      }
+    ]
+  },
+  {
+    "header": "Allowed Subagents",
+    "question": "List allowed subagents, `*`, or `none`.",
+    "message": "Use `none` when the agent does not delegate. If you list names, they must match existing `.github/agents/**/<slug>.agent.md` files.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Output Contract",
+    "question": "What should this agent return or produce?",
+    "message": "Map this answer directly into the `## Output Contract` section.",
+    "allowFreeformInput": true
+  }
+]

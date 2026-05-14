@@ -13,6 +13,7 @@
 - Search before edit: always run semantic_search + grep_search before modifying any file.
 - Context engineering: load only what is needed for the current LLM call (Karpathy principle).
 - Language convention: XML for instructions/rules/constraints (you->LLM), Markdown for human output (LLM->human), JSON for tool calls and strict output formats.
+- tests must be written with pytest
 
 </MANDATORY-RULES>
 
@@ -122,39 +123,6 @@ Three languages, three roles. Never mix them up:
 | XML      | Instructions (you -> LLM) | Rules, constraints, gates, handoffs in .agent.md and SKILL.md |
 | Markdown | Presentation (LLM -> human) | Descriptive text, step titles, examples for readability |
 | JSON     | Structured data (LLM <-> tools) | Tool call formats, strict output schemas, mcp.json |
-
-### Rules for authoring .agent.md and SKILL.md files
-
-- YAML frontmatter: required, keep as-is (VS Code parser requirement)
-- Workflow steps and narrative: Markdown headers and prose
-- Constraints, gates, rules, handoffs: wrap in XML tags
-
-Example structure for an agent file:
-
-```
----
-name: my-agent
----
-
-# My Agent
-
-Narrative description in Markdown.
-
-<constraints>
-- Never modify files outside the declared scope.
-- Always run tests before committing.
-</constraints>
-
-<gates>
-- RED gate: test must fail before implementation starts.
-- GREEN gate: all tests pass before refactor.
-</gates>
-
-<handoffs>
-- On success: pass manifest to @dev
-- On ambiguity: ask @planner for clarification
-</handoffs>
-```
 
 ### Why XML over nested Markdown headers for instructions
 
