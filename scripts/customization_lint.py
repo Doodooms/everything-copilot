@@ -70,6 +70,45 @@ CANONICAL_CREATE_SURFACE_SKILL_NAMES = {
     "create-prompt",
     "create-mcp",
 }
+MAX_POST_WORKFLOW_CONTENT_LINES = 20
+GENERIC_DUPLICATE_CONCEPTS = {
+    "when to use",
+    "when not to use",
+    "official resources",
+    "validation",
+    "purpose",
+    "notes",
+}
+CONCEPT_TOKEN_STOPWORDS = {
+    "and",
+    "below",
+    "code",
+    "docs",
+    "example",
+    "examples",
+    "file",
+    "files",
+    "for",
+    "from",
+    "guide",
+    "guides",
+    "how",
+    "into",
+    "not",
+    "only",
+    "or",
+    "resource",
+    "resources",
+    "section",
+    "sections",
+    "the",
+    "this",
+    "those",
+    "through",
+    "use",
+    "when",
+    "with",
+}
 
 
 @dataclass
@@ -505,6 +544,122 @@ def detect_front_loaded_support_reads(text: str) -> list[str]:
             warnings.append(
                 f"Potential front-loading in {heading}: early context-gathering step reads {len(support_doc_reads)} support files ({', '.join(support_doc_reads)}). Replace most of these with markdown links and defer #tool:read to the step where each file is actually consumed."
             )
+
+    return warnings
+
+
+def extract_post_workflow_text(text: str) -> str | None:
+    match = re.search(r"</workflow>(?P<remainder>.*)\Z", text, re.DOTALL | re.IGNORECASE)
+    if not match:
+        return None
+    return match.group("remainder")
+
+
+def count_content_lines(text: str) -> int:
+    return sum(1 for line in text.splitlines() if line.strip())
+
+
+def validate_post_workflow_reference_sections(text: str) -> list[str]:
+    post_workflow_text = extract_post_workflow_text(text)
+    if post_workflow_text is None:
+        return []
+
+    content_line_count = count_content_lines(post_workflow_text)
+    if content_line_count <= MAX_POST_WORKFLOW_CONTENT_LINES:
+        return []
+
+    return [
+        (
+            f"SKILL.md contient {content_line_count} lignes après </workflow>. "
+            "Déplacez les matrices, checklists, guides de setup dans references/ ou assets/."
+        )
+    ]
+
+
+def normalize_concept_label(label: str) -> str:
+    normalized = label.strip().lower()
+    normalized = normalized.replace("mcp.json", "mcp json")
+    normalized = re.sub(r"[`*_#:/().,\-]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized)
+    return normalized.strip()
+
+
+def extract_significant_concept_tokens(label: str) -> set[str]:
+    normalized = normalize_concept_label(label)
+    return {
+        token
+        for token in normalized.split()
+        if len(token) >= 3 and token not in CONCEPT_TOKEN_STOPWORDS
+    }
+
+
+def iter_support_doc_concepts(skill_dir: Path):
+    for support_doc in iter_non_frontmatter_markdown_files(skill_dir):
+        if support_doc.name in {"USEFOR.md", "DONOTUSEFOR.md"}:
+            continue
+
+        _, support_text = read_frontmatter(support_doc)
+        relative_path = support_doc.relative_to(skill_dir).as_posix()
+        concepts = [support_doc.stem.replace("-", " ")]
+        concepts.extend(iter_markdown_headings(support_text))
+
+        seen = set()
+        for concept in concepts:
+            normalized = normalize_concept_label(concept)
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            yield relative_path, concept
+
+
+def detect_duplicate_skill_support_concepts(skill_dir: Path, full_text: str) -> list[str]:
+    post_workflow_text = extract_post_workflow_text(full_text)
+    if not post_workflow_text:
+        return []
+
+    support_concepts = []
+    for relative_path, concept in iter_support_doc_concepts(skill_dir):
+        support_concepts.append(
+            (
+                relative_path,
+                concept,
+                normalize_concept_label(concept),
+                extract_significant_concept_tokens(concept),
+            )
+        )
+
+    warnings: list[str] = []
+    seen_messages: set[str] = set()
+    for heading in iter_markdown_headings(post_workflow_text):
+        normalized_heading = normalize_concept_label(heading)
+        if not normalized_heading or normalized_heading in GENERIC_DUPLICATE_CONCEPTS:
+            continue
+
+        heading_tokens = extract_significant_concept_tokens(heading)
+        if not heading_tokens:
+            continue
+
+        for relative_path, support_concept, normalized_support, support_tokens in support_concepts:
+            if not support_tokens:
+                continue
+
+            overlap = heading_tokens & support_tokens
+            if not (
+                normalized_heading in normalized_support
+                or normalized_support in normalized_heading
+                or len(overlap) >= 2
+            ):
+                continue
+
+            message = (
+                f"Concept `{heading}` apparaît dans SKILL.md ET dans ./{relative_path} "
+                f"(`{support_concept}`). Gardez une seule source."
+            )
+            if message in seen_messages:
+                continue
+            seen_messages.add(message)
+            warnings.append(message)
+            break
 
     return warnings
 
@@ -1016,7 +1171,9 @@ def lint_skill_markdown(skill_dir: Path, full_text: str) -> LintResult:
         )
 
     result.errors.extend(validate_skill_step_structure(full_text))
+    result.errors.extend(validate_post_workflow_reference_sections(full_text))
     result.warnings.extend(detect_front_loaded_support_reads(full_text))
+    result.warnings.extend(detect_duplicate_skill_support_concepts(skill_dir, full_text))
     return result
 
 

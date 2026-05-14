@@ -1,9 +1,6 @@
 ---
 description: "Use when creating or editing workspace skills, custom agents, prompts, or their linked Markdown support docs. Keeps customization Markdown human-readable with lightweight hierarchy and progressive-loading-friendly support docs."
-applyTo:
-  - ".github/skills/**/*.md"
-  - ".github/agents/**/*.agent.md"
-  - ".github/prompts/**/*.prompt.md"
+applyTo: ".github/skills/**/*.md, .github/agents/**/*.agent.md, .github/prompts/**/*.prompt.md"
 ---
 
 # Customization Markdown Structure

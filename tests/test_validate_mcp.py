@@ -32,6 +32,28 @@ def test_validate_mcp_accepts_valid_stdio_config(tmp_path: Path) -> None:
     assert "Validation passed" in result.stdout
 
 
+def test_validate_mcp_accepts_stdio_config_without_explicit_type(tmp_path: Path) -> None:
+    config_path = tmp_path / "mcp.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "servers": {
+                    "demo": {
+                        "command": "uv",
+                        "args": ["run", "python", "server.py"],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = _run_validate_mcp(config_path)
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+    assert "assuming `stdio`" in result.stdout
+
+
 def test_validate_mcp_rejects_stdio_server_without_command(tmp_path: Path) -> None:
     config_path = tmp_path / "mcp.json"
     config_path.write_text(
