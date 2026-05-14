@@ -44,14 +44,12 @@ Current state versus plan:
 
 This repository now integrates AHK locally through the pinned dependency in [package.json](package.json), the harness config in [agent-harness-kit.config.ts](agent-harness-kit.config.ts), and the operational backlog in [.harness/feature_list.json](.harness/feature_list.json).
 
-The committed AHK-generated provider artifacts are:
+The tracked Copilot-facing AHK runtime surface is:
 
-- [AGENTS.md](AGENTS.md)
-- [.claude/agents/lead.md](.claude/agents/lead.md)
-- [.claude/agents/explorer.md](.claude/agents/explorer.md)
-- [.claude/agents/builder.md](.claude/agents/builder.md)
-- [.claude/agents/reviewer.md](.claude/agents/reviewer.md)
-- [.claude/mcp.json](.claude/mcp.json)
+- [agent-harness-kit.config.ts](agent-harness-kit.config.ts)
+- [health.sh](health.sh)
+- [.harness/feature_list.json](.harness/feature_list.json)
+- [.vscode/mcp.json](.vscode/mcp.json)
 
 AHK's current role in this workspace is operational, not strategic:
 
@@ -59,7 +57,7 @@ AHK's current role in this workspace is operational, not strategic:
 - [.github/PLAN.md](.github/PLAN.md) remains the strategic source of truth for what exists and what is planned.
 - `.github/tasks/` and `.github/plan_history/` remain the audit trail for orchestrated changes.
 
-AHK itself currently supports `claude-code` and `opencode` providers in its config schema. This workspace keeps `provider: 'claude-code'` only to satisfy the package contract, while GitHub Copilot uses the manual MCP server registration in [.vscode/mcp.json](.vscode/mcp.json).
+AHK itself currently supports `claude-code` and `opencode` providers in its config schema. This workspace keeps `provider: 'claude-code'` only to satisfy the package contract, while GitHub Copilot uses the manual MCP server registration in [.vscode/mcp.json](.vscode/mcp.json). Provider-materialized files from `ahk build` or `ahk init` are intentionally excluded from this repository; [health.sh](health.sh) fails if they appear.
 
 Useful AHK commands from the repository root:
 
@@ -251,7 +249,7 @@ Commit [Dockerfile](Dockerfile) and [.dockerignore](.dockerignore) when the pack
 - Current local tooling dependencies include `graphifyy`, `ladybug`, `mcp`, `pyyaml`, and `typer`.
 - `uv sync` removes packages that are not declared in [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock).
 - `npm install` installs the pinned local AHK dependency declared in [package.json](package.json).
-- The committed AHK workspace files are [agent-harness-kit.config.ts](agent-harness-kit.config.ts), [health.sh](health.sh), [.harness/feature_list.json](.harness/feature_list.json), [AGENTS.md](AGENTS.md), and the generated files under [.claude](.claude).
+- The committed AHK workspace files are [agent-harness-kit.config.ts](agent-harness-kit.config.ts), [health.sh](health.sh), [.harness/feature_list.json](.harness/feature_list.json), and [.vscode/mcp.json](.vscode/mcp.json). Provider-materialized files are intentionally excluded.
 - CodeGraphContext is intentionally not registered in [.vscode/mcp.json](.vscode/mcp.json) until a future candidate passes the deep validation battery.
 - `graphify` is managed by the root uv project in this repository.
 - `gitnexus` remains an external prerequisite managed outside the root uv project; the workspace adapts the upstream hook semantics in Python, but does not declare a root PyPI dependency for GitNexus.

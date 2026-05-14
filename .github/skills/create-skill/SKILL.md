@@ -39,26 +39,17 @@ license: MIT
 
 <rules>
 
-- A skill describes **HOW** to execute a repeatable workflow. Keep implementation detail in referenced assets or scripts **ONLY** when a workflow step actually needs them.
-
+- A skill describes **HOW** to execute a repeatable workflow. Keep implementation detail in referenced assets or scripts **ONLY** when a workflow step actually needs them
 - Give each file in the skill folder one responsibility. `SKILL.md` **MUST** own workflow, `assets/` own copyable templates or payloads, `references/` own human guidance consulted at a specific step, and `scripts/` own executable checks.
-
 - There **MUST** be one source of truth per concept. If a rule, matrix, or checklist already lives in one section or support file, later steps **MUST** point to that canonical location instead of restating it.
-
 - Use skill-facing `#tool:` names **ONLY**. Valid names come from the workspace agent tool layer and namespaced tools exposed there, for example `read`, `search`, `agent`, `execute`, `web`, `browser`, `todo`, and `vscode/askQuestions`.
-
 - If a skill relies on behavior that is unavailable in older VS Code or GitHub Copilot builds, it **MUST** declare a `compatibility` frontmatter field.
-
 - `metadata` and `license` are optional workspace conventions. They **MAY** be used for authorship or provenance, but they do **NOT** replace a precise `description` or `compatibility` field.
-
 - Use `#file:` **ONLY** when the current workflow step needs that file immediately. In practice, `#file:` should usually appear on the same line as the action that consumes it, such as `#tool:read`, `#tool:execute`, or another direct step-local use. If the file is only a candidate future input, a canonical reference, or a reminder that the file exists, use a markdown link instead. **NEVER** front-load support files or tool lists in a `Runtime Inputs` section.
-
 - Early context-gathering steps must not batch-load candidate support docs. In those steps, `[file](./path)` is the default for discoverability. If three or more support files are only possible future inputs, link them with markdown and defer `#tool:read` until the step that actually consumes each file.
-
 - Every runtime-relevant file under `assets/`, `references/`, and `scripts/` **MUST** still be referenced from `SKILL.md`. Use `#file:` on the workflow line that consumes the file now, and use `[file](./path)` when the file is being named as an optional, future, or explanatory reference.
-
 - Active `#tool:` and `#file:` markers **MUST ONLY** appear in frontmatter-bearing definition files such as `SKILL.md`, `.agent.md`, and `.prompt.md`. In support markdown files under `assets/` or `references/`, **USE** markdown links for files and plain or inline-coded tool names.
-
+- Human-facing support markdown should still be structured for readability. Use one `#` title and short `##` sections for distinct concerns instead of leaving bare labels such as `Purpose` or `When to use` as plain text lines.
 - Keep `#file:` references relative and free of trailing punctuation.
 
 </rules>
@@ -89,6 +80,7 @@ When a support file is needed, cite it on the workflow line that consumes it ins
 Ensure every `#tool:` names a skill-facing workspace tool or namespaced tool actually available to the workspace. Treat the examples in this skill as examples, **NOT** a closed list.
 Ensure every runtime-relevant support file is referenced from `SKILL.md` at point of need with `#file:` or `[link](./...)`. Use `#file:` only for immediate consumption in the current step; use `[link](./...)` for discoverability, optionality, or future-step references.
 Ensure support markdown files **NEVER** contain active `#tool:` or `#file:` markers. **USE** markdown links there for files and plain or inline-coded tool names.
+Ensure support markdown files are not visually flat. Prefer one `#` title and short `##` sections such as `## Purpose`, `## When to use this file`, `## How to use it`, `## Fix patterns`, or `## Status codes` when the file covers multiple concerns.
 Use `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` blocks when they sharpen routing or clarify terms, but keep them brief. They help after the skill is loaded; the frontmatter `description` still drives initial discovery.
 If a section starts repeating policy already defined elsewhere, replace the repeated prose with a short pointer to the canonical section or file.
 If an early workflow step starts listing several candidate docs to preload, replace those grouped `#tool:read` calls with markdown links and move each actual read to the later point-of-need step.

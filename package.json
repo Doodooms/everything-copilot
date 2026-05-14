@@ -7,7 +7,7 @@
     "npm": ">=9"
   },
   "scripts": {
-    "ahk:health": "npx --no-install ahk health",
+    "ahk:health": "bash health.sh",
     "ahk:status": "npx --no-install ahk status",
     "ahk:sync": "npx --no-install ahk sync --direction in",
     "ahk:dashboard": "npx --no-install ahk dashboard --no-open",

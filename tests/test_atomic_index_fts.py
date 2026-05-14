@@ -23,7 +23,7 @@ MIN_GRAPH_JSON = {
 
 class AtomicIndexFtsTest(unittest.TestCase):
     def test_search_docs_tracks_patch_and_delete_lifecycle(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT, prefix=".tmp-fts-") as temp_dir:
+        with tempfile.TemporaryDirectory(prefix=".tmp-fts-") as temp_dir:
             sandbox_root = Path(temp_dir)
             guide_path = sandbox_root / "guide.md"
             graph_json_path = sandbox_root / "graphify-out" / "graph.json"
@@ -71,7 +71,7 @@ class AtomicIndexFtsTest(unittest.TestCase):
             self.assertEqual(atomic_index.search_docs_impl(sandbox_root, "beta-token", limit=5), [])
 
     def test_graphify_server_exposes_search_docs_tool(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT, prefix=".tmp-fts-") as temp_dir:
+        with tempfile.TemporaryDirectory(prefix=".tmp-fts-") as temp_dir:
             sandbox_root = Path(temp_dir)
             guide_path = sandbox_root / "guide.md"
             graph_json_path = sandbox_root / "graphify-out" / "graph.json"

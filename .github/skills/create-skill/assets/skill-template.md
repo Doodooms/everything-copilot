@@ -58,6 +58,7 @@ Reference #file:./scripts/<validator>.py **ONLY** if the validator lives inside 
 - Prefer markdown links such as `[guide](./references/guide.md)` when the workflow is only naming a candidate, optional, or future file. Use `#file:` only when the current step must consume that file immediately.
 - **NEVER** batch 3 or more candidate support-file reads in an early context step. Use markdown links to show the files exist, then defer each `#tool:read` to the point-of-need step.
 - Outside the generated definition snippets, support markdown files **MUST** use markdown links for files and plain or inline-coded tool names. Active `#tool:` and `#file:` markers **MUST ONLY** appear in frontmatter-bearing skill, agent, or prompt bodies.
+- Support markdown files should keep lightweight hierarchy: one `#` title plus short `##` sections when the doc covers multiple concerns. Prefer `## Purpose`, `## When to use this file`, `## How to use it`, `## Fix patterns`, and `## Status codes` over bare labels.
 - The frontmatter `description` remains the primary discovery surface. `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` help the agent once the skill is loaded, but they do **NOT** replace a precise description.
 - Add `compatibility` whenever the skill depends on version-gated VS Code or Copilot behavior.
 - `metadata` and `license` are optional workspace-local annotations for authorship or provenance.
@@ -102,9 +103,11 @@ Bad:
 
 ```markdown
 ## Validation Rules
+
 - Run the validator before finishing.
 
 ## Step 4 - Validate
+
 - Run the validator before finishing.
 ```
 
@@ -112,9 +115,11 @@ Good:
 
 ```markdown
 ## Validation Rules
+
 - Run the validator before finishing.
 
 ## Step 4 - Validate
+
 Apply the Validation Rules section above.
 ```
 
@@ -124,6 +129,7 @@ Bad:
 
 ```markdown
 ## Runtime Inputs
+
 - #file:./assets/ask_questions.json
 - #file:./references/validation.md
 - #file:./scripts/validate_skill.py
@@ -133,9 +139,11 @@ Good:
 
 ```markdown
 ## Step 2 - Capture missing details
+
 Use #tool:vscode/askQuestions with #file:./assets/ask_questions.json.
 
 ## Step 4 - Validate
+
 Use #tool:execute on #file:./scripts/validate_skill.py.
 Use #tool:read on #file:./references/validation.md only while fixing validation output.
 ```
@@ -146,6 +154,7 @@ Bad:
 
 ```markdown
 ## Step 1 - Inspect options
+
 Use #file:./references/guide-a.md to note the canonical guidance.
 Use #file:./references/guide-b.md as an alternative.
 ```
@@ -154,9 +163,11 @@ Good:
 
 ```markdown
 ## Step 1 - Inspect options
+
 Review [guide A](./references/guide-a.md) and [guide B](./references/guide-b.md) to decide which file matters.
 
 ## Step 3 - Draft
+
 Use #tool:read on #file:./references/guide-a.md only if the draft needs guide A right now.
 ```
 
@@ -166,6 +177,7 @@ Bad:
 
 ```markdown
 ## Step 1 - Gather references
+
 Use #tool:read on #file:./references/guide-a.md before planning.
 Use #tool:read on #file:./references/guide-b.md before planning.
 Use #tool:read on #file:./assets/checklist.md before planning.
@@ -175,9 +187,11 @@ Good:
 
 ```markdown
 ## Step 1 - Gather context
+
 Review [guide A](./references/guide-a.md), [guide B](./references/guide-b.md), and [checklist](./assets/checklist.md) to decide which file is relevant.
 
 ## Step 3 - Draft
+
 Use #tool:read on #file:./references/guide-a.md only if the workflow needs guide A.
 ```
 
@@ -187,6 +201,7 @@ Bad:
 
 ```markdown
 # Validation notes
+
 Use #tool:read on #file:./references/validation.md.
 ```
 
@@ -194,6 +209,7 @@ Good:
 
 ```markdown
 # Validation notes
+
 See [validation guide](../references/validation.md).
 Use the tool `read` only when the SKILL workflow step instructs it.
 ```

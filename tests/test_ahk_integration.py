@@ -10,6 +10,15 @@ from mcp import ClientSession, StdioServerParameters, stdio_client
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+AHK_BIN = REPO_ROOT / "node_modules" / ".bin" / "ahk"
+AHK_PACKAGE = (REPO_ROOT / "node_modules" / "@cardor" / "agent-harness-kit").resolve()
+FORBIDDEN_REPO_ARTIFACTS = (
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".claude",
+    ".opencode",
+    "opencode.json",
+)
 EXPECTED_AHK_TOOLS = {
     "tasks.get",
     "tasks.claim",
@@ -50,9 +59,9 @@ class AhkIntegrationTest(unittest.TestCase):
         self.assertEqual(ahk_server["command"], "npx")
         self.assertEqual(ahk_server["args"], ["--no-install", "ahk", "serve"])
 
-    def test_ahk_health_gate_passes(self) -> None:
+    def test_repo_health_gate_passes(self) -> None:
         result = subprocess.run(
-            ["npx", "--no-install", "ahk", "health"],
+            ["bash", "health.sh"],
             cwd=REPO_ROOT,
             capture_output=True,
             text=True,
@@ -64,6 +73,7 @@ class AhkIntegrationTest(unittest.TestCase):
             0,
             msg=(result.stdout + "\n" + result.stderr).strip(),
         )
+        self._assert_forbidden_repo_artifacts_absent()
 
     def test_ahk_cli_status_and_sync_pass(self) -> None:
         for command in (
@@ -83,6 +93,8 @@ class AhkIntegrationTest(unittest.TestCase):
                 msg=(result.stdout + "\n" + result.stderr).strip(),
             )
 
+        self._assert_forbidden_repo_artifacts_absent()
+
     def test_ahk_server_exposes_expected_tools(self) -> None:
         tool_manifest = anyio.run(self._get_ahk_tool_manifest, REPO_ROOT)
         tool_names = set(tool_manifest)
@@ -90,6 +102,7 @@ class AhkIntegrationTest(unittest.TestCase):
             EXPECTED_AHK_TOOLS.issubset(tool_names),
             msg=f"Missing expected AHK tools: {sorted(EXPECTED_AHK_TOOLS - tool_names)}",
         )
+        self._assert_forbidden_repo_artifacts_absent()
 
     def test_ahk_tool_schemas_cover_core_lifecycle(self) -> None:
         tool_manifest = anyio.run(self._get_ahk_tool_manifest, REPO_ROOT)
@@ -102,6 +115,8 @@ class AhkIntegrationTest(unittest.TestCase):
                 required_fields,
                 msg=f"Unexpected required fields for {tool_name}",
             )
+
+        self._assert_forbidden_repo_artifacts_absent()
 
     def test_ahk_end_to_end_workspace_tools(self) -> None:
         result = anyio.run(self._exercise_workspace_tools)
@@ -119,9 +134,10 @@ class AhkIntegrationTest(unittest.TestCase):
             any(entry["file"] in {"PLAN.md", "README.md"} for entry in result["docs"]),
             "Expected docs.search to return PLAN.md or README.md",
         )
+        self._assert_forbidden_repo_artifacts_absent()
 
     def test_ahk_isolated_task_lifecycle_persists_sections_and_fallback(self) -> None:
-        with tempfile.TemporaryDirectory(dir=REPO_ROOT, prefix=".tmp-ahk-") as temp_dir:
+        with tempfile.TemporaryDirectory(prefix=".tmp-ahk-") as temp_dir:
             sandbox_root = Path(temp_dir)
             self._write_sandbox_workspace(sandbox_root)
             result = anyio.run(self._exercise_isolated_workspace, sandbox_root)
@@ -139,6 +155,13 @@ class AhkIntegrationTest(unittest.TestCase):
         self.assertTrue(any(entry["file"] == "guide.md" for entry in result["docs"]))
         self.assertIn("No tasks in progress", result["current_md"])
         self.assertTrue(result["db_exists"], "Expected the sandbox SQLite DB to exist")
+        self._assert_forbidden_repo_artifacts_absent()
+
+    def _assert_forbidden_repo_artifacts_absent(self) -> None:
+        forbidden_paths = [path for path in FORBIDDEN_REPO_ARTIFACTS if (REPO_ROOT / path).exists()]
+        self.assertEqual(forbidden_paths, [], msg=f"Unexpected provider artifacts in repo root: {forbidden_paths}")
+        leaked_temp_paths = sorted(path.name for path in REPO_ROOT.glob(".tmp-*"))
+        self.assertEqual(leaked_temp_paths, [], msg=f"Unexpected repo-root temp artifacts: {leaked_temp_paths}")
 
     async def _get_ahk_tool_manifest(self, cwd: Path) -> dict[str, dict[str, object]]:
         server_parameters = StdioServerParameters(
@@ -175,9 +198,10 @@ class AhkIntegrationTest(unittest.TestCase):
         return {"tasks": tasks, "docs": docs}
 
     async def _exercise_isolated_workspace(self, sandbox_root: Path) -> dict[str, object]:
+        self.assertTrue(AHK_BIN.exists(), f"Expected AHK binary at {AHK_BIN}")
         server_parameters = StdioServerParameters(
-            command="npx",
-            args=["--no-install", "ahk", "serve"],
+            command=str(AHK_BIN.resolve()),
+            args=["serve"],
             cwd=sandbox_root,
         )
 
@@ -286,59 +310,59 @@ class AhkIntegrationTest(unittest.TestCase):
         (sandbox_root / ".harness").mkdir(parents=True, exist_ok=True)
         (sandbox_root / "docs").mkdir(parents=True, exist_ok=True)
         (sandbox_root / "agent-harness-kit.config.ts").write_text(
-            textwrap.dedent(
-                """
-                import { defineHarness } from '@cardor/agent-harness-kit';
+                        textwrap.dedent(
+                                """
+                                import { defineHarness } from '__AHK_PACKAGE__';
 
-                export default defineHarness({
-                  project: {
-                    name: 'ahk-test-workspace',
-                    description: 'Temporary AHK stability sandbox.',
-                    docsPath: './docs',
-                  },
-                  provider: 'claude-code',
-                  agents: {
-                    lead: { instructionsPath: null, context: 'Lead' },
-                    explorer: { instructionsPath: null, context: 'Explorer' },
-                    builder: { instructionsPath: null, context: 'Builder' },
-                    reviewer: { instructionsPath: null, context: 'Reviewer' },
-                    custom: [],
-                  },
-                  storage: {
-                    dir: '.harness',
-                    tasks: { adapter: 'local' },
-                    sections: {
-                      toolsUsed: true,
-                      filesModified: true,
-                      result: true,
-                      blockers: true,
-                      nextSteps: true,
-                    },
-                    markdownFallback: {
-                      enabled: true,
-                      path: '.harness/current.md',
-                    },
-                  },
-                  database: {
-                    type: 'sqlite',
-                    path: '.harness/harness.db',
-                  },
-                  health: {
-                    required: false,
-                  },
-                  tools: {
-                    mcp: {
-                      enabled: true,
-                      port: 3742,
-                    },
-                    scripts: {
-                      enabled: false,
-                      outputDir: './.harness/scripts',
-                    },
-                  },
-                });
-                """
-            ).strip()
+                                export default defineHarness({
+                                    project: {
+                                        name: 'ahk-test-workspace',
+                                        description: 'Temporary AHK stability sandbox.',
+                                        docsPath: './docs',
+                                    },
+                                    provider: 'claude-code',
+                                    agents: {
+                                        lead: { instructionsPath: null, context: 'Lead' },
+                                        explorer: { instructionsPath: null, context: 'Explorer' },
+                                        builder: { instructionsPath: null, context: 'Builder' },
+                                        reviewer: { instructionsPath: null, context: 'Reviewer' },
+                                        custom: [],
+                                    },
+                                    storage: {
+                                        dir: '.harness',
+                                        tasks: { adapter: 'local' },
+                                        sections: {
+                                            toolsUsed: true,
+                                            filesModified: true,
+                                            result: true,
+                                            blockers: true,
+                                            nextSteps: true,
+                                        },
+                                        markdownFallback: {
+                                            enabled: true,
+                                            path: '.harness/current.md',
+                                        },
+                                    },
+                                    database: {
+                                        type: 'sqlite',
+                                        path: '.harness/harness.db',
+                                    },
+                                    health: {
+                                        required: false,
+                                    },
+                                    tools: {
+                                        mcp: {
+                                            enabled: true,
+                                            port: 3742,
+                                        },
+                                        scripts: {
+                                            enabled: false,
+                                            outputDir: './.harness/scripts',
+                                        },
+                                    },
+                                });
+                                """
+                        ).replace("__AHK_PACKAGE__", AHK_PACKAGE.as_posix()).strip()
             + "\n",
             encoding="utf-8",
         )

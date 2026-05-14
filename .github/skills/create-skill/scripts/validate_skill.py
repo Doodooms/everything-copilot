@@ -77,6 +77,15 @@ TEMPLATE_LEFTOVER_MARKERS = {
     "./assets/<questions>.json": "Template file reference `./assets/<questions>.json` found; replace it with a real support-file path or remove it.",
     "./scripts/<validator>.py": "Template file reference `./scripts/<validator>.py` found; replace it with a real validator path or remove it.",
 }
+EXPECTED_SKILL_TEMPLATE_POST_HEADINGS = [
+    "Authoring Notes",
+    "Discovery and routing example",
+    "Duplicate logic example",
+    "Point-of-need reference example",
+    "Choosing `#file:` versus markdown links",
+    "Early-context front-loading example",
+    "Support-doc marker example",
+]
 
 
 def iter_markdown_headings(text: str):
@@ -214,6 +223,13 @@ def normalize_relative_path(path_str: str) -> str:
     return normalized.as_posix()
 
 
+def resolve_skill_relative_path(skill_dir: Path, file_ref: str) -> Path:
+    candidate = Path(file_ref.strip())
+    if candidate.is_absolute():
+        return candidate
+    return (skill_dir / candidate).resolve(strict=False)
+
+
 def iter_code_fence_filtered_lines(text: str):
     in_code_block = False
     for raw_line in text.splitlines():
@@ -224,6 +240,225 @@ def iter_code_fence_filtered_lines(text: str):
         if in_code_block:
             continue
         yield re.sub(r"`[^`]*`", "", line)
+
+
+def split_leading_code_fences(text: str, expected_count: int = 2):
+    normalized = text.replace("\r\n", "\n").lstrip("\ufeff")
+    lines = normalized.splitlines()
+    index = 0
+
+    while index < len(lines) and not lines[index].strip():
+        index += 1
+
+    fences = []
+    while len(fences) < expected_count:
+        if index >= len(lines) or not lines[index].startswith("```"):
+            return fences, "\n".join(lines[index:]).strip(), False
+
+        language = lines[index][3:].strip()
+        index += 1
+        content_lines = []
+        while index < len(lines) and lines[index].strip() != "```":
+            content_lines.append(lines[index])
+            index += 1
+
+        if index >= len(lines):
+            return fences, "", None
+
+        index += 1
+        fences.append((language, "\n".join(content_lines).strip()))
+
+        while index < len(lines) and not lines[index].strip():
+            index += 1
+
+    return fences, "\n".join(lines[index:]).strip(), True
+
+
+def validate_template_yaml_block(content: str) -> str | None:
+    stripped = content.strip()
+    match = re.fullmatch(r"---\n(?P<body>.*)\n---", stripped, re.DOTALL)
+    if not match:
+        return "must keep YAML frontmatter delimiters inside the opening ```yaml block"
+
+    try:
+        parsed = yaml.safe_load(match.group("body"))
+    except Exception:
+        return "must keep valid YAML inside the opening ```yaml block"
+
+    if parsed is not None and not isinstance(parsed, dict):
+        return "must keep a YAML mapping inside the opening ```yaml block"
+
+    return None
+
+
+def validate_agent_template_markdown_block(content: str) -> list[str]:
+    errors = []
+    stripped_lines = [line.strip() for line in content.splitlines() if line.strip()]
+
+    required_tokens = [
+        "<definitions>",
+        "</definitions>",
+        "# Role",
+        "## Responsibilities",
+        "<workflow>",
+        "## Workflow",
+        "</workflow>",
+        "## Constraints",
+        "## Output Contract",
+    ]
+    token_positions = {}
+    for token in required_tokens:
+        try:
+            token_positions[token] = stripped_lines.index(token)
+        except ValueError:
+            if token in {"<definitions>", "<workflow>", "</workflow>"}:
+                errors.append(
+                    "must keep <definitions> and a <workflow> wrapper in the canonical agent markdown example"
+                )
+            else:
+                errors.append(
+                    "must keep # Role, ## Responsibilities, ## Workflow, ## Constraints, and ## Output Contract headings in the canonical agent markdown example"
+                )
+            return errors
+
+    definitions_match = re.search(r"<definitions>(.*?)</definitions>", content, re.DOTALL | re.IGNORECASE)
+    if not definitions_match or not re.search(
+        r"^\s*-\s+\*\*[^*]+\*\*\s*:\s+\S+",
+        definitions_match.group(1),
+        re.MULTILINE,
+    ):
+        errors.append(
+            "must keep at least one definition bullet in <definitions> using `- **term** : definition`"
+        )
+
+    headings = list(iter_markdown_headings(content))
+    if headings != ["Role", "Responsibilities", "Workflow", "Constraints", "Output Contract"]:
+        errors.append(
+            "must keep markdown headings in this order: # Role, ## Responsibilities, ## Workflow, ## Constraints, ## Output Contract"
+        )
+        return errors
+
+    if not (
+        token_positions["<definitions>"]
+        < token_positions["</definitions>"]
+        < token_positions["# Role"]
+        < token_positions["## Responsibilities"]
+        < token_positions["<workflow>"]
+        < token_positions["## Workflow"]
+        < token_positions["</workflow>"]
+        < token_positions["## Constraints"]
+        < token_positions["## Output Contract"]
+    ):
+        errors.append(
+            "must keep <definitions>, # Role, ## Responsibilities, <workflow>, ## Workflow, </workflow>, ## Constraints, and ## Output Contract in canonical order"
+        )
+
+    return errors
+
+
+def validate_skill_template_markdown_block(content: str) -> list[str]:
+    errors = []
+    stripped_lines = [line.strip() for line in content.splitlines() if line.strip()]
+
+    required_tokens = [
+        "<definitions>",
+        "</definitions>",
+        "<workflow>",
+        "<rules>",
+        "</rules>",
+        "</workflow>",
+    ]
+    token_positions = {}
+    for token in required_tokens:
+        try:
+            token_positions[token] = stripped_lines.index(token)
+        except ValueError:
+            errors.append(
+                "must keep <definitions>, <workflow>, and <rules> tags in the canonical markdown example"
+            )
+            return errors
+
+    step_lines = [line for line in stripped_lines if WORKFLOW_STEP_HEADING.match(line)]
+    step_patterns = [
+        r"^##\s+Step\s+0\s+-\s+\*\*CONFIRMATION\*\*$",
+        r"^##\s+Step\s+1\s+-\s+.+$",
+        r"^##\s+Step\s+2\s+-\s+.+$",
+        r"^##\s+Step\s+3\s+-\s+.+$",
+    ]
+    if len(step_lines) != len(step_patterns) or any(
+        not re.fullmatch(pattern, line)
+        for pattern, line in zip(step_patterns, step_lines)
+    ):
+        errors.append(
+            "must keep markdown headings in this order: ## Step 0 - **CONFIRMATION**, ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
+        )
+        return errors
+
+    step_positions = {line: stripped_lines.index(line) for line in step_lines}
+    if not (
+        token_positions["<definitions>"]
+        < token_positions["</definitions>"]
+        < token_positions["<workflow>"]
+        < step_positions[step_lines[0]]
+        < token_positions["<rules>"]
+        < token_positions["</rules>"]
+        < step_positions[step_lines[1]]
+        < step_positions[step_lines[2]]
+        < step_positions[step_lines[3]]
+        < token_positions["</workflow>"]
+    ):
+        errors.append(
+            "must keep <definitions>, <workflow>, Step 0, <rules>, Step 1, Step 2, Step 3, and </workflow> in canonical order"
+        )
+
+    return errors
+
+
+def validate_template_asset(relative_path: str, text: str) -> list[str]:
+    errors = []
+    asset_name = Path(relative_path).name
+
+    fences, remainder, status = split_leading_code_fences(text)
+    if status is False:
+        return [
+            f"Template asset ./{relative_path} must start with consecutive ```yaml and ```markdown code fences"
+        ]
+    if status is None:
+        return [f"Template asset ./{relative_path} has an unclosed leading code fence"]
+
+    languages = [language for language, _ in fences]
+    if languages != ["yaml", "markdown"]:
+        errors.append(
+            f"Template asset ./{relative_path} must start with consecutive ```yaml and ```markdown code fences"
+        )
+        return errors
+
+    yaml_error = validate_template_yaml_block(fences[0][1])
+    if yaml_error:
+        errors.append(f"Template asset ./{relative_path} {yaml_error}")
+
+    if asset_name == "agent-template.md":
+        for markdown_error in validate_agent_template_markdown_block(fences[1][1]):
+            errors.append(f"Template asset ./{relative_path} {markdown_error}")
+
+        trailing_lines = [line.strip() for line in remainder.splitlines() if line.strip()]
+        if not trailing_lines or trailing_lines[0] != "Notes":
+            errors.append(
+                f"Template asset ./{relative_path} must keep the trailing Notes section after the closing ```markdown fence"
+            )
+
+    if asset_name == "skill-template.md":
+        for markdown_error in validate_skill_template_markdown_block(fences[1][1]):
+            errors.append(f"Template asset ./{relative_path} {markdown_error}")
+
+        post_headings = list(iter_markdown_headings(remainder))
+        if post_headings != EXPECTED_SKILL_TEMPLATE_POST_HEADINGS:
+            errors.append(
+                f"Template asset ./{relative_path} must keep post-template headings in this order: "
+                + ", ".join(EXPECTED_SKILL_TEMPLATE_POST_HEADINGS)
+            )
+
+    return errors
 
 
 def find_workspace_root(start: Path):
@@ -529,10 +764,10 @@ def validate(skill_dir: Path = Path(".")):
     }
     for file_ref in file_refs:
         parts = Path(file_ref).parts
-        if len(parts) > 2 and not file_ref.startswith("./"):
+        if len(parts) > 2 and not file_ref.startswith(("./", "../")):
             warnings.append(f"#file reference appears deep: {file_ref}")
 
-        candidate = skill_dir.joinpath(file_ref.lstrip("./"))
+        candidate = resolve_skill_relative_path(skill_dir, file_ref)
         if not candidate.exists():
             warnings.append(f"#file reference not found (best-effort): {file_ref}")
 
@@ -559,6 +794,12 @@ def validate(skill_dir: Path = Path(".")):
             errors.append(
                 f"Active #tool marker found in non-frontmatter markdown file: ./{relative_support_doc}. Reserve #tool for frontmatter-bearing skill, agent, or prompt definitions and use inline tool names in support docs."
             )
+
+        if Path(relative_support_doc).parts[:1] == ("assets",) and Path(relative_support_doc).name in {
+            "agent-template.md",
+            "skill-template.md",
+        }:
+            errors.extend(validate_template_asset(relative_support_doc, support_text))
 
     tool_ref_has_trailing_punctuation = False
     tool_refs = []

@@ -123,39 +123,6 @@ Three languages, three roles. Never mix them up:
 | Markdown | Presentation (LLM -> human) | Descriptive text, step titles, examples for readability |
 | JSON     | Structured data (LLM <-> tools) | Tool call formats, strict output schemas, mcp.json |
 
-### Rules for authoring .agent.md and SKILL.md files
-
-- YAML frontmatter: required, keep as-is (VS Code parser requirement)
-- Workflow steps and narrative: Markdown headers and prose
-- Constraints, gates, rules, handoffs: wrap in XML tags
-
-Example structure for an agent file:
-
-```
----
-name: my-agent
----
-
-# My Agent
-
-Narrative description in Markdown.
-
-<constraints>
-- Never modify files outside the declared scope.
-- Always run tests before committing.
-</constraints>
-
-<gates>
-- RED gate: test must fail before implementation starts.
-- GREEN gate: all tests pass before refactor.
-</gates>
-
-<handoffs>
-- On success: pass manifest to @dev
-- On ambiguity: ask @planner for clarification
-</handoffs>
-```
-
 ### Why XML over nested Markdown headers for instructions
 
 - Explicit close tag: `</constraints>` marks the exact end of a rule block;
