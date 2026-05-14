@@ -13,6 +13,7 @@
 - Search before edit: always run semantic_search + grep_search before modifying any file.
 - Context engineering: load only what is needed for the current LLM call (Karpathy principle).
 - Language convention: XML for instructions/rules/constraints (you->LLM), Markdown for human output (LLM->human), JSON for tool calls and strict output formats.
+- tests must be written with pytest
 
 </MANDATORY-RULES>
 

@@ -77,7 +77,7 @@ npx --no-install ahk serve
 The focused AHK integration test suite is:
 
 ```bash
-uv run python -m unittest tests.test_ahk_integration
+uv run pytest tests/test_ahk_integration.py -q
 ```
 
 The broader active-tool stability battery is:

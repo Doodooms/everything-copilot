@@ -14,9 +14,9 @@
     "docker:build": "docker build -t agentic-workflow:latest .",
     "docker:test:workspace:stability": "docker run --rm agentic-workflow:latest bash -lc \"npm run test:workspace:stability\"",
     "docker:run": "docker run --rm -it agentic-workflow:latest",
-    "test:ahk:e2e": "uv run python -m unittest tests.test_ahk_integration",
-    "test:graphify:fts": "uv run python -m unittest tests.test_atomic_index_fts",
-    "test:workspace:stability": "bash health.sh && npx --no-install ahk sync --direction in && npx --no-install ahk status && uv run python -m unittest tests.test_ahk_integration tests.test_atomic_index_fts"
+    "test:ahk:e2e": "uv run pytest tests/test_ahk_integration.py -q",
+    "test:graphify:fts": "uv run pytest tests/test_atomic_index_fts.py -q",
+    "test:workspace:stability": "bash health.sh && npx --no-install ahk sync --direction in && npx --no-install ahk status && uv run pytest tests/test_ahk_integration.py tests/test_atomic_index_fts.py -q"
   },
   "devDependencies": {
     "@cardor/agent-harness-kit": "^1.1.2"

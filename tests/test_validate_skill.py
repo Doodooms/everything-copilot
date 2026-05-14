@@ -1,8 +1,6 @@
 import subprocess
 import sys
-import tempfile
 import textwrap
-import unittest
 from pathlib import Path
 
 
@@ -10,434 +8,444 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR_PATH = REPO_ROOT / ".github" / "skills" / "create-skill" / "scripts" / "validate_skill.py"
 
 
-class ValidateSkillTest(unittest.TestCase):
-    def test_validator_warns_on_front_loaded_support_reads(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            skill_dir = Path(temp_dir) / "front-load-skill"
-            self._write_skill(skill_dir, front_loaded=True)
+def test_validator_warns_on_front_loaded_support_reads(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "front-load-skill"
+    _write_skill(skill_dir, front_loaded=True)
 
-            result = self._run_validator(skill_dir)
+    result = _run_validator(skill_dir)
 
-        self.assertEqual(result.returncode, 0, msg=(result.stdout + result.stderr).strip())
-        self.assertIn("Potential front-loading", result.stdout)
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+    assert "Potential front-loading" in result.stdout
 
-    def test_validator_allows_point_of_need_links_without_front_loading_warning(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            skill_dir = Path(temp_dir) / "point-of-need-skill"
-            self._write_skill(skill_dir, front_loaded=False)
 
-            result = self._run_validator(skill_dir)
+def test_validator_allows_point_of_need_links_without_front_loading_warning(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "point-of-need-skill"
+    _write_skill(skill_dir, front_loaded=False)
 
-        self.assertEqual(result.returncode, 0, msg=(result.stdout + result.stderr).strip())
-        self.assertNotIn("Potential front-loading", result.stdout)
+    result = _run_validator(skill_dir)
 
-    def test_validator_rejects_template_assets_without_split_yaml_and_markdown_fences(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            skill_dir = Path(temp_dir) / "broken-template-skill"
-            self._write_skill(
-                skill_dir,
-                front_loaded=False,
-                template_assets={"agent-template.md": self._legacy_agent_template()},
-            )
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+    assert "Potential front-loading" not in result.stdout
 
-            result = self._run_validator(skill_dir)
 
-        self.assertEqual(result.returncode, 3, msg=(result.stdout + result.stderr).strip())
-        self.assertIn("./assets/agent-template.md", result.stdout)
-        self.assertIn("consecutive ```yaml and ```markdown code fences", result.stdout)
+def test_validator_rejects_template_assets_without_split_yaml_and_markdown_fences(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "broken-template-skill"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        template_assets={"agent-template.md": _legacy_agent_template()},
+    )
 
-    def test_validator_rejects_template_assets_with_reordered_canonical_sections(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            skill_dir = Path(temp_dir) / "reordered-template-skill"
-            self._write_skill(
-                skill_dir,
-                front_loaded=False,
-                template_assets={"agent-template.md": self._reordered_agent_template()},
-            )
+    result = _run_validator(skill_dir)
 
-            result = self._run_validator(skill_dir)
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "./assets/agent-template.md" in result.stdout
+    assert "consecutive ```yaml and ```markdown code fences" in result.stdout
 
-        self.assertEqual(result.returncode, 3, msg=(result.stdout + result.stderr).strip())
-        self.assertIn("./assets/agent-template.md", result.stdout)
-        self.assertIn("markdown headings in this order", result.stdout)
 
-    def test_validator_rejects_skill_template_with_reordered_reference_sections(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            skill_dir = Path(temp_dir) / "broken-skill-template"
-            self._write_skill(
-                skill_dir,
-                front_loaded=False,
-                template_assets={"skill-template.md": self._reordered_skill_template()},
-            )
+def test_validator_rejects_template_assets_with_reordered_canonical_sections(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "reordered-template-skill"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        template_assets={"agent-template.md": _reordered_agent_template()},
+    )
 
-            result = self._run_validator(skill_dir)
+    result = _run_validator(skill_dir)
 
-        self.assertEqual(result.returncode, 3, msg=(result.stdout + result.stderr).strip())
-        self.assertIn("./assets/skill-template.md", result.stdout)
-        self.assertIn("post-template headings in this order", result.stdout)
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "./assets/agent-template.md" in result.stdout
+    assert "markdown headings in this order" in result.stdout
 
-    def test_validator_resolves_parent_relative_file_references(self) -> None:
-        with tempfile.TemporaryDirectory(prefix=".tmp-skill-validator-") as temp_dir:
-            workspace_root = Path(temp_dir) / "workspace"
-            skill_dir = workspace_root / ".github" / "skills" / "relative-parent-skill"
-            (workspace_root / ".github" / "agents").mkdir(parents=True, exist_ok=True)
-            self._write_skill(
-                skill_dir,
-                front_loaded=False,
-                step_one_body_override=(
-                    "Use #tool:search under #file:../../agents/ to inspect existing agents before drafting."
-                ),
-            )
 
-            result = self._run_validator(skill_dir)
+def test_validator_rejects_skill_template_with_reordered_reference_sections(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "broken-skill-template"
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        template_assets={"skill-template.md": _reordered_skill_template()},
+    )
 
-        self.assertEqual(result.returncode, 0, msg=(result.stdout + result.stderr).strip())
-        self.assertNotIn("#file reference not found (best-effort): ../../agents/", result.stdout)
-        self.assertNotIn("#file reference appears deep: ../../agents/", result.stdout)
+    result = _run_validator(skill_dir)
 
-    def test_live_create_agent_skill_directory_validates(self) -> None:
-        result = self._run_validator(REPO_ROOT / ".github" / "skills" / "create-agent")
+    assert result.returncode == 3, (result.stdout + result.stderr).strip()
+    assert "./assets/skill-template.md" in result.stdout
+    assert "post-template headings in this order" in result.stdout
 
-        self.assertEqual(result.returncode, 0, msg=(result.stdout + result.stderr).strip())
 
-    def test_live_create_prompt_skill_directory_validates(self) -> None:
-        result = self._run_validator(REPO_ROOT / ".github" / "skills" / "create-prompt")
+def test_validator_resolves_parent_relative_file_references(tmp_path: Path) -> None:
+    workspace_root = tmp_path / "workspace"
+    skill_dir = workspace_root / ".github" / "skills" / "relative-parent-skill"
+    (workspace_root / ".github" / "agents").mkdir(parents=True, exist_ok=True)
+    _write_skill(
+        skill_dir,
+        front_loaded=False,
+        step_one_body_override=(
+            "Use #tool:search under #file:../../agents/ to inspect existing agents before drafting."
+        ),
+    )
 
-        self.assertEqual(result.returncode, 0, msg=(result.stdout + result.stderr).strip())
+    result = _run_validator(skill_dir)
 
-    def _run_validator(self, skill_dir: Path) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(
-            [sys.executable, str(VALIDATOR_PATH), "--skill-dir", str(skill_dir)],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+    assert "#file reference not found (best-effort): ../../agents/" not in result.stdout
+    assert "#file reference appears deep: ../../agents/" not in result.stdout
+
+
+def test_live_create_agent_skill_directory_validates() -> None:
+    result = _run_validator(REPO_ROOT / ".github" / "skills" / "create-agent")
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+
+
+def test_live_create_prompt_skill_directory_validates() -> None:
+    result = _run_validator(REPO_ROOT / ".github" / "skills" / "create-prompt")
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+
+
+def _run_validator(skill_dir: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(VALIDATOR_PATH), "--skill-dir", str(skill_dir)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _write_skill(
+    skill_dir: Path,
+    *,
+    front_loaded: bool,
+    template_assets: dict[str, str] | None = None,
+    step_one_body_override: str | None = None,
+) -> None:
+    (skill_dir / "assets").mkdir(parents=True, exist_ok=True)
+    (skill_dir / "references").mkdir(parents=True, exist_ok=True)
+    (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
+
+    files = {
+        skill_dir / "references" / "USEFOR.md": "# WHEN TO USE\n\n- Test fixture.\n",
+        skill_dir / "references" / "DONOTUSEFOR.md": "# WHEN NOT TO USE\n\n- Test fixture.\n",
+        skill_dir / "references" / "guide.md": "# Guide\n\nPoint-of-need guidance.\n",
+        skill_dir / "references" / "validation.md": "# Validation\n\nFix warnings here.\n",
+        skill_dir / "assets" / "ask_questions.json": "[]\n",
+        skill_dir / "scripts" / "noop.py": "print('ok')\n",
+    }
+    for asset_name, content in (template_assets or {}).items():
+        files[skill_dir / "assets" / asset_name] = content
+
+    for path, content in files.items():
+        path.write_text(content, encoding="utf-8")
+
+    template_links = ""
+    if template_assets:
+        references = ", ".join(
+            f"[{asset_name}](./assets/{asset_name})" for asset_name in sorted(template_assets)
         )
+        template_links = f"\nAvailable templates: {references}."
 
-    def _write_skill(
-        self,
-        skill_dir: Path,
-        *,
-        front_loaded: bool,
-        template_assets: dict[str, str] | None = None,
-        step_one_body_override: str | None = None,
-    ) -> None:
-        (skill_dir / "assets").mkdir(parents=True, exist_ok=True)
-        (skill_dir / "references").mkdir(parents=True, exist_ok=True)
-        (skill_dir / "scripts").mkdir(parents=True, exist_ok=True)
-
-        files = {
-            skill_dir / "references" / "USEFOR.md": "# WHEN TO USE\n\n- Test fixture.\n",
-            skill_dir / "references" / "DONOTUSEFOR.md": "# WHEN NOT TO USE\n\n- Test fixture.\n",
-            skill_dir / "references" / "guide.md": "# Guide\n\nPoint-of-need guidance.\n",
-            skill_dir / "references" / "validation.md": "# Validation\n\nFix warnings here.\n",
-            skill_dir / "assets" / "ask_questions.json": "[]\n",
-            skill_dir / "scripts" / "noop.py": "print('ok')\n",
-        }
-        for asset_name, content in (template_assets or {}).items():
-            files[skill_dir / "assets" / asset_name] = content
-
-        for path, content in files.items():
-            path.write_text(content, encoding="utf-8")
-
-        template_links = ""
-        if template_assets:
-            references = ", ".join(
-                f"[{asset_name}](./assets/{asset_name})" for asset_name in sorted(template_assets)
-            )
-            template_links = f"\nAvailable templates: {references}."
-
-        if step_one_body_override is not None:
-            step_one_body = step_one_body_override.strip()
-        elif front_loaded:
-            step_one_body = textwrap.dedent(
-                """
-                Use #tool:search under `.github/skills` to inspect nearby skills.
-                Use #tool:read on #file:./references/guide.md before planning.
-                Use #tool:read on #file:./references/validation.md before planning.
-                Use #tool:read on #file:./assets/ask_questions.json before planning.
-                """
-            ).strip()
-        else:
-            step_one_body = textwrap.dedent(
-                """
-                Use #tool:search under `.github/skills` to inspect nearby skills.
-                Review [guide](./references/guide.md), [validation notes](./references/validation.md), and [question payload](./assets/ask_questions.json) to decide what might be needed later.
-                """
-            ).strip()
-
-        skill_text = textwrap.dedent(
-            f"""
-            ---
-            name: {skill_dir.name}
-            description: "WHAT: Fixture skill for validator tests. USE FOR: validating front-loading detection. DO NOT USE FOR: production workflows."
-            user-invocable: false
-            ---
-
-            <workflow>
-
-            ## Step 0 - **CONFIRMATION**
-
-            1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this skill should be used.
-            2. Read the workflow and continue.
-
-            <rules>
-
-            - Reference support files only at point of need.
-
-            </rules>
-
-            ## Step 1 - Inspect current state
-
-            {step_one_body}
-            {template_links}
-
-            ## Step 2 - Validate
-
-            Use #tool:read on #file:./references/guide.md only if the guide is still needed.
-            Use #tool:execute on #file:./scripts/noop.py when validating the draft.
-
-            </workflow>
+    if step_one_body_override is not None:
+        step_one_body = step_one_body_override.strip()
+    elif front_loaded:
+        step_one_body = textwrap.dedent(
             """
-        ).strip() + "\n"
-
-        (skill_dir / "SKILL.md").write_text(skill_text, encoding="utf-8")
-
-    def _legacy_agent_template(self) -> str:
-        return textwrap.dedent(
+            Use #tool:search under `.github/skills` to inspect nearby skills.
+            Use #tool:read on #file:./references/guide.md before planning.
+            Use #tool:read on #file:./references/validation.md before planning.
+            Use #tool:read on #file:./assets/ask_questions.json before planning.
             """
-            ```markdown
-            ---
-            name: legacy-agent
-            description: "What: Legacy single-fence example. Use when: tests need a broken template."
-            target: vscode
-            tools: [read]
-            ---
-
-            # Role
-
-            You are the Legacy agent.
-
-            ## Responsibilities
-
-            - Keep everything in one fence.
-
-            ## Workflow
-
-            1. Read the task.
-            2. Return the result.
-
-            ## Constraints
-
-            - This shape is intentionally wrong.
-
-            ## Output Contract
-
-            - Return a draft.
-            ```
+        ).strip()
+    else:
+        step_one_body = textwrap.dedent(
             """
-        ).strip() + "\n"
-
-    def _reordered_agent_template(self) -> str:
-        return textwrap.dedent(
+            Use #tool:search under `.github/skills` to inspect nearby skills.
+            Review [guide](./references/guide.md), [validation notes](./references/validation.md), and [question payload](./assets/ask_questions.json) to decide what might be needed later.
             """
-            ```yaml
-            ---
-            name: reordered-agent
-            description: "What: Reordered sections example. Use when: tests need a structurally broken template."
-            target: vscode
-            tools: [read]
-            ---
-            ```
+        ).strip()
 
-            ```markdown
-            <definitions>
+    skill_text = textwrap.dedent(
+        f"""
+        ---
+        name: {skill_dir.name}
+        description: "WHAT: Fixture skill for validator tests. USE FOR: validating front-loading detection. DO NOT USE FOR: production workflows."
+        user-invocable: false
+        ---
 
-            - **focused role** : A single job owned by one agent.
+        <workflow>
 
-            </definitions>
+        ## Step 0 - **CONFIRMATION**
 
-            # Role
+        1. USE #tool:read **IMMEDIATELY** on #file:./references/USEFOR.md and **IMMEDIATELY** on #file:./references/DONOTUSEFOR.md to confirm with certainty if this skill should be used.
+        2. Read the workflow and continue.
 
-            You are the Reordered agent.
+        <rules>
 
-            <workflow>
+        - Reference support files only at point of need.
 
-            ## Workflow
+        </rules>
 
-            1. Read the task.
-            2. Return the result.
+        ## Step 1 - Inspect current state
 
-            </workflow>
+        {step_one_body}
+        {template_links}
 
-            ## Responsibilities
+        ## Step 2 - Validate
 
-            - This section moved to the wrong place.
+        Use #tool:read on #file:./references/guide.md only if the guide is still needed.
+        Use #tool:execute on #file:./scripts/noop.py when validating the draft.
 
-            ## Constraints
+        </workflow>
+        """
+    ).strip() + "\n"
 
-            - Keep this invalid for the test.
+    (skill_dir / "SKILL.md").write_text(skill_text, encoding="utf-8")
 
-            ## Output Contract
 
-            - Return a draft.
-            ```
+def _legacy_agent_template() -> str:
+    return textwrap.dedent(
+        """
+        ```markdown
+        ---
+        name: legacy-agent
+        description: "What: Legacy single-fence example. Use when: tests need a broken template."
+        target: vscode
+        tools: [read]
+        ---
 
-            Notes
+        # Role
 
-            - Preserve the outer wrapper, but not the section order.
-            """
-        ).strip() + "\n"
+        You are the Legacy agent.
 
-    def _reordered_skill_template(self) -> str:
-        return textwrap.dedent(
-            """
-            ```yaml
-            ---
-            name: fixture-skill
-            description: "WHAT: Exercise validator template checks. USE FOR: testing exact template structure. DO NOT USE FOR: production workflows."
-            user-invocable: false
-            ---
-            ```
+        ## Responsibilities
 
-            ```markdown
-            <definitions>
+        - Keep everything in one fence.
 
-            - **fixture definition** : Keeps the template shape deterministic.
+        ## Workflow
 
-            </definitions>
+        1. Read the task.
+        2. Return the result.
 
-            <workflow>
+        ## Constraints
 
-            ## Step 0 - **CONFIRMATION**
+        - This shape is intentionally wrong.
 
-            1. Confirm the template still applies.
-            2. Continue with the fixed skeleton.
+        ## Output Contract
 
-            <rules>
+        - Return a draft.
+        ```
+        """
+    ).strip() + "\n"
 
-            - Keep the wrapper structure stable.
 
-            </rules>
+def _reordered_agent_template() -> str:
+    return textwrap.dedent(
+        """
+        ```yaml
+        ---
+        name: reordered-agent
+        description: "What: Reordered sections example. Use when: tests need a structurally broken template."
+        target: vscode
+        tools: [read]
+        ---
+        ```
 
-            ## Step 1 - Inspect
-            Use #tool:read on #file:./references/guide.md only if needed.
+        ```markdown
+        <definitions>
 
-            ## Step 2 - Ask
-            Use #tool:vscode/askQuestions on #file:./assets/questions.json only if needed.
+        - **focused role** : A single job owned by one agent.
 
-            ## Step 3 - Validate
-            Use #tool:execute on #file:./scripts/validate.py only if needed.
+        </definitions>
 
-            </workflow>
-            ```
+        # Role
 
-            ## Discovery and routing example
+        You are the Reordered agent.
 
-            Bad:
+        <workflow>
 
-            ```yaml
-            ---
-            name: vague-skill
-            description: Helpful skill
-            user-invocable: false
-            ---
-            ```
+        ## Workflow
 
-            Good:
+        1. Read the task.
+        2. Return the result.
 
-            ```yaml
-            ---
-            name: precise-skill
-            description: "WHAT: Provide precise routing. USE FOR: validator tests. DO NOT USE FOR: unrelated work."
-            user-invocable: false
-            ---
-            ```
+        </workflow>
 
-            ## Authoring Notes
+        ## Responsibilities
 
-            - The sections above are intentionally reordered.
+        - This section moved to the wrong place.
 
-            ## Duplicate logic example
+        ## Constraints
 
-            Bad:
+        - Keep this invalid for the test.
 
-            ```markdown
-            ## Step 4 - Validate
-            - Repeat the validator instruction.
-            ```
+        ## Output Contract
 
-            Good:
+        - Return a draft.
+        ```
 
-            ```markdown
-            ## Step 4 - Validate
-            Apply the shared validation rules instead.
-            ```
+        Notes
 
-            ## Point-of-need reference example
+        - Preserve the outer wrapper, but not the section order.
+        """
+    ).strip() + "\n"
 
-            Bad:
 
-            ```markdown
-            ## Runtime Inputs
-            - #file:./assets/questions.json
-            ```
+def _reordered_skill_template() -> str:
+    return textwrap.dedent(
+        """
+        ```yaml
+        ---
+        name: fixture-skill
+        description: "WHAT: Exercise validator template checks. USE FOR: testing exact template structure. DO NOT USE FOR: production workflows."
+        user-invocable: false
+        ---
+        ```
 
-            Good:
+        ```markdown
+        <definitions>
 
-            ```markdown
-            ## Step 2 - Ask
-            Use #tool:vscode/askQuestions with #file:./assets/questions.json.
-            ```
+        - **fixture definition** : Keeps the template shape deterministic.
 
-            ## Choosing `#file:` versus markdown links
+        </definitions>
 
-            Bad:
+        <workflow>
 
-            ```markdown
-            ## Step 1 - Inspect options
-            Use #file:./references/guide-a.md to note the canonical guidance.
-            ```
+        ## Step 0 - **CONFIRMATION**
 
-            Good:
+        1. Confirm the template still applies.
+        2. Continue with the fixed skeleton.
 
-            ```markdown
-            ## Step 1 - Inspect options
-            Review [guide A](./references/guide-a.md) before deciding whether it is needed now.
-            ```
+        <rules>
 
-            ## Early-context front-loading example
+        - Keep the wrapper structure stable.
 
-            Bad:
+        </rules>
 
-            ```markdown
-            ## Step 1 - Gather references
-            Use #tool:read on #file:./references/guide-a.md before planning.
-            Use #tool:read on #file:./references/guide-b.md before planning.
-            Use #tool:read on #file:./assets/checklist.md before planning.
-            ```
+        ## Step 1 - Inspect
+        Use #tool:read on #file:./references/guide.md only if needed.
 
-            Good:
+        ## Step 2 - Ask
+        Use #tool:vscode/askQuestions on #file:./assets/questions.json only if needed.
 
-            ```markdown
-            ## Step 1 - Gather context
-            Review [guide A](./references/guide-a.md), [guide B](./references/guide-b.md), and [checklist](./assets/checklist.md) before deciding what matters.
-            ```
+        ## Step 3 - Validate
+        Use #tool:execute on #file:./scripts/validate.py only if needed.
 
-            ## Support-doc marker example
+        </workflow>
+        ```
 
-            Bad:
+        ## Discovery and routing example
 
-            ```markdown
-            # Validation notes
-            Use #tool:read on #file:./references/validation.md.
-            ```
+        Bad:
 
-            Good:
+        ```yaml
+        ---
+        name: vague-skill
+        description: Helpful skill
+        user-invocable: false
+        ---
+        ```
 
-            ```markdown
-            # Validation notes
-            See [validation guide](../references/validation.md).
-            ```
-            """
-        ).strip() + "\n"
+        Good:
+
+        ```yaml
+        ---
+        name: precise-skill
+        description: "WHAT: Provide precise routing. USE FOR: validator tests. DO NOT USE FOR: unrelated work."
+        user-invocable: false
+        ---
+        ```
+
+        ## Authoring Notes
+
+        - The sections above are intentionally reordered.
+
+        ## Duplicate logic example
+
+        Bad:
+
+        ```markdown
+        ## Step 4 - Validate
+        - Repeat the validator instruction.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 4 - Validate
+        Apply the shared validation rules instead.
+        ```
+
+        ## Point-of-need reference example
+
+        Bad:
+
+        ```markdown
+        ## Runtime Inputs
+        - #file:./assets/questions.json
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 2 - Ask
+        Use #tool:vscode/askQuestions with #file:./assets/questions.json.
+        ```
+
+        ## Choosing `#file:` versus markdown links
+
+        Bad:
+
+        ```markdown
+        ## Step 1 - Inspect options
+        Use #file:./references/guide-a.md to note the canonical guidance.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 1 - Inspect options
+        Review [guide A](./references/guide-a.md) before deciding whether it is needed now.
+        ```
+
+        ## Early-context front-loading example
+
+        Bad:
+
+        ```markdown
+        ## Step 1 - Gather references
+        Use #tool:read on #file:./references/guide-a.md before planning.
+        Use #tool:read on #file:./references/guide-b.md before planning.
+        Use #tool:read on #file:./assets/checklist.md before planning.
+        ```
+
+        Good:
+
+        ```markdown
+        ## Step 1 - Gather context
+        Review [guide A](./references/guide-a.md), [guide B](./references/guide-b.md), and [checklist](./assets/checklist.md) before deciding what matters.
+        ```
+
+        ## Support-doc marker example
+
+        Bad:
+
+        ```markdown
+        # Validation notes
+        Use #tool:read on #file:./references/validation.md.
+        ```
+
+        Good:
+
+        ```markdown
+        # Validation notes
+        See [validation guide](../references/validation.md).
+        ```
+        """
+    ).strip() + "\n"
