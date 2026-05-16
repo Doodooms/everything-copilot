@@ -5,7 +5,7 @@ user-invocable: false
 disable-model-invocation: true
 ---
 
-Related skill: `agent-customization`. Load and follow **prompts.md** for template and principles.
+Related skill: `create-agent` for agent work. Do not load stale `agent-customization` guidance here; this skill stays scoped to `.prompt.md` authoring.
 
 Guide the user to create a `.prompt.md`.
 
@@ -26,4 +26,4 @@ If no clear pattern emerges from the conversation, clarify:
 2. Identify the most ambiguous or weak parts and ask about those.
 3. Once finalized, summarize what the prompt does, suggest example invocations, and propose related customizations to create next.
 
-Remember to follow the `agent-customization` guidelines to create highly effective prompts.
+Remember to follow the prompt authoring template and principles for reusable `.prompt.md` files, not agent-specific guidance.

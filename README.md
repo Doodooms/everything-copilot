@@ -21,6 +21,17 @@ npm install
 
 This creates or updates the local `.venv` from [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock), then installs the pinned local Node-based AHK dependency from [package.json](package.json).
 
+## Capability layer
+
+This repository now includes a deterministic capability abstraction layer between skill workflows and concrete MCP tool bindings.
+
+- Capability contracts live in [.github/capabilities](.github/capabilities).
+- Provider and tool catalogs live in [.github/runtime/provider-catalog.yaml](.github/runtime/provider-catalog.yaml).
+- Capability-to-provider bindings live in [.github/runtime/capability-bindings.yaml](.github/runtime/capability-bindings.yaml).
+- Validation and resolution CLIs live in [scripts/capability_validator.py](scripts/capability_validator.py) and [scripts/capability_resolver.py](scripts/capability_resolver.py).
+
+The first implementation adds the abstraction layer and validation without migrating existing skills or agents yet. The architecture, migration examples, risks, and future evolution notes live in [.github/runtime/capability-layer.md](.github/runtime/capability-layer.md).
+
 ## Recommended Evolution Path
 
 This repository is evolving toward an `everything-copilot` platform in phases. The current recommendation order is:
@@ -192,6 +203,8 @@ Examples:
 
 ```bash
 uv run python .github/skills/create-skill/scripts/validate_skill.py --skill-dir .github/skills/create-skill
+uv run python scripts/capability_validator.py repo --root .
+uv run python scripts/capability_resolver.py resolve --capability graph.semantic.related
 uv run python -c "import typer, yaml, mcp"
 ```
 
@@ -256,4 +269,5 @@ Commit [Dockerfile](Dockerfile) and [.dockerignore](.dockerignore) when the pack
 - `graphify` is managed by the root uv project in this repository.
 - `gitnexus` remains an external prerequisite managed outside the root uv project; the workspace adapts the upstream hook semantics in Python, but does not declare a root PyPI dependency for GitNexus.
 - `ahk` is managed as a pinned local Node development dependency and exposed to Copilot through [.vscode/mcp.json](.vscode/mcp.json).
+- The health gate now validates the checked-in capability registry with [scripts/capability_validator.py](scripts/capability_validator.py).
 - For markdown-heavy graphify runs without external API keys, use the workspace [/graphify prompt](.github/prompts/graphify.prompt.md).

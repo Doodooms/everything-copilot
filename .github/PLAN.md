@@ -17,7 +17,7 @@ The most complete agentic-workflow framework for GitHub Copilot in VS Code.
 Language-agnostic and reusable for any project. Provides a layered system:
 
 - **Layer 1 -- Native VS Code/Copilot**: built-in memory tool, Plan agent, chat checkpoints, Copilot CLI background agents, hooks
-- **Layer 2 -- Custom Agents**: specialized personas (Planner, Research, Dev, Quality, Commit, Code Reviewer)
+- **Layer 2 -- Custom Agents**: specialized personas (Orchestrator, Planner, Implementer, Code Reviewer, Debugger, Researcher, Documentalist, Sec Auditor, Devops)
 - **Layer 3 -- Skills Library**: orchestration, TDD, security, knowledge graph, impact analysis, creation wizards
 - **Layer 4 -- MCP Servers**: ahk (task orchestration state), graphify (documentation graph), gitnexus (impact analysis)
 - **Layer 5 -- Scoped Instructions**: file-pattern-specific rules via `.github/instructions/`
@@ -42,12 +42,12 @@ GitHub Copilot (VS Code)
    [Hooks]                     -- Deterministic lifecycle enforcement
      [.github/hooks/graph-patch.json]
         |
-   [Orchestrator Skill]        -- Coordinates multi-agent workflows via manifest
-        |
-   +--------+--------+--------+--------+
-   |        |        |        |        |
-Planner  Research   Dev    Quality  Commit
-   |                           |
+     [Orchestrator Agent] / [Orchestrator Skill]
+            |
+     +----+----+----+----+----+----+----+----+
+     |    |    |    |    |    |    |    |    |
+Planner Researcher Implementer Code-Reviewer Debugger Documentalist Sec-Auditor Devops
+            |
 [Skills Library]          [MCP Servers]
 graphify                  ahk (tasks/actions/docs)
 gitnexus                  graphify (graph.json)
@@ -70,30 +70,15 @@ troubleshoot
 
 | Agent        | File                           | Purpose                              |
 |--------------|-------------------------------|--------------------------------------|
-| Orchestrator | skill: orchestrator/SKILL.md  | Coordinate Research->Dev->QA->Commit |
-| Planner      | agents/planner.agent.md       | Phased implementation plans          |
-| Research     | agents/research.agent.md      | Gather docs, APIs, repo insights     |
-| Dev          | agents/dev.agent.md           | Implement tasks from manifest        |
-| Quality      | agents/quality.agent.md       | Validate implementations via tests   |
-| Commit       | agents/commit.agent.md        | Precise conventional commit messages |
-| Code Reviewer      | agents/code-reviewer.agent.md          | Security, quality, maintainability   |
-| Architect          | agents/architect.agent.md              | System design, ADRs, scalability     |
-| Code Architect     | agents/code-architect.agent.md         | Codebase-grounded implementation blueprints |
-| Code Explorer      | agents/code-explorer.agent.md          | Execution-path and dependency mapping |
-| TDD Guide          | agents/tdd-guide.agent.md              | TDD specialist, RED-GREEN-REFACTOR   |
-| Refactor Cleaner   | agents/refactor-cleaner.agent.md       | Dead code cleanup, consolidation     |
-| Build Error Resolver| agents/build-error-resolver.agent.md  | Fix build/type errors, minimal diffs |
-| Security Reviewer  | agents/security-reviewer.agent.md      | OWASP Top 10 vulnerability detection |
-| Database Reviewer  | agents/database-reviewer.agent.md      | PostgreSQL review specialist         |
-| Silent Failure Hunter | agents/silent-failure-hunter.agent.md | Reliability and error-propagation review |
-| PR Test Analyzer   | agents/pr-test-analyzer.agent.md       | Behavioral test coverage review      |
-| E2E Runner         | agents/e2e-runner.agent.md             | Critical user-journey end-to-end testing |
-| Performance Optimizer| agents/performance-optimizer.agent.md| Profiling, bundle, query, memory     |
-| Doc Updater        | agents/doc-updater.agent.md            | Codemaps and documentation sync      |
-| TypeScript Reviewer| agents/typescript-reviewer.agent.md    | TS/JS code review specialist         |
-| Python Reviewer    | agents/python-reviewer.agent.md        | Python code review specialist        |
-| Go Reviewer        | agents/go-reviewer.agent.md            | Go code review specialist            |
-| Rust Reviewer      | agents/rust-reviewer.agent.md          | Rust safety and patterns reviewer    |
+| Orchestrator | agents/orchestrator/orchestrator.agent.md | Route requests and coordinate specialist flows |
+| Planner      | agents/planner/planner.agent.md       | Phased implementation plans          |
+| Implementer  | agents/implementer/implementer.agent.md | Scoped code changes and tests       |
+| Code Reviewer| agents/code-reviewer/code-reviewer.agent.md | Quality, regression, and language review |
+| Debugger     | agents/debugger/debugger.agent.md     | Failure reproduction and root-cause repair |
+| Researcher   | agents/researcher/researcher.agent.md | Docs, APIs, compatibility, and technical research |
+| Documentalist| agents/documentalist/documentalist.agent.md | READMEs, guides, runbooks, and codemaps |
+| Sec Auditor  | agents/sec-auditor/sec-auditor.agent.md | Security, secrets, auth, and database audit |
+| Devops       | agents/devops/devops.agent.md         | CI, deployment, packaging, and observability |
 
 ## Skills Library
 
@@ -101,11 +86,20 @@ troubleshoot
 |--------------------|--------------------------------|-----------------------------------------|
 | graphify           | skills/graphify/               | Knowledge graph exploration             |
 | gitnexus           | skills/gitnexus/               | Architecture impact analysis            |
+| architecture-design | skills/architecture-design/   | System design and codebase-aware blueprinting |
+| code-exploration   | skills/code-exploration/      | Execution-path and dependency mapping   |
+| commit-message     | skills/commit-message/        | Factual commit message drafting         |
 | tdd-workflow       | skills/tdd-workflow/           | RED-GREEN-REFACTOR with checkpoints     |
 | memory             | skills/memory/                 | Orient-Work-Persist session rhythm      |
 | security-review    | skills/security-review/        | OWASP Top 10 audit before merge         |
-| code-quality       | skills/code-quality/           | Static analysis, lint, type checking    |
 | orchestrator       | skills/orchestrator/           | Multi-agent manifest coordination       |
+| code-quality       | skills/code-quality/           | Static analysis, lint, type checking    |
+| failure-analysis   | skills/failure-analysis/       | Build, test, and runtime root-cause isolation |
+| database-audit     | skills/database-audit/         | Database integrity, performance, and safety review |
+| language-review    | skills/language-review/        | TypeScript, Python, Go, and Rust review checklists |
+| performance-profiling | skills/performance-profiling/ | Hotspot analysis and optimization guidance |
+| refactor-cleanup   | skills/refactor-cleanup/       | Behavior-preserving dead code and duplication cleanup |
+| test-coverage-review | skills/test-coverage-review/ | Behavioral test adequacy review         |
 | verification-loop  | skills/verification-loop/      | Pre-PR gate: build+types+lint+tests     |
 | search-first       | skills/search-first/           | Research before writing custom code     |
 | iterative-retrieval| skills/iterative-retrieval/    | Progressive context for multi-agent     |
@@ -236,7 +230,7 @@ Examples to create:
 1. Open Copilot Chat, invoke the orchestrator prompt (`#prompt:orchestrator.prompt.md`).
 2. Orchestrator reads PLAN.md and produces a manifest; review and approve.
 3. When the `ahk` MCP server is connected, the Orchestrator uses AHK as the operational task ledger: locate or add the task, claim it when execution begins, and record actions during implementation and validation.
-4. Planner produces a phased plan; Orchestrator dispatches to Research/Dev/Quality/Commit.
+4. Planner produces a phased plan; Orchestrator dispatches to the smallest specialist flow needed across Researcher, Implementer, Code Reviewer, Debugger, Documentalist, Sec Auditor, and Devops.
 5. Use chat checkpoints to rewind if the agent goes off track.
 6. After completion: run `memory` Persist phase to capture learnings.
 
@@ -293,12 +287,8 @@ Examples to create:
 | P1    | Create `.github/instructions/` scoped files      | Scaffolded  |
 | P1    | Update `memory` SKILL.md to reference built-in tool | Planned  |
 | P1    | Strip Docker mandate from `copilot-instructions.md` | Completed |
-| P2    | Import `code-architect` agent                    | Completed   |
-| P2    | Import `code-explorer` agent                     | Completed   |
-| P2    | Import `database-reviewer` agent                 | Completed   |
-| P2    | Import `silent-failure-hunter` agent             | Completed   |
-| P2    | Import `pr-test-analyzer` agent                  | Completed   |
-| P2    | Import `e2e-runner` agent                        | Completed   |
+| P2    | Consolidate imported specialist agents into the skill layer | Completed |
+| P2    | Replace flat agent files with the canonical 9-agent model | Completed |
 | P2    | Add Copilot CLI handoff guidance to orchestrator prompt | Planned |
 | P2    | Add more hooks (PreToolUse: format check, SessionStart: memory orient) | Planned |
 | P3    | Document Copilot Memory setup guide              | Planned     |

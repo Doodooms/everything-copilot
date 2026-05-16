@@ -1,0 +1,34 @@
+providers:
+  ahk:
+    server: ahk
+    description: Task and documentation lifecycle tools exposed through Agent Harness Kit.
+    tools:
+      - tasks.get
+      - tasks.claim
+      - tasks.update
+      - tasks.add
+      - tasks.acceptance.update
+      - actions.start
+      - actions.write
+      - actions.complete
+      - actions.get
+      - actions.record_file
+      - actions.record_tool
+      - docs.search
+  graphify:
+    server: graphify
+    description: Workspace graph retrieval over the local graphify MCP server.
+    tools:
+      - query_graph
+      - get_node
+      - get_neighbors
+      - shortest_path
+  gitnexus:
+    server: gitnexus
+    description: Code impact and repository graph analysis through the GitNexus MCP server.
+    tools:
+      - impact
+      - context
+      - detect_changes
+      - rename
+      - route_map

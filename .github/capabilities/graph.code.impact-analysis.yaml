@@ -1,0 +1,15 @@
+name: graph.code.impact-analysis
+description: Compute graph-backed code impact analysis for a symbol or change surface.
+inputs:
+  - symbol
+  - scope
+outputs:
+  - impacted_surfaces
+  - rationale
+determinism:
+  resolution: explicit
+  fallback: forbidden
+  ambiguity: fail
+constraints:
+  - Impact analysis must stay bound to one provider route for auditability.
+requires: []

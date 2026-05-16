@@ -29,39 +29,34 @@ Authoritative plan: #file:./PLAN.md
 
 ## Agents Available
 
-- @planner (agents/planner.agent.md) -- phased implementation plans, risk annotation
-- @research (agents/research.agent.md) -- API docs, repo insights, technical spikes
-- @dev (agents/dev.agent.md) -- implementation from manifest, patch-style edits
-- @quality (agents/quality.agent.md) -- validation, test runs, invariant checks
-- @commit (agents/commit.agent.md) -- precise conventional commit messages
-- @code-reviewer (agents/code-reviewer.agent.md) -- code review: security, quality, maintainability
-- @architect (agents/architect.agent.md) -- system design, ADRs, scalability decisions
-- @code-architect (agents/code-architect.agent.md) -- codebase-grounded implementation blueprints
-- @code-explorer (agents/code-explorer.agent.md) -- execution-path and dependency mapping before changes
-- @tdd-guide (agents/tdd-guide.agent.md) -- TDD specialist: RED-GREEN-REFACTOR enforcement
-- @refactor-cleaner (agents/refactor-cleaner.agent.md) -- dead code cleanup and consolidation
-- @build-error-resolver (agents/build-error-resolver.agent.md) -- fix build/type errors, minimal diffs
-- @security-reviewer (agents/security-reviewer.agent.md) -- OWASP Top 10 vulnerability detection
-- @database-reviewer (agents/database-reviewer.agent.md) -- PostgreSQL query, schema, and safety review
-- @silent-failure-hunter (agents/silent-failure-hunter.agent.md) -- swallowed-error and reliability review
-- @pr-test-analyzer (agents/pr-test-analyzer.agent.md) -- PR test coverage quality and gap analysis
-- @e2e-runner (agents/e2e-runner.agent.md) -- end-to-end journey testing and flaky-test control
-- @performance-optimizer (agents/performance-optimizer.agent.md) -- profiling, bundle, DB query, memory
-- @doc-updater (agents/doc-updater.agent.md) -- codemaps and documentation sync
-- @typescript-reviewer (agents/typescript-reviewer.agent.md) -- TypeScript/JavaScript code reviewer
-- @python-reviewer (agents/python-reviewer.agent.md) -- Python code reviewer (PEP 8, type hints, security)
-- @go-reviewer (agents/go-reviewer.agent.md) -- Go code reviewer (idiomatic Go, concurrency, errors)
-- @rust-reviewer (agents/rust-reviewer.agent.md) -- Rust code reviewer (safety, ownership, lifetimes)
+- @orchestrator (agents/orchestrator/orchestrator.agent.md) -- top-level routing, workflow coordination, and specialist handoff
+- @planner (agents/planner/planner.agent.md) -- phased implementation plans, scope, risks, and acceptance criteria
+- @implementer (agents/implementer/implementer.agent.md) -- scoped code changes, tests, and behavior validation
+- @code-reviewer (agents/code-reviewer/code-reviewer.agent.md) -- quality, regression, and language-specific code review
+- @debugger (agents/debugger/debugger.agent.md) -- failure reproduction, root-cause isolation, and minimal bug repair
+- @researcher (agents/researcher/researcher.agent.md) -- authoritative technical research and evidence-backed recommendations
+- @documentalist (agents/documentalist/documentalist.agent.md) -- README, guide, runbook, and codemap maintenance
+- @sec-auditor (agents/sec-auditor/sec-auditor.agent.md) -- security, secrets, auth, and database safety audit
+- @devops (agents/devops/devops.agent.md) -- CI, deployment, packaging, runtime, and observability workflows
 
 ## Skills Available
 
 - graphify -- knowledge graph over codebase: read graphify-out/GRAPH_REPORT.md first
 - gitnexus -- impact analysis: run context + impact before editing shared symbols
+- architecture-design -- system design briefs and codebase-grounded implementation blueprints
+- code-exploration -- execution-path tracing and safest-change-surface mapping
+- commit-message -- factual commit message drafting from validated changes
 - tdd-workflow -- RED-GREEN-REFACTOR with git checkpoints
 - memory -- Orient-Work-Persist session rhythm, .memory/ vault management
 - security-review -- OWASP Top 10 audit before merge
-- orchestrator -- coordinate Research->Dev->QA->Commit workflows
+- orchestrator -- coordinate the 9-agent developer workflow and persist manifests
 - code-quality -- static analysis, linting, type checking
+- failure-analysis -- root-cause isolation for build, test, and runtime failures
+- database-audit -- schema, query, transaction, and migration safety review
+- language-review -- TypeScript, Python, Go, and Rust specific review checklists
+- performance-profiling -- hotspot analysis and evidence-backed optimization paths
+- refactor-cleanup -- behavior-preserving dead code and duplication cleanup
+- test-coverage-review -- behavioral test adequacy and regression-gap review
 - create-skill -- create new SKILL.md files
 - create-agent -- create new agent definitions
 - create-hook -- create hooks for deterministic lifecycle enforcement (.github/hooks/)
@@ -102,13 +97,13 @@ Start every session: read .memory/INDEX.md (if present) before any other search.
 
 ## Workflow Defaults
 
-1. For new tasks: invoke @planner or orchestrator skill.
+1. For new tasks: invoke @orchestrator or @planner.
 2. For codebase exploration: invoke graphify skill, read GRAPH_REPORT.md, and use the workspace `/graphify` prompt when the graph is missing or stale.
 3. For pre-refactor analysis: invoke gitnexus skill, run impact + context.
 4. For feature implementation: use tdd-workflow skill.
 5. Before adding dependencies: use search-first skill.
 6. After completing a feature: run verification-loop skill.
-7. For pre-merge validation: run security-review skill + quality agent.
+7. For pre-merge validation: run security-review skill plus @sec-auditor and @code-reviewer when the change warrants it.
 8. After any significant session: run memory skill Persist phase.
 
 <LANGUAGE-CONVENTIONS>
@@ -151,7 +146,7 @@ Narrative description in Markdown.
 </gates>
 
 <handoffs>
-- On success: pass manifest to @dev
+- On success: pass manifest to @implementer
 - On ambiguity: ask @planner for clarification
 </handoffs>
 ```

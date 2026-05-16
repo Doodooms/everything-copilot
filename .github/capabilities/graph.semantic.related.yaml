@@ -1,0 +1,15 @@
+name: graph.semantic.related
+description: Resolve semantically related entities from the workspace graph.
+inputs:
+  - query
+  - scope
+outputs:
+  - related_entities
+  - confidence
+determinism:
+  resolution: explicit
+  fallback: forbidden
+  ambiguity: fail
+constraints:
+  - Bindings must map to one deterministic provider route unless an explicit routing policy is declared.
+requires: []

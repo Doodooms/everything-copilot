@@ -1,22 +1,72 @@
 [
   {
     "header": "Skill Name",
-    "question": "Provide a single-line skill name (lowercase, hyphens).",
+    "question": "Provide the skill folder name in lowercase hyphenated form.",
     "allowFreeformInput": true
   },
   {
-    "header": "Purpose",
-    "question": "One-line purpose: what the skill accomplishes.",
+    "header": "WHAT",
+    "question": "One line: what repeatable workflow should the skill perform?",
     "allowFreeformInput": true
   },
   {
-    "header": "When To Use",
-    "question": "Short trigger phrases or scenarios (comma-separated).",
+    "header": "USE FOR",
+    "question": "List concrete trigger phrases or scenarios, comma-separated.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "DO NOT USE FOR",
+    "question": "List nearby asks that should route elsewhere, comma-separated.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Scope",
+    "question": "Where should the skill live?",
+    "options": [
+      {
+        "label": "Workspace",
+        "description": "Create under .github/skills/<name>",
+        "recommended": true
+      },
+      {
+        "label": "User profile",
+        "description": "Create in a personal skill folder outside the repository"
+      }
+    ],
+    "allowFreeformInput": false
+  },
+  {
+    "header": "Access Mode",
+    "question": "How should Copilot access this skill?",
+    "options": [
+      {
+        "label": "Auto-load only",
+        "description": "Set user-invocable: false",
+        "recommended": true
+      },
+      {
+        "label": "Slash command only",
+        "description": "Set disable-model-invocation: true"
+      },
+      {
+        "label": "Both auto-load and slash",
+        "description": "Omit both access flags"
+      },
+      {
+        "label": "Disabled placeholder",
+        "description": "Set user-invocable: false and disable-model-invocation: true"
+      }
+    ],
+    "allowFreeformInput": false
+  },
+  {
+    "header": "Dependencies",
+    "question": "List required MCP servers, workspace tools, local scripts, or external services, or answer none.",
     "allowFreeformInput": true
   },
   {
     "header": "Output Format",
-    "question": "Preferred output: `SKILL.md` draft | assets | apply_patch",
+    "question": "Preferred output: SKILL.md draft, package assets, or apply_patch diffs?",
     "options": [
       { "label": "SKILL.md draft" },
       { "label": "Assets + templates" },

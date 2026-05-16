@@ -188,6 +188,12 @@ def test_live_create_agent_skill_directory_validates() -> None:
     assert result.returncode == 0, (result.stdout + result.stderr).strip()
 
 
+def test_live_create_skill_directory_validates() -> None:
+    result = _run_validator(REPO_ROOT / ".github" / "skills" / "create-skill")
+
+    assert result.returncode == 0, (result.stdout + result.stderr).strip()
+
+
 def test_live_create_prompt_skill_directory_validates() -> None:
     result = _run_validator(REPO_ROOT / ".github" / "skills" / "create-prompt")
 

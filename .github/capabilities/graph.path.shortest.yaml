@@ -1,0 +1,14 @@
+name: graph.path.shortest
+description: Compute the shortest deterministic path between two known graph nodes.
+inputs:
+  - source_id
+  - target_id
+outputs:
+  - path
+determinism:
+  resolution: explicit
+  fallback: forbidden
+  ambiguity: fail
+constraints:
+  - Source and target nodes must resolve inside the same provider graph.
+requires: []

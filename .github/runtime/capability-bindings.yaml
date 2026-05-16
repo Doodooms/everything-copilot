@@ -1,0 +1,21 @@
+bindings:
+  graph.semantic.related:
+    routes:
+      - provider: graphify
+        tool: query_graph
+  graph.node.fetch:
+    routes:
+      - provider: graphify
+        tool: get_node
+  graph.node.neighbors:
+    routes:
+      - provider: graphify
+        tool: get_neighbors
+  graph.path.shortest:
+    routes:
+      - provider: graphify
+        tool: shortest_path
+  graph.code.impact-analysis:
+    routes:
+      - provider: gitnexus
+        tool: impact

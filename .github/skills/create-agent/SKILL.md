@@ -27,30 +27,14 @@ license: MIT
 
 ## Step 0 - **CONFIRMATION**
 
-# Code Reviewer Use Cases
-
-Use the code-reviewer agent when the task is primarily about judging a change rather than making one.
-
-- Review a diff or edited files before merge.
-- Check whether tests cover the real behavior change.
-- Look for correctness, maintainability, and regression issues.
-- Apply language-specific review depth to TypeScript, Python, Go, or Rust changes.
-
-# Code Reviewer Non-Use Cases
-
-Do not use the code-reviewer agent when the task is mainly about producing or changing artifacts.
-
-- Writing or editing code.
-- Planning a feature or architecture.
-- Researching external APIs or libraries.
-- Reproducing a failure and fixing it.
-- Performing a dedicated security audit or infrastructure workflow.
+1. USE #tool:read **IMMEDIATELY** on #file:./references/confirmation-matrix.md to confirm with **certainty** if this skill should be used.
+2. **If and ONLY if** you are **certain**, read the following rules and workflow steps to understand how the skill works and what it requires for execution.
 
 <rules>
 
 - This is the default skill for agent work in this workspace. Use it before improvising agent edits or loading stale external agent-customization guidance.
 - Default to a single self-contained agent file at `.github/agents/<slug>.agent.md`.
-- Keep routing rules inside the `.agent.md` file itself. Do **NOT** require sibling `references/USEFOR.md` or `references/DONOTUSEFOR.md` files for new agents.
+- Keep routing rules inside the `.agent.md` file itself. Do **NOT** require sibling routing docs for new agents.
 - For new drafts, use `<definitions>`, `<workflow>`, and `<rules>` as the canonical wrapper vocabulary. Do **NOT** invent extra XML-style tags.
 - Keep the tool list minimal. Every extra tool widens the agent's blast radius and weakens routing precision.
 - If the agent declares `agents:`, it **MUST** also include the `agent` tool.
@@ -58,8 +42,10 @@ Do not use the code-reviewer agent when the task is mainly about producing or ch
 - Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
 - `description` is the primary routing surface. It **MUST** use `WHAT:`, `USE FOR:`, and `DO NOT USE FOR:` so the agent advertises both scope and refusal boundary before Step 0 runs.
 - Every new agent **MUST** include a Step 0 confirmation with embedded `### USE FOR` and `### DO **NOT** USE FOR` sections and a structured refusal path.
+- If extra routing help is still needed before the workflow loads, keep it in one dense support surface. Do **NOT** split the same yes or no boundary across multiple files.
 - If routing still feels ambiguous after drafting, produce one example prompt that should route to the agent and verify that the `description` clearly covers that prompt.
 - Reference support files only on the workflow step that consumes them. Support markdown files must stay free of active `#tool:` and `#file:` markers.
+- Keep procedural workflow in ordered `1.` actions and use `-` bullets for narrow sub-checks, exceptions, or examples when they belong under the same main action.
 
 </rules>
 
@@ -68,8 +54,9 @@ Do not use the code-reviewer agent when the task is mainly about producing or ch
 1. Inspect the workspace agent surface before drafting.
    - If the name, scope, or overlap is unclear, use #tool:search in the workspace `.github/agents/` directory to avoid duplicates and naming collisions.
    - If the target agent already exists and you know the exact file path, use #tool:read on its current `.agent.md` file first.
+   - If the request is still ambiguous after Step 0 confirmation, review the [primitive selection matrix](./references/primitive-selection.md) only for the remaining agent-vs-other-primitive choice.
 2. Confirm current host requirements only when they matter for this draft.
-   - Use #tool:read on #file:./references/latest-docs.md before drafting when you need to confirm current VS Code custom-agent frontmatter, location, or subagent behavior.
+   - Use #tool:read on #file:./references/latest-docs.md only when you need to confirm current VS Code custom-agent frontmatter, location, picker behavior, or subagent behavior.
    - Review [custom agent docs](./references/custom_agent.md), [local agent docs](./references/local_agents.md), [subagent docs](./references/sub_agent.md), and the [agents overview](./references/agents.md) only for the specific ambiguity you still need to resolve.
 3. Confirm the canonical body shape before you draft.
    - Use the current [agent template](./assets/agent-template.md) as the canonical draft scaffold when you need to confirm the expected body shape.
@@ -88,7 +75,7 @@ Do not use the code-reviewer agent when the task is mainly about producing or ch
    - Routing triggers.
    - Routing exclusions.
    - Required tools.
-   - Forbidden tools.
+   - Forbidden work.
    - Invocation mode.
    - Delegation needs.
    - Output contract.
@@ -124,7 +111,7 @@ Do not use the code-reviewer agent when the task is mainly about producing or ch
    - If invocation mode or delegation still feels tricky while drafting, review [delegation and invocation guidance](./references/delegation_and_invocation.md) before setting `agent`, `agents:`, `user-invocable`, or `disable-model-invocation`.
 6. Keep the generated body aligned with the canonical structure.
    - Keep the draft agent-shaped with `<definitions>`, then a `<workflow>` wrapper containing `## Step 0 - **CONFIRMATION**`, embedded `### USE FOR` and `### DO **NOT** USE FOR`, `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
-   - Inside the workflow, prefer ordered `1. 2. 3.` lists when actions must happen in sequence.
+   - Inside the workflow, prefer ordered `1. 2. 3.` lists when actions must happen in sequence and keep sub-checks, exceptions, or examples under those actions as `-` bullets.
    - Keep routing, refusal, and output requirements inside the `.agent.md` file itself instead of splitting them into sibling support files.
 7. Use the template wrappers as scaffolding for new drafts.
    - Existing legacy agents may keep their older shape unless the task explicitly rewrites them.
@@ -153,11 +140,15 @@ Do not use the code-reviewer agent when the task is mainly about producing or ch
 
 1. Run the agent validator.
    - Use #tool:execute to run #file:./scripts/validate_agent.py with the repository interpreter: `./.venv/bin/python .github/skills/create-agent/scripts/validate_agent.py --agent-file <agent_file>`.
+   - The validator and its lint core both live under this skill's own `scripts/` directory. Repo-level wrappers may call them, but they are not the source of truth.
 2. Refresh the repository environment if validation prerequisites are missing.
    - If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before validating.
 3. Load the fix guide only when the output needs interpretation.
    - If validation reports errors or warnings you need help interpreting, use #tool:read on #file:./references/validation.md and apply the matching fix.
-4. Fix the full validation surface instead of weakening the contract.
+   - If the validator behavior itself needs inspection, review [agent lint core](./scripts/agent_lint_core.py) at this step.
+4. Run the final local audit after script validation.
+   - Use #tool:read on #file:./references/final-checklist.md and resolve every unchecked item or state why it does not apply.
+5. Fix the full validation surface instead of weakening the contract.
    - If validation flags unknown tools, broad delegation, missing embedded routing sections, or missing subagents, fix the agent contract instead of weakening the validator.
    - When tool names are the issue, use the `copilot-tool-snapshot` workflow or the chat `Configure Tools...` button before you guess.
    - Fix **ALL** ERRORs before proceeding.

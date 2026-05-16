@@ -13,6 +13,7 @@ test -f agent-harness-kit.config.ts
 test -f .harness/feature_list.json
 
 uv run python -c "import graphify, ladybug, mcp, typer, yaml"
+uv run python scripts/capability_validator.py repo --root .
 npx --no-install ahk --version >/dev/null
 
 echo "agentic-workflow health check passed."

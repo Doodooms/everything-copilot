@@ -1,13 +1,13 @@
 ---
 name: orchestrator
-description: "Orchestrator skill: coordinate Research→Dev→Quality→Commit flows; persist manifests and audits; enforce plan_index-first contract."
+description: "Orchestrator skill: coordinate the 9-agent developer workflow; persist manifests and audits; enforce plan_index-first contract."
 user-invocable: false
 ---
 
 # Orchestrator Skill
 
 Purpose:
-- Coordinate multi-agent workflows (Research, Dev, Quality, Commit).
+- Coordinate multi-agent workflows across Orchestrator, Planner, Researcher, Implementer, Code Reviewer, Debugger, Documentalist, Sec Auditor, and Devops.
 - Persist authoritative manifests to `.github/tasks/` and audit records to `.github/plan_history/`.
 - Provide a machine-friendly `manifest` to guide subagents.
 
@@ -61,24 +61,24 @@ Working examples: #file:./assets/example_manifest_patch.yaml and #file:./assets/
 	Orchestrator will proactively surface the plan and request the missing
 	plan-index details using #tool:vscode/askQuestions when necessary.
 
-# Research invocation rules (when Orchestrator should call Research)
+# Research invocation rules (when Orchestrator should call Researcher)
 
-The Orchestrator decides whether to call the Research agent according to
+The Orchestrator decides whether to call the Researcher agent according to
 deterministic rules:
 
-- CALL Research when any of the following are true:
+- CALL Researcher when any of the following are true:
 	- `requires_research: true` in the manifest
 	- `risk_level` is `high`
 	- `change_type` is `full_content`
 	- `plan_index` is missing, empty, or insufficient to identify impacted files
 	- the manifest references external services, connectors, or URLs
 
-- CONSIDER calling Research when:
+- CONSIDER calling Researcher when:
 	- `risk_level` is `medium` and the manifest touches unfamiliar modules
 	- the manifest omits `test_commands` or verification steps
 
-When Research is invoked, the Orchestrator will provide a targeted `plan_index`
-and a short query string describing what to research; Research outputs are
+When Researcher is invoked, the Orchestrator will provide a targeted `plan_index`
+and a short query string describing what to research; Researcher outputs are
 consumed programmatically (see Research Output Contract) and attached to the
 orchestration record.
 
@@ -134,7 +134,7 @@ When the manifest delegates work (for example to `copilot_cli`), the Orchestrato
 	- The manifest explicitly includes a `skipped_phases` entry documenting the skip (see schema) with `phase: Research`, `reason`, `recorded_by`, and `timestamp`.
 	- The manifest author or delegate provides a short `skip_rationale` and, when available, references to prior audit records that justify the skip.
 
-- Any other phase (Dev, Quality, Commit) may be skipped only with the same explicit recording in `skipped_phases` and a clear `reason`. The Orchestrator will persist this to the audit record and raise a flag in the orchestration summary.
+- Any other specialist phase (Planner, Implementer, Code Reviewer, Debugger, Documentalist, Sec Auditor, Devops, or commit-message) may be skipped only with the same explicit recording in `skipped_phases` and a clear `reason`. The Orchestrator will persist this to the audit record and raise a flag in the orchestration summary.
 
 Note: These rules are policy — the Orchestrator will validate that required phases were not skipped for high-risk or full-content changes and will refuse to auto-apply changes if mandatory phases are missing.
 

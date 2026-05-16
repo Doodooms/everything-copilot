@@ -1,51 +1,46 @@
 # Skill validation guide
 
 Purpose
-- Explains what `scripts/validate_skill.py` checks and how to fix its output.
-- Use [skill-template.md](../assets/skill-template.md) for the canonical bad and good examples that correspond to the checks below.
+- Explains what `scripts/validate_skill.py` checks and where to look when it fails.
+- The validator and its lint core both live in this skill's own `scripts/` directory.
+- A repo-level wrapper may call this validator, but this skill package remains the source of truth for skill validation behavior.
 
 When to use this file
-- Read it after validation fails or when you need to understand what the validator enforces.
-- In this repository, run the validator with `./.venv/bin/python .github/skills/create-skill/scripts/validate_skill.py --skill-dir <skill_folder>`.
-- If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root before running the validator.
+- Read it after validation fails.
+- In this repository, run `./.venv/bin/python .github/skills/create-skill/scripts/validate_skill.py --skill-dir <skill_folder>`.
+- If `.venv` does not exist yet, or if dependencies changed, run `uv sync` from the repository root first.
 
-Automatic checks
-- `SKILL.md` exists at the skill root.
-- YAML frontmatter parses and contains `name`, `description`, and `user-invocable`.
-- A frontmatter `name` that differs from the folder name is reported.
-- `context` without `compatibility` is reported because version-gated behavior should declare explicit compatibility bounds.
-- Missing `<rules>` or `<workflow>` blocks are reported.
-- `SKILL.md` longer than 500 lines is reported.
-- Missing or empty `assets/` or `references/` is reported.
-- Unresolved template leftovers such as `<what this skill does>`, `./references/<guide>.md`, or `./assets/<questions>.json` are reported.
-- Non-frontmatter markdown files are checked for active `#tool:` or `#file:` markers outside fenced code blocks.
-- `#tool:` markers are parsed, checked for trailing punctuation, and validated against the workspace skill-tool alias catalog.
-- Wrong-layer raw tool names such as `copilot_readFile`, `run_in_terminal`, or `vscode_askQuestions` fail validation and include alias suggestions.
-- `#file:` markers are parsed, checked for trailing punctuation, and best-effort checked for existence.
-- Every file under `assets/`, `references/`, and `scripts/` **MUST** be referenced from `SKILL.md`.
-- Duplicate normalized markdown headings are reported.
-- A `## Runtime Inputs` section is reported because it front-loads support files instead of referencing them at point of need.
+What the script enforces
+- Valid YAML frontmatter with `name`, `description`, and `user-invocable`.
+- `name` and folder mismatch warnings.
+- `context` without `compatibility` warnings.
+- `<workflow>` and `<rules>` presence.
+- Ordered `1.` actions at the start of every step block.
+- Point-of-need support-file references.
+- Active `#tool:` and `#file:` markers only in frontmatter-bearing definition files.
+- Template placeholder rejection.
+- Oversized post-workflow appendices rejection.
 
-Fix patterns
-- Missing frontmatter key -> add the missing key to the YAML header.
-- Name mismatch -> rename the folder or change the `name` field so they match.
-- `context` without `compatibility` -> add a `compatibility` field with the minimum VS Code and GitHub Copilot versions you have actually verified.
-- Missing `.venv` or missing validator dependencies -> run `uv sync` from the repository root, then rerun the validator.
-- Missing `<rules>` or `<workflow>` -> restore the canonical structure from [skill-template.md](../assets/skill-template.md).
-- Template leftovers such as `<what this skill does>` or `./references/<guide>.md` -> replace them with concrete wording and real file paths before publishing.
-- Active `#file:` in a support markdown file -> replace it with a markdown link such as `[file](./path)` or `[file](../path)`.
-- Active `#tool:` in a support markdown file -> replace it with plain prose or inline code such as `vscode/askQuestions`.
-- Unknown or wrong-layer `#tool:` -> replace it with the skill-facing alias or namespaced tool accepted by the workspace.
-- Unreferenced support file -> cite the file on the workflow step that consumes it.
-- `Runtime Inputs` warning -> move each `#file:` reference to the step where the agent actually needs that file.
-- Trailing punctuation after `#file:` or `#tool:` -> rewrite the sentence so the reference stands alone.
-- Duplicate headings -> merge the sections or rename one so only one canonical heading remains.
+What still needs the final checklist
+- Workspace-required `metadata`.
+- The stricter local package rule that skills should keep `assets/`, `references/`, and `scripts/` present even when upstream would allow less.
+- Conditional `compatibility` when the skill uses `context: fork`, newer tool surfaces, or other version-gated behavior.
 
-Workspace notes
-- `compatibility` is strongly recommended whenever a skill depends on version-gated behavior.
-- `metadata` and `license` are optional local annotations; keep them concise if you use them.
-- `## WHEN TO USE`, `## WHEN NOT TO USE`, and short `<definitions>` can help post-load routing, but the frontmatter `description` remains the main discovery surface.
+Use [final-checklist.md](./final-checklist.md) after script validation to catch those remaining local requirements.
 
-Status codes
-- ERROR: **MUST** fix before publishing.
-- WARNING: structural problem or quality issue that should usually be corrected.
+Fast fix map
+
+```text
++--------------------------------------+---------------------------------------------+----------------------------------------------+
+| Validator output                      | First place to look                         | Typical repair                               |
++--------------------------------------+---------------------------------------------+----------------------------------------------+
+| Missing workflow or rules             | [skill-template](../assets/skill-template.md) | Restore the canonical structure            |
+| Plain prose at top of step            | SKILL.md workflow                            | Move the text into the first ordered action  |
+| Template leftovers                    | SKILL.md or template asset                   | Replace placeholders with real wording       |
+| Wrong-layer tool or file markers      | Support markdown                             | Use markdown links or inline tool names      |
+| Unreferenced support file             | SKILL.md                                     | Cite it at the exact point of need           |
+| Too much content after </workflow>    | references/ or assets/                       | Move matrices or checklists out of SKILL.md  |
++--------------------------------------+---------------------------------------------+----------------------------------------------+
+```
+
+Keep one source of truth per concept. If a package rule, routing rule, or matrix already exists elsewhere in the skill package, point to it instead of rewriting it here.

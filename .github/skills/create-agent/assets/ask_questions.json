@@ -1,93 +1,48 @@
 [
   {
     "header": "Agent Slug",
-    "question": "Provide the agent filename slug (lowercase, hyphens).",
+    "question": "Provide the agent file slug in lowercase hyphenated form.",
     "allowFreeformInput": true
   },
   {
     "header": "Focused Role",
     "question": "One sentence: what single job should this agent own end-to-end?",
+    "message": "This answer becomes the `WHAT:` clause in the frontmatter `description`.",
     "allowFreeformInput": true
   },
   {
     "header": "Routing Triggers",
-    "question": "Short trigger phrases or scenarios that should route work to this agent.",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Routing Exclusions",
-    "question": "Nearby tasks this agent must refuse.",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Required Tools",
-    "question": "List only the tool names this agent genuinely needs.",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Invocation Mode",
-    "question": "Should the agent appear in the picker or stay hidden as a helper?",
-    "options": [
-      { "label": "Visible in picker" },
-      { "label": "Hidden helper (user-invocable: false)" },
-      { "label": "Never invokable as subagent (disable-model-invocation: true)" }
-    ],
-    "allowFreeformInput": false
-  },
-  {
-    "header": "Allowed Subagents",
-    "question": "If the agent delegates, list the allowed subagents. Otherwise answer none.",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Output Contract",
-    "question": "Describe the exact result this agent must return.",
-    "allowFreeformInput": true
-  }
-][
-  {
-    "header": "Agent Slug",
-    "question": "Provide the agent file slug (lowercase, hyphens).",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Purpose",
-    "question": "One sentence: what unique job does this agent perform?",
-    "message": "This answer becomes the `WHAT:` part of the frontmatter `description`.",
-    "allowFreeformInput": true
-  },
-  {
-    "header": "Routing Triggers",
-    "question": "Which phrases or scenarios should cause this agent to be selected?",
-    "message": "These phrases become the `USE FOR:` portion of the frontmatter `description`.",
+    "question": "Which phrases or scenarios should route work to this agent?",
+    "message": "These answers map to the `USE FOR:` clause in `description` and the embedded Step 0 `### USE FOR` section.",
     "allowFreeformInput": true
   },
   {
     "header": "Routing Exclusions",
     "question": "Which nearby tasks or scenarios should this agent refuse?",
-    "message": "These answers become both the `DO NOT USE FOR:` clause in `description` and `references/DONOTUSEFOR.md`, helping Step 0 reject bad delegation early.",
+    "message": "These answers map to the `DO NOT USE FOR:` clause in `description` and the embedded Step 0 `### DO **NOT** USE FOR` section.",
     "allowFreeformInput": true
   },
   {
     "header": "Required Tools",
-    "question": "Which tools must this agent have?",
+    "question": "List only the workspace agent-facing tool names this agent genuinely needs.",
     "message": "Keep the set minimal. Add `agent` only when the agent truly delegates to other agents.",
     "multiSelect": true,
     "allowFreeformInput": true,
     "options": [
       { "label": "read", "description": "Inspect files or generated drafts.", "recommended": true },
       { "label": "search", "description": "Find candidate files, symbols, or collisions.", "recommended": true },
-      { "label": "edit" },
-      { "label": "execute" },
+      { "label": "execute", "description": "Run focused validation or repo checks when the role genuinely needs them." },
       { "label": "agent", "description": "Needed only if this agent delegates to other agents." },
       { "label": "web" },
+      { "label": "browser" },
       { "label": "todo" },
       { "label": "vscode/askQuestions" }
     ]
   },
   {
     "header": "Forbidden Work",
-    "question": "What must this agent avoid doing?",
+    "question": "What must this agent explicitly avoid doing?",
+    "message": "Map this answer into `## Constraints` so the refusal boundary stays explicit.",
     "allowFreeformInput": true
   },
   {
@@ -118,13 +73,13 @@
   {
     "header": "Allowed Subagents",
     "question": "List allowed subagents, `*`, or `none`.",
-    "message": "Use `none` when the agent does not delegate. If you list names, they must match existing `.github/agents/**/<slug>.agent.md` files.",
+    "message": "Use `none` when the agent does not delegate. If you list names, they must match existing `.github/agents/*.agent.md` files.",
     "allowFreeformInput": true
   },
   {
     "header": "Output Contract",
-    "question": "What should this agent return or produce?",
-    "message": "Map this answer directly into the `## Output Contract` section.",
+    "question": "Describe the exact result this agent must return.",
+    "message": "Map this answer directly into `## Output Contract`.",
     "allowFreeformInput": true
   }
 ]

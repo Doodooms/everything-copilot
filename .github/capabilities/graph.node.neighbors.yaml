@@ -1,0 +1,14 @@
+name: graph.node.neighbors
+description: Retrieve adjacent graph nodes for one deterministic starting node.
+inputs:
+  - node_id
+  - depth
+outputs:
+  - neighbors
+determinism:
+  resolution: explicit
+  fallback: forbidden
+  ambiguity: fail
+constraints:
+  - Traversal depth must be explicit in the caller context.
+requires: []

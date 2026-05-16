@@ -69,23 +69,33 @@ You are the Agent Slug agent. Your job is to perform one focused role and stop a
 - Describe exactly what the agent should return to its caller.
 - State any required sections, fields, or artifacts when the result must follow a fixed format.
 - Keep the output scoped to the role instead of narrating unrelated work.
+- Keep the main action in `1.` and place sub-checks, exceptions, or examples under it as `-` bullets when that is clearer than another top-level item.
 
 </rules>
 
 ## Step 1 - Gather only the context needed for the task.
 
-1. <describe the first thing the agent should do, for example "Inspect the PR description and linked issue to understand the change being proposed.">
-2. <describe the second thing the agent should do, for example "Search for relevant documentation or references to inform the task.">
+1. <describe what the agent must inspect or gather before it can act correctly>
+	- If this action has required sub-checks, keep them as `-` bullets under the numbered item instead of inventing another step.
+	- Example: "Inspect the PR description and linked issue to understand the change being proposed."
+2. Add another ordered action only when this step owns a second distinct gathering task.
+	- Example: "Search for the exact files, symbols, or references that define the changed behavior."
 
 ## Step 2 - Apply the role-specific method using the declared tools.
 
-1. <describe the third thing the agent should do, for example "Use the read tool to load the PR description and linked issue.">
-2. <describe the fourth thing the agent should do, for example "Use the write tool to update the PR description with the gathered context.">
+1. <describe the main role-specific action this agent performs with the declared tools>
+	- If the method branches, keep the branches as `-` bullets under the same numbered item when they are still one main action.
+	- Example: "Use the read tool to load the PR description and linked issue, then synthesize the requested findings."
+2. Add another ordered action only when this step owns a second distinct method action.
+	- Example: "Escalate only when the task requires a different specialist or broader permissions."
 
 ## Step 3 - Return the promised result without drifting into adjacent work.
 
-1. <describe the fifth thing the agent should do, for example "Summarize the change and its implications in a comment on the PR.">
-2. <describe the sixth thing the agent should do, for example "If the change touches a critical area, escalate to the Security team by invoking the security agent with a summary of the change and the reason for escalation.">
+1. <describe the concrete result this agent must return before the workflow can finish>
+	- If the output has required fields, sections, or refusal behavior, keep them as `-` bullets under the numbered item.
+	- Example: "Summarize the change and its implications in a short structured review for the caller."
+2. Add another ordered action only when the return step owns a second distinct closure action.
+	- Example: "If the task now needs a different specialist, return the handoff reason explicitly instead of drifting into adjacent work."
 
 </workflow>
 
@@ -101,6 +111,7 @@ You are the Agent Slug agent. Your job is to perform one focused role and stop a
 - Map positive routing signals into Step 0 `### USE FOR` and nearby non-matches or refusal cases into Step 0 `### DO **NOT** USE FOR`.
 - Map forbidden work and the required return shape into the `<rules>` block using `## Constraints` and `## Output Contract`.
 - Keep Step 0 mandatory for new agents. It is the refusal mechanism that prevents bad delegation.
+- Inside a step, keep the main action in `1.` and use `-` bullets for sub-checks, exceptions, and examples when they belong under the same task.
 - If tool names are unclear, use the chat "Configure Tools..." button for the live UI view and the `copilot-tool-snapshot` workflow (`Agentic Workflow: Export Copilot Tool Snapshot`, `Agentic Workflow: Check Copilot Tool Name`) to confirm exact names before you lock frontmatter.
 - If allowed subagents are `none`, omit `agents:` and remove `agent` from `tools`.
 - If you add `agents:`, include `agent` in `tools` and use existing agent names or `*` only when broad delegation is intentional.

@@ -1,0 +1,13 @@
+name: graph.node.fetch
+description: Retrieve one concrete graph node by deterministic identifier.
+inputs:
+  - node_id
+outputs:
+  - node
+determinism:
+  resolution: explicit
+  fallback: forbidden
+  ambiguity: fail
+constraints:
+  - Node identifiers must already exist in the selected provider graph.
+requires: []
