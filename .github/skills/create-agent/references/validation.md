@@ -22,24 +22,21 @@ Automatic checks
 - Wrong-layer raw tool names such as `run_in_terminal` or `vscode_askQuestions` are rejected with local alias suggestions.
 - `agents:` must be a valid list, must include only known workspace agents, and must be paired with the `agent` tool.
 - Broad `agent` usage without an explicit `agents:` allowlist is warned.
-- The canonical wrapped shape for ordinary agents keeps `<definitions>`, `<workflow>`, `## Step 0 - **CONFIRMATION**`, `## Role`, `<rules>`, `## Responsibilities`, `## Constraints`, `## Output Contract`, `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...` in order. A direct-user orchestrator may omit Step 0 only with `user-invocable: true` and `disable-model-invocation: true` and must keep the remaining wrapped workflow.
-- Ordinary canonical self-contained Step 0 agents keep routing as one dense decision matrix inside the `.agent.md` file. Legacy heading-based routing sections are still accepted for existing agents. The direct-user orchestrator exception has no routing refusal because it cannot be selected as a subagent.
-- Canonical agents keep a refusal payload with `status: refused`, `agent`, `reason`, and `suggested_alternative`.
+- The canonical wrapped shape keeps `<definitions>`, `<workflow>`, `## Role`, `<rules>`, `## Responsibilities`, `## Constraints`, `## Output Contract`, `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...` in order. Older agents may retain an optional initial routing step.
+- Routing is validated primarily through the frontmatter description. Body-level routing and explicit refusal or hand-off text remain role-dependent rather than universal.
 - Legacy routing-file agents are still recognized, but they warn and must keep valid sibling routing files if they still use that older mode.
 
 What still needs the final checklist
 
 - Whether the role is narrow enough to justify an agent instead of a skill, prompt, or other primitive.
-- Whether the example prompt in the final summary truly matches the `description` and Step 0 routing surface.
+- Whether the example prompt in the final summary truly matches the `description` and any optional body routing.
 - Whether invocation mode is deliberate even when the validator would allow omitted fields.
 
 Use [final-checklist.md](./final-checklist.md) after script validation to catch those remaining judgment calls.
 
 Fix patterns
 
-- Missing Step 0 routing matrix -> add one dense routing decision matrix under Step 0.
-- Old sibling routing references in a new draft -> move the routing bullets into Step 0 and remove the file reads.
-- Missing refusal JSON -> add the structured refusal payload in Step 0 or `## Output Contract`.
+- Ambiguous routing description -> sharpen the `WHAT:`, `INVOKE FOR:`, or `DO NOT INVOKE FOR:` clause.
 - Wrong-layer tool name -> replace it with the workspace alias or namespaced tool the validator suggests.
 - Broad delegation -> either remove `agent` or add an explicit `agents:` allowlist.
 - Unknown allowed subagent -> fix the agent name or create that agent first.
@@ -51,8 +48,7 @@ Fast fix map
 | Validator output                      | First place to look                         | Typical repair                               |
 +--------------------------------------+---------------------------------------------+----------------------------------------------+
 | Missing wrapped sections              | [agent-template](../assets/agent-template.md) | Restore the canonical body shape           |
-| Missing embedded routing              | Step 0 in the `.agent.md` file               | Add one routing decision matrix               |
-| Missing refusal JSON                  | Step 0 or `## Output Contract`               | Add the structured refusal payload           |
+| Ambiguous routing                     | Frontmatter `description`                   | Clarify the three routing clauses            |
 | Wrong-layer tool name                 | Frontmatter `tools`                          | Replace it with the suggested workspace alias |
 | Unknown allowed subagent              | Frontmatter `agents:`                        | Fix the name or create that agent first      |
 | Broad `agent` warning                 | Frontmatter `tools` and `agents:`            | Remove `agent` or add an explicit allowlist  |

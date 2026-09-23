@@ -1,0 +1,84 @@
+[
+  {
+    "header": "Agent Slug",
+    "question": "Provide the lowercase hyphenated agent slug.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Focused Role",
+    "question": "One sentence: what single job should this agent own end-to-end?",
+    "message": "Maps to `WHAT:` in `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Triggers",
+    "question": "Which phrases or scenarios should route work to this agent?",
+    "message": "Maps to `INVOKE FOR:` in `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Routing Exclusions",
+    "question": "Which nearby tasks or scenarios should this agent refuse?",
+    "message": "Maps to `DO NOT INVOKE FOR:` in `description`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Required Tools",
+    "question": "List only the workspace agent-facing tool names this agent genuinely needs.",
+    "message": "Keep the set minimal. Add `agent` only for real delegation.",
+    "multiSelect": true,
+    "allowFreeformInput": true,
+    "options": [
+      { "label": "read", "description": "Inspect files or generated drafts.", "recommended": true },
+      { "label": "search", "description": "Find candidate files, symbols, or collisions.", "recommended": true },
+      { "label": "execute", "description": "Run focused validation or repo checks when the role genuinely needs them." },
+      { "label": "agent", "description": "Needed only if this agent delegates to other agents." },
+      { "label": "web" },
+      { "label": "browser" },
+      { "label": "todo" },
+      { "label": "vscode/askQuestions" }
+    ]
+  },
+  {
+    "header": "Forbidden Work",
+    "question": "What must this agent explicitly avoid doing?",
+    "message": "Maps to `## Constraints`.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Invocation Mode",
+    "question": "How should this agent be invoked?",
+    "allowFreeformInput": false,
+    "options": [
+      {
+        "label": "Visible in picker and invocable as subagent",
+        "description": "Usually omit both fields.",
+        "recommended": true
+      },
+      {
+        "label": "Hidden from picker, subagent only",
+        "description": "Set `user-invocable: false`."
+      },
+      {
+        "label": "Visible in picker, not invocable as subagent",
+        "description": "Set `disable-model-invocation: true`."
+      },
+      {
+        "label": "Internal helper: hidden from picker and blocked from subagent use",
+        "description": "Set `user-invocable: false` and `disable-model-invocation: true`."
+      }
+    ]
+  },
+  {
+    "header": "Allowed Subagents",
+    "question": "List allowed subagents, `*`, or `none`.",
+    "message": "Use `none` for no delegation. Named agents must already exist.",
+    "allowFreeformInput": true
+  },
+  {
+    "header": "Output Contract",
+    "question": "Describe the exact result this agent must return.",
+    "message": "Maps to `## Output Contract`.",
+    "allowFreeformInput": true
+  }
+]

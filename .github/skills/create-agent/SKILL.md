@@ -19,34 +19,13 @@ license: MIT
 - **delegation boundary** : The line between work the agent performs directly and work it should hand off through `agent`, `agents:`, or `handoffs`.
 - **invocation mode** : The frontmatter combination of `user-invocable` and `disable-model-invocation` that controls picker visibility and subagent eligibility.
 - **subagent-only agent** : An agent hidden from the picker with `user-invocable: false` but still callable by other agents unless `disable-model-invocation: true` also blocks it.
-- **self-contained agent** : A single `.agent.md` file whose Step 0 routing rules, refusal boundary, workflow, and output contract all live inside that file without sibling routing documents.
+- **self-contained agent** : A single `.agent.md` file whose routing description, role, workflow, and output contract all live inside that file without sibling runtime documents.
 - **skill** : A reusable capability or package workflow; it is not a specialist persona and does not require an agent's delegation or invocation contract.
 - **primitive choice** : The decision between an agent, skill, prompt, MCP server, hook, or product implementation before authoring begins.
 
 </definitions>
 
 <workflow>
-
-## Step 0 - **CONFIRMATION**
-
-1. Confirm that the request needs a custom agent rather than another primitive.
-
-| Request shape | Invoke? | Route |
-|---|---:|---|
-| Create, repair, migrate, review, or validate one `.agent.md` | Yes | Continue with `create-agent` |
-| Create or repair a reusable skill | No | `create-skill` |
-| Create or repair a reusable prompt | No | `create-prompt` |
-| Create or repair an MCP server | No | `create-mcp` |
-| Create or repair a hook | No | `create-hook` |
-| Implement general product behavior | No | Relevant implementation skill |
-
-2. If the request does not match, stop and return exactly one concise routing object:
-
-```json
-{"status":"rejected","agent":"create-agent","reason":"The request is for a different primitive or product implementation, not a custom agent.","routing":"Route to create-skill, create-prompt, create-mcp, create-hook, or the relevant implementation skill."}
-```
-
-3. If the request matches, continue to Step 1.
 
 <rules>
 
@@ -61,15 +40,15 @@ license: MIT
 - If the draft does **NOT** delegate, omit `agents:` and remove `agent` from `tools`.
 - Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
 - When a direct-user orchestrator is the sole user-facing entry point, set `user-invocable: false` on specialist agents so the picker routes users through the orchestrator. Keep `disable-model-invocation: false` unless the agent must also be unavailable to other agents.
-- `description` is the primary routing surface. It **MUST** use `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:` so the agent advertises both scope and refusal boundary before Step 0 runs.
-- Every ordinary agent **MUST** include a Step 0 confirmation with one dense routing decision matrix and a structured refusal path. The only exception is a direct-user orchestrator with `user-invocable: true` and `disable-model-invocation: true`; that agent may omit Step 0 because it is blocked from model or subagent invocation, but it must retain the canonical workflow, role, rules, and output contract.
+- `description` is the primary routing surface. It **MUST** use `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:` so the agent advertises both scope and refusal boundary before its body is loaded.
+- Keep the runtime contract in the agent file: persona or role, minimal tools, optional delegation, invocation mode, workflow, constraints, and output contract. Use explicit refusal or hand-off only when the role needs it.
 - There **MUST** be one source of truth per concept. If a matrix, mapping, or checklist already exists in one support file, later steps **MUST** point to it instead of restating it.
 - If extra routing help is still needed before the workflow loads, keep it in one dense support surface. Do **NOT** split the same yes or no boundary across multiple files.
 - If routing still feels ambiguous after drafting, produce one example prompt that should route to the agent and verify that the `description` clearly covers that prompt.
 - Add a user-review pause only when the agent's role requires user-owned confirmation; otherwise return the defined handoff directly.
 - Reference support files only on the workflow step that consumes them. Support markdown files must stay free of active `#tool:` and `#file:` markers.
 - Keep contrastive choices in dense ASCII matrices and keep procedural workflow in ordered `1.` actions with `-` bullets only for narrow sub-checks, exceptions, or examples.
-- Reject skill, prompt, MCP, hook, and product-implementation requests at the primitive gate instead of stretching the agent primitive.
+- Choose the primitive early. Use `create-agent` for a persona with a tool boundary, invocation mode, or delegation contract; use a skill for a reusable capability/package workflow.
 
 </rules>
 
@@ -78,11 +57,11 @@ license: MIT
 1. Inspect the workspace agent surface before drafting.
    - If the name, scope, or overlap is unclear, use #tool:search in the workspace `.github/agents/` directory to avoid duplicates and naming collisions.
    - If the target agent already exists and you know the exact file path, use #tool:read on its current `.agent.md` file first.
-   - If the request is still ambiguous after Step 0 confirmation, review the [primitive selection matrix](./references/primitive-selection.md) only for the remaining agent-vs-other-primitive choice.
+   - If the agent-vs-other-primitive choice remains ambiguous, review the [primitive selection matrix](./references/primitive-selection.md) only for that choice.
 2. Confirm current host requirements only when they matter for this draft.
    - Use #tool:read on #file:./references/latest-docs.md only when you need to confirm current VS Code custom-agent frontmatter, location, picker behavior, or subagent behavior.
    - Review [custom agent docs](./references/custom_agent.md) and [subagent docs](./references/sub_agent.md) only for the specific ambiguity that still remains after [latest-docs](./references/latest-docs.md).
-3. Confirm the canonical body shape before you draft: `<definitions>`, `<workflow>`, Step 0 for ordinary agents, `## Role`, `<rules>` with Responsibilities, Constraints, and Output Contract, then ordered Steps 1-3. The direct-user orchestrator exception is allowed only with `user-invocable: true` and `disable-model-invocation: true`.
+3. Confirm the canonical body shape before you draft: `<definitions>`, `<workflow>`, `## Role`, `<rules>` with Responsibilities, Constraints, and Output Contract, then ordered Steps 1-3. Add a short `## Routing` section or a first workflow action only when the role genuinely needs disambiguation beyond its description.
    - Use the current [agent template](./assets/agent-template.md) as the canonical draft scaffold when you need to confirm the expected body shape.
 
 ## Step 2 - Capture the missing agent contract
@@ -117,9 +96,9 @@ license: MIT
 5. Resolve tricky delegation or invocation decisions before finalizing the draft.
    - If invocation mode or delegation still feels tricky while drafting, review [delegation and invocation guidance](./references/delegation_and_invocation.md) before setting `agent`, `agents:`, `user-invocable`, or `disable-model-invocation`.
 6. Keep the generated body aligned with the canonical structure.
-   - Keep ordinary drafts agent-shaped with `<definitions>`, then a `<workflow>` wrapper containing `## Step 0 - **CONFIRMATION**`, one dense routing decision matrix, `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`. The direct-user orchestrator exception may omit Step 0 only under the invocation flags documented above.
+   - Keep drafts agent-shaped with `<definitions>`, then a `<workflow>` wrapper containing `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
    - Inside the workflow, prefer ordered `1. 2. 3.` lists when actions must happen in sequence and keep sub-checks, exceptions, or examples under those actions as `-` bullets.
-   - Keep routing, refusal, workflow, delegation boundaries, and output requirements inside the `.agent.md` file itself instead of splitting them into sibling support files.
+   - Keep routing, workflow, delegation boundaries, and output requirements inside the `.agent.md` file itself instead of splitting runtime behavior into sibling support files.
 7. Use the template wrappers as scaffolding for new drafts.
    - Existing legacy agents may keep their older shape unless the task explicitly rewrites them.
 
@@ -129,7 +108,7 @@ license: MIT
    - Use #tool:read on the finished draft so you validate the actual file rather than memory.
 2. Confirm only the high-risk contract surfaces before validation.
    - Ensure the agent stays a single `.agent.md` file under `.github/agents/`.
-   - Ensure Step 0 embeds one dense routing decision matrix and the refusal JSON inside that file.
+   - Ensure the description, tools, invocation mode, delegation, workflow, constraints, and output contract agree with the intended role.
    - Ensure `description`, `tools`, `agents:`, `user-invocable`, and `disable-model-invocation` all agree with the intended role.
    - If you used the template wrappers for a new draft, keep `<workflow>` around the full runtime contract and `<rules>` around `## Responsibilities`, `## Constraints`, plus `## Output Contract`.
 

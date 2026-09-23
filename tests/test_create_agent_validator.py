@@ -10,8 +10,13 @@ VALIDATOR = ROOT / ".github/skills/create-agent/scripts/validate_agent.py"
 
 
 class CreateAgentValidatorTests(unittest.TestCase):
-    def run_validator(self, filename: str, frontmatter: str) -> subprocess.CompletedProcess[str]:
-        body = """
+    def run_validator(
+        self,
+        filename: str,
+        frontmatter: str,
+        body: str | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        body = body or """
 # Role
 
 ## Responsibilities
@@ -40,6 +45,47 @@ class CreateAgentValidatorTests(unittest.TestCase):
                 text=True,
                 check=False,
             )
+
+    def test_accepts_description_first_agent_without_confirmation_step(self):
+        body = """
+<definitions>
+</definitions>
+<workflow>
+## Role
+
+<rules>
+## Responsibilities
+- Keep the role focused.
+## Constraints
+- Do not exceed the role.
+## Output Contract
+- Return the scoped result.
+</rules>
+
+## Step 1 - Gather context.
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "minimal.agent.md",
+            "name: minimal\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("Step 0", result.stdout)
+        self.assertNotIn("refusal", result.stdout.lower())
+
+    def test_rejects_invalid_delegation_contract(self):
+        result = self.run_validator(
+            "sample.agent.md",
+            "name: sample\ntarget: vscode\ndescription: 'WHAT: x INVOKE FOR: x DO NOT INVOKE FOR: y'\nagents: [missing]\n",
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("omits the `agent` tool", result.stdout)
+        self.assertIn("unknown agent `missing`", result.stdout)
 
     def test_rejects_filename_name_drift(self):
         result = self.run_validator(

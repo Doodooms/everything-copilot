@@ -11,12 +11,6 @@ import yaml
 
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n?(.*)\Z", re.DOTALL)
 STEP_HEADING_PATTERN = re.compile(r"^##\s+Step\s+(\d+)\b", re.IGNORECASE)
-AGENT_REFUSAL_JSON_TOKENS = (
-    '"status": "refused"',
-    '"agent":',
-    '"reason":',
-    '"suggested_alternative":',
-)
 VALID_AGENT_TOOLS = {
     "agent",
     "browser",
@@ -102,24 +96,15 @@ def lint_agent_frontmatter(frontmatter: dict[str, Any]) -> LintResult:
     description = frontmatter.get("description")
     if isinstance(description, str) and description.strip():
         lowered_description = description.lower()
-        if "what:" not in lowered_description:
-            result.warnings.append(
-                "`description` should include `WHAT:` to state the agent's primary job clearly."
-            )
-        if (
-            "invoke for:" not in lowered_description
-            and "use for:" not in lowered_description
-        ):
-            result.warnings.append(
-                "`description` should include `INVOKE FOR:` for reliable routing; legacy `USE FOR:` wording is still accepted."
-            )
-        if (
-            "do not invoke for:" not in lowered_description
-            and "do not use for:" not in lowered_description
-        ):
-            result.warnings.append(
-                "`description` should include `DO NOT INVOKE FOR:` to mark nearby tasks the agent must refuse; legacy `DO NOT USE FOR:` wording is still accepted."
-            )
+        for clause in ("what:", "invoke for:", "do not invoke for:"):
+            if clause not in lowered_description:
+                result.errors.append(
+                    f"`description` must include `{clause[:-1].upper()}:` for description-first routing."
+                )
+    else:
+        result.errors.append(
+            "`description` is required and must include WHAT:, INVOKE FOR:, and DO NOT INVOKE FOR:."
+        )
 
     tools = frontmatter.get("tools")
     if tools is not None and not isinstance(tools, list):
@@ -219,19 +204,6 @@ def _has_embedded_routing_sections(stripped_lines: list[str]) -> bool:
     )
 
 
-def _has_routing_decision_matrix(body: str) -> bool:
-    normalized_lines = [
-        _normalize_agent_heading(line) for line in body.splitlines() if line.strip()
-    ]
-    matrix_lines = [line for line in normalized_lines if "|" in line]
-    has_header = any(
-        "REQUEST SHAPE" in line and "INVOKE?" in line for line in matrix_lines
-    )
-    has_yes = any(re.search(r"\|\s*YES\s*\|", line) for line in matrix_lines)
-    has_no = any(re.search(r"\|\s*NO\s*\|", line) for line in matrix_lines)
-    return has_header and has_yes and has_no
-
-
 def _uses_routing_file_refs(body: str) -> bool:
     return (
         "#file:./references/USEFOR.md" in body
@@ -239,101 +211,12 @@ def _uses_routing_file_refs(body: str) -> bool:
     )
 
 
-def _looks_like_step_confirmation_agent(stripped_lines: list[str], body: str) -> bool:
-    has_step_zero = "## Step 0 - **CONFIRMATION**" in stripped_lines
+def _looks_like_wrapped_agent(stripped_lines: list[str], body: str) -> bool:
     return (
-        has_step_zero
-        or "## Role" in stripped_lines
-        or _has_routing_decision_matrix(body)
-        or _has_embedded_routing_sections(stripped_lines)
-        or _uses_routing_file_refs(body)
+        "## Role" in stripped_lines
+        or "<workflow>" in stripped_lines
+        or "<definitions>" in stripped_lines
     )
-
-
-def _is_direct_user_orchestrator(frontmatter: dict[str, Any] | None) -> bool:
-    if not isinstance(frontmatter, dict):
-        return False
-
-    tools = frontmatter.get("tools") or []
-    return (
-        frontmatter.get("name") == "orchestrator"
-        and frontmatter.get("user-invocable") is True
-        and frontmatter.get("disable-model-invocation") is True
-        and "agent" in tools
-        and isinstance(frontmatter.get("agents"), list)
-    )
-
-
-def _validate_direct_user_orchestrator_body(body: str) -> LintResult:
-    result = LintResult()
-    stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
-    required_tokens = [
-        "<definitions>",
-        "</definitions>",
-        "<workflow>",
-        "## Role",
-        "<rules>",
-        "## Responsibilities",
-        "## Constraints",
-        "## Output Contract",
-        "</rules>",
-        "</workflow>",
-    ]
-
-    for token in required_tokens:
-        if token not in stripped_lines:
-            result.errors.append(
-                "Direct-user orchestrators without Step 0 must include <definitions>, <workflow>, ## Role, <rules> with ## Responsibilities, ## Constraints, ## Output Contract, and closing wrappers."
-            )
-            return result
-
-    if not _has_definition_bullet(body):
-        result.errors.append(
-            "Direct-user orchestrators must keep at least one definition bullet in <definitions>."
-        )
-
-    step_lines = [line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)]
-    step_patterns = [
-        r"^##\s+Step\s+1\s+-\s+.+$",
-        r"^##\s+Step\s+2\s+-\s+.+$",
-        r"^##\s+Step\s+3\s+-\s+.+$",
-    ]
-    if len(step_lines) != len(step_patterns) or any(
-        not re.fullmatch(pattern, line)
-        for pattern, line in zip(step_patterns, step_lines)
-    ):
-        result.errors.append(
-            "Direct-user orchestrators without Step 0 must keep headings in this order: ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
-        )
-        return result
-
-    token_positions = {token: stripped_lines.index(token) for token in required_tokens}
-    step_positions = [stripped_lines.index(line) for line in step_lines]
-    if not (
-        token_positions["<definitions>"]
-        < token_positions["</definitions>"]
-        < token_positions["<workflow>"]
-        < token_positions["## Role"]
-        < token_positions["<rules>"]
-        < token_positions["## Responsibilities"]
-        < token_positions["## Constraints"]
-        < token_positions["## Output Contract"]
-        < token_positions["</rules>"]
-        < step_positions[0]
-        < step_positions[1]
-        < step_positions[2]
-        < token_positions["</workflow>"]
-    ):
-        result.errors.append(
-            "Direct-user orchestrators must keep <definitions>, <workflow>, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, and </workflow> in canonical order."
-        )
-
-    if "## Step 0 - **CONFIRMATION**" in stripped_lines:
-        result.errors.append(
-            "Direct-user orchestrators use the explicit invocation exception and must not include a Step 0 confirmation."
-        )
-
-    return result
 
 
 def _validate_optional_wrapper(
@@ -406,14 +289,13 @@ def _validate_optional_wrapper(
         )
 
 
-def _validate_step_confirmation_agent_body(body: str, agent_file: Path) -> LintResult:
+def _validate_wrapped_agent_body(body: str, agent_file: Path) -> LintResult:
     result = LintResult()
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
     required_tokens = [
         "<definitions>",
         "</definitions>",
         "<workflow>",
-        "## Step 0 - **CONFIRMATION**",
         "## Role",
         "<rules>",
         "## Responsibilities",
@@ -435,50 +317,45 @@ def _validate_step_confirmation_agent_body(body: str, agent_file: Path) -> LintR
                 )
                 return result
             result.errors.append(
-                "Agent markdown body is missing expected sections. Canonical Step 0 agents must include <definitions>, <workflow>, ## Step 0 - **CONFIRMATION**, ## Role, <rules> with ## Responsibilities, ## Constraints, ## Output Contract, and closing wrappers."
+                "Agent markdown body is missing expected sections. Wrapped agents must include <definitions>, <workflow>, ## Role, <rules> with ## Responsibilities, ## Constraints, ## Output Contract, and closing wrappers."
             )
             return result
 
-    if not _has_definition_bullet(body):
-        result.errors.append(
-            "Canonical Step 0 agents must keep at least one definition bullet in <definitions> using `- **term** : definition`."
-        )
-
     step_lines = [line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)]
     step_patterns = [
-        r"^##\s+Step\s+0\s+-\s+\*\*CONFIRMATION\*\*$",
         r"^##\s+Step\s+1\s+-\s+.+$",
         r"^##\s+Step\s+2\s+-\s+.+$",
         r"^##\s+Step\s+3\s+-\s+.+$",
     ]
-    if len(step_lines) != len(step_patterns) or any(
+    workflow_steps = [
+        line for line in step_lines if re.match(r"^##\s+Step\s+[1-3]\b", line)
+    ]
+    if len(workflow_steps) != len(step_patterns) or any(
         not re.fullmatch(pattern, line)
-        for pattern, line in zip(step_patterns, step_lines)
+        for pattern, line in zip(step_patterns, workflow_steps)
     ):
         result.errors.append(
-            "Canonical Step 0 agents must keep headings in this order: ## Step 0 - **CONFIRMATION**, ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
+            "Wrapped agents must keep workflow headings in this order: ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
         )
         return result
 
-    step_positions = {line: stripped_lines.index(line) for line in step_lines}
+    step_positions = {line: stripped_lines.index(line) for line in workflow_steps}
     if not (
         token_positions["<definitions>"]
         < token_positions["</definitions>"]
         < token_positions["<workflow>"]
-        < step_positions[step_lines[0]]
         < token_positions["## Role"]
         < token_positions["<rules>"]
         < token_positions["## Responsibilities"]
         < token_positions["## Constraints"]
         < token_positions["## Output Contract"]
         < token_positions["</rules>"]
-        < step_positions[step_lines[1]]
-        < step_positions[step_lines[2]]
-        < step_positions[step_lines[3]]
+        < step_positions[workflow_steps[1]]
+        < step_positions[workflow_steps[2]]
         < token_positions["</workflow>"]
     ):
         result.errors.append(
-            "Canonical Step 0 agents must keep this order: <definitions>, <workflow>, Step 0, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, </workflow>."
+            "Wrapped agents must keep this order: <definitions>, <workflow>, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, </workflow>."
         )
 
     if "<role>" in stripped_lines or "</role>" in stripped_lines:
@@ -488,41 +365,14 @@ def _validate_step_confirmation_agent_body(body: str, agent_file: Path) -> LintR
 
     if "# Role" in stripped_lines:
         result.errors.append(
-            "Canonical Step 0 agents must use `## Role` inside the workflow block, not `# Role`."
+            "Wrapped agents must use `## Role` inside the workflow block, not `# Role`."
         )
-
-    has_routing_matrix = _has_routing_decision_matrix(body)
-    has_embedded_routing = _has_embedded_routing_sections(stripped_lines)
     uses_routing_file_refs = _uses_routing_file_refs(body)
-
-    if (
-        not has_routing_matrix
-        and not has_embedded_routing
-        and not uses_routing_file_refs
-    ):
-        result.errors.append(
-            "Canonical Step 0 agents must embed one dense routing decision matrix in the `.agent.md` file; legacy heading-based routing sections or sibling routing files are accepted only for older agents."
-        )
-
-    if has_embedded_routing and not has_routing_matrix:
-        result.warnings.append(
-            "Canonical Step 0 agent uses legacy heading-based routing. Prefer one embedded routing decision matrix inside the `.agent.md` file."
-        )
-
-    if uses_routing_file_refs and not has_routing_matrix:
-        result.warnings.append(
-            "Canonical Step 0 agent uses legacy sibling routing files. Prefer one embedded routing decision matrix inside the `.agent.md` file."
-        )
-
-    if any(token not in body for token in AGENT_REFUSAL_JSON_TOKENS):
-        result.errors.append(
-            'Canonical Step 0 agents must return a refusal JSON object before continuing, with `"status": "refused"`, `"agent"`, `"reason"`, and `"suggested_alternative"` fields.'
-        )
 
     if uses_routing_file_refs:
         if agent_file.parent.name == "agents":
             result.errors.append(
-                "Canonical Step 0 agents that still read sibling routing files must live in a dedicated package directory such as `.github/agents/<slug>/<slug>.agent.md` so those legacy paths resolve per-agent."
+                "Legacy agents that still read sibling routing files must live in a dedicated package directory such as `.github/agents/<slug>/<slug>.agent.md` so those paths resolve per-agent."
             )
             return result
 
@@ -530,7 +380,7 @@ def _validate_step_confirmation_agent_body(body: str, agent_file: Path) -> LintR
             support_path = agent_file.parent / "references" / support_name
             if not support_path.exists():
                 result.errors.append(
-                    f"Canonical Step 0 agents that use legacy routing files must include a sibling routing file: {support_path}"
+                    f"Legacy agents that use sibling routing files must include the support file: {support_path}"
                 )
 
     return result
@@ -639,16 +489,13 @@ def lint_agent_markdown_contract(
     agent_file: Path,
     frontmatter: dict[str, Any] | None = None,
 ) -> LintResult:
-    if _is_direct_user_orchestrator(frontmatter):
-        return _validate_direct_user_orchestrator_body(body)
-
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
-    if _looks_like_step_confirmation_agent(stripped_lines, body):
-        return _validate_step_confirmation_agent_body(body, agent_file)
+    if _looks_like_wrapped_agent(stripped_lines, body):
+        return _validate_wrapped_agent_body(body, agent_file)
 
     result = _validate_legacy_agent_body_sections(body)
     if not result.errors:
         result.warnings.append(
-            "Agent body uses the legacy contract without Step 0 confirmation. New agents should use the canonical self-contained Step 0 workflow with one embedded routing decision matrix."
+            "Agent body uses the legacy unwrapped contract. New agents should use the wrapped role, rules, and ordered workflow contract."
         )
     return result
