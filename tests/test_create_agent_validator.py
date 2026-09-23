@@ -77,6 +77,37 @@ class CreateAgentValidatorTests(unittest.TestCase):
         self.assertNotIn("Step 0", result.stdout)
         self.assertNotIn("refusal", result.stdout.lower())
 
+    def test_rejects_step_one_before_wrapped_role_and_rules(self):
+        body = """
+<definitions>
+</definitions>
+<workflow>
+## Step 1 - Gather context.
+
+## Role
+
+<rules>
+## Responsibilities
+- Keep the role focused.
+## Constraints
+- Do not exceed the role.
+## Output Contract
+- Return the scoped result.
+</rules>
+
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "misplaced.agent.md",
+            "name: misplaced\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Wrapped agents must keep this order", result.stdout)
+
     def test_rejects_invalid_delegation_contract(self):
         result = self.run_validator(
             "sample.agent.md",

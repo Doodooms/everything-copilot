@@ -17,7 +17,7 @@ Automatic checks
 - YAML frontmatter parses and the body is not empty.
 - `name` is a lowercase hyphenated slug matching the `.agent.md` filename stem.
 - Workspace agents set `target: vscode`; deprecated `infer` is rejected.
-- `description` warnings cover missing `WHAT:`, `INVOKE FOR:`, or `DO NOT INVOKE FOR:` clauses. Legacy `USE FOR:` wording is still accepted for existing agents.
+- Missing `WHAT:`, `INVOKE FOR:`, or `DO NOT INVOKE FOR:` clauses are validation errors. Legacy `USE FOR:` wording is still accepted for existing agents.
 - Tool names are checked against the workspace agent-facing tool catalog embedded in this skill's own lint core.
 - Wrong-layer raw tool names such as `run_in_terminal` or `vscode_askQuestions` are rejected with local alias suggestions.
 - `agents:` must be a valid list, must include only known workspace agents, and must be paired with the `agent` tool.

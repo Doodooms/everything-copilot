@@ -350,6 +350,7 @@ def _validate_wrapped_agent_body(body: str, agent_file: Path) -> LintResult:
         < token_positions["## Constraints"]
         < token_positions["## Output Contract"]
         < token_positions["</rules>"]
+        < step_positions[workflow_steps[0]]
         < step_positions[workflow_steps[1]]
         < step_positions[workflow_steps[2]]
         < token_positions["</workflow>"]
