@@ -1,0 +1,14 @@
+id: reject-agent-near-miss
+name: reject-agent-near-miss
+description: 'Adversarial create-skill completion task: reject-agent-near-miss.'
+tags:
+- near-miss
+- rejection
+- holdout
+inputs:
+  prompt: Create agents for reviewers that delegate implementation work.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

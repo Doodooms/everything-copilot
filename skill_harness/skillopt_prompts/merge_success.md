@@ -1,0 +1,1 @@
+Merge success-driven SkillOpt patches into one coherent patch. Keep only improvements supported by the trajectories and preserve the canonical scaffold, provenance, routing, rejection contract, and inline workflow. Return JSON only with `reasoning` and an `edits` array.

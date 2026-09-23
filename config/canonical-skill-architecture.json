@@ -1,0 +1,12 @@
+{
+  "admission_representation": "grouped_lists",
+  "architecture_id": "phase-0b-inline-grouped-lists",
+  "mutable_markers": [],
+  "progressive_disclosure": "inline_workflow",
+  "required_files": [
+    "SKILL.md",
+    "references/original-spec.md"
+  ],
+  "selection_hash": "c7dfc11e600a1f2a2c2342b8ed0dfa541ed5e886c81aa2b9dfe583dc58699504",
+  "workflow_location": "SKILL.md"
+}

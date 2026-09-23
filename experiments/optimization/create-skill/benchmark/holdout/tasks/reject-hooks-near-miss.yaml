@@ -1,0 +1,14 @@
+id: reject-hooks-near-miss
+name: reject-hooks-near-miss
+description: 'Adversarial create-skill completion task: reject-hooks-near-miss.'
+tags:
+- near-miss
+- rejection
+- holdout
+inputs:
+  prompt: Create hooks that run on every commit.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

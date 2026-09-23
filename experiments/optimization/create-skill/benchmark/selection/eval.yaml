@@ -1,0 +1,83 @@
+name: create-skill-selection
+description: Frozen adversarial selection benchmark for create-skill.
+skill: create-skill
+version: '1.0'
+config:
+  trials_per_task: 1
+  timeout_seconds: 600
+  parallel: false
+  executor: copilot-sdk
+  model: gpt-5.6-luna
+  inject_skill_body: false
+metrics:
+- name: llm_quality
+  weight: 0.8
+  threshold: 0.75
+  description: 'Judge the generated skill package against the requested skill or application.
+
+    Score 0-4 for each dimension: ontology clarity, semantic contract and boundaries,
+
+    canonical topology and provenance, executable workflow, self-contained support-file
+
+    discipline, structural validation and user-review evidence, downstream implementation
+
+    utility, and failure/security/verification coverage. For application tasks, downstream
+
+    utility means that another agent could use the produced skill to build a coherent
+
+    project with explicit requirements, acceptance criteria, failure handling, and
+
+    verification gates; judge the skill''s guidance, not an imagined implementation.
+
+    Penalize invented architecture, vague discovery text, missing provenance, unsafe
+    or
+
+    unverifiable actions, external workspace imports, unnecessary tables, duplicated
+
+    guidance, and treating an unreviewed draft as complete. Reject near-miss requests
+
+    that belong to another skill. Return JSON with keys score (0-32), hard_pass (boolean),
+
+    failures (array), and rationale (string).'
+- name: efficiency
+  weight: 0.2
+  threshold: 0.5
+  description: Stay within the task timeout and avoid unnecessary actions.
+graders:
+- type: prompt
+  name: llm-quality
+  config:
+    rubric: 'Judge the generated skill package against the requested skill or application.
+
+      Score 0-4 for each dimension: ontology clarity, semantic contract and boundaries,
+
+      canonical topology and provenance, executable workflow, self-contained support-file
+
+      discipline, structural validation and user-review evidence, downstream implementation
+
+      utility, and failure/security/verification coverage. For application tasks,
+      downstream
+
+      utility means that another agent could use the produced skill to build a coherent
+
+      project with explicit requirements, acceptance criteria, failure handling, and
+
+      verification gates; judge the skill''s guidance, not an imagined implementation.
+
+      Penalize invented architecture, vague discovery text, missing provenance, unsafe
+      or
+
+      unverifiable actions, external workspace imports, unnecessary tables, duplicated
+
+      guidance, and treating an unreviewed draft as complete. Reject near-miss requests
+
+      that belong to another skill. Return JSON with keys score (0-32), hard_pass
+      (boolean),
+
+      failures (array), and rationale (string).'
+- type: behavior
+  name: bounded-actions
+  config:
+    max_tokens: 6000
+tasks:
+- tasks/*.yaml

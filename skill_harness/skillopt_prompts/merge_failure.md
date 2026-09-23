@@ -1,0 +1,1 @@
+Merge failure-driven SkillOpt patches into one coherent patch. Preserve the canonical scaffold, frontmatter, provenance, grouped admission lists, rejection JSON contract, and inline workflow. Prefer precise non-duplicative semantic edits that address observed failures. Return JSON only with `reasoning` and an `edits` array.

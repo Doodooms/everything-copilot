@@ -1,0 +1,24 @@
+id: app-saas-billing
+name: app-saas-billing
+description: 'Adversarial create-skill completion task: app-saas-billing.'
+tags:
+- application
+- llm-judge
+- train
+inputs:
+  prompt: 'Authoring, repairing, restructuring, reviewing, and validating a production-ready
+    skill that guides implementation of a multi-tenant billing dashboard. Create or
+    update deterministic VS Code skill packages from a clear specification. This includes
+    authoring, repairing, restructuring, reviewing, or validating a skill and its
+    support files. The skill must turn this request into an executable, testable workflow:
+    Implement tenant isolation, invoice history, role-based access, and idempotent
+    payment actions with an auditable verification path. Define the domain ontology,
+    semantic boundaries, acceptance criteria, failure handling, security and verification
+    gates, and enough downstream guidance for another agent to implement the project
+    coherently. Use the canonical inline grouped-list architecture and preserve source
+    provenance.'
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: true

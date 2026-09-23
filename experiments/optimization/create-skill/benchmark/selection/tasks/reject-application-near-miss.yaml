@@ -1,0 +1,14 @@
+id: reject-application-near-miss
+name: reject-application-near-miss
+description: 'Adversarial create-skill completion task: reject-application-near-miss.'
+tags:
+- near-miss
+- rejection
+- selection
+inputs:
+  prompt: Implement a general application implementation for a calendar product.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

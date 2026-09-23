@@ -1,0 +1,14 @@
+id: reject-benchmark-near-miss
+name: reject-benchmark-near-miss
+description: 'Adversarial create-skill completion task: reject-benchmark-near-miss.'
+tags:
+- near-miss
+- rejection
+- selection
+inputs:
+  prompt: Perform benchmark optimization for create-skill and run SkillOpt experiments.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

@@ -1,0 +1,30 @@
+{
+  "target_skill": "create-skill",
+  "architecture": "phase-0b-inline-grouped-lists",
+  "model": "gpt-5.6-luna",
+  "skills": [
+    "specify-requirements", "classify-change-risk", "canonical-task-state", "specialist-handoff", "git-task-lifecycle", "change-impact-routing",
+    "domain-modeling", "system-design", "api-contract-design", "data-architecture", "technology-selection", "migration-architecture", "distributed-systems-design", "architecture-decision-record",
+    "implementation-planning", "dependency-mapping", "acceptance-criteria-design", "validation-planning", "migration-planning", "rollout-planning", "risk-driven-delivery",
+    "api-doc-research", "dependency-version-research", "library-comparison", "standards-research", "paper-research", "repository-archaeology", "benchmark-research",
+    "tdd", "focused-refactoring", "python-development", "typescript-development", "rust-development", "go-development", "api-implementation", "database-migration-implementation", "concurrency-safe-implementation", "performance-optimization", "update-documentation",
+    "adversarial-testing", "edge-case-generation", "failure-reproduction", "integration-testing", "e2e-testing", "property-based-testing", "fuzz-testing", "mutation-testing", "test-quality-analysis",
+    "code-review", "security-review", "performance-review", "dependency-review", "architecture-conformance-review", "data-migration-review", "documentation-consistency-review", "test-quality-review", "python-review", "typescript-review", "rust-review", "go-review",
+    "assumption-audit", "pre-mortem", "architecture-red-team", "experiment-falsification", "breaking-change-analysis", "migration-failure-analysis", "reversibility-analysis", "threat-model-challenge",
+    "ci-cd", "packaging-release", "containerization", "deployment", "infrastructure-as-code", "observability", "operational-security", "runtime-configuration", "rollout-rollback", "update-runbook",
+    "technology-selection", "validation-planning"
+  ],
+  "applications": [
+    {"id": "saas-billing", "name": "multi-tenant billing dashboard", "constraints": "Implement tenant isolation, invoice history, role-based access, and idempotent payment actions with an auditable verification path."},
+    {"id": "offline-notes", "name": "offline-first notes application", "constraints": "Support optimistic local edits, conflict resolution, encrypted sync, keyboard navigation, and explicit failure recovery."},
+    {"id": "incident-console", "name": "incident response console", "constraints": "Model incidents, timelines, ownership, severity changes, safe command execution, and immutable audit events."},
+    {"id": "inventory-mobile", "name": "mobile inventory scanner", "constraints": "Handle intermittent connectivity, barcode input, duplicate scans, inventory reconciliation, and accessible touch workflows."},
+    {"id": "research-library", "name": "research library and citation manager", "constraints": "Import metadata, deduplicate references, preserve provenance, export citations, and surface uncertain matches for review."},
+    {"id": "workflow-builder", "name": "visual workflow builder", "constraints": "Support typed nodes, validation before execution, undo and redo, versioned persistence, and safe migration of old graphs."}
+  ],
+  "splits": {
+    "train": {"all_skills": true, "applications": ["saas-billing", "offline-notes", "incident-console"]},
+    "selection": {"skills": ["tdd", "security-review", "system-design", "e2e-testing", "performance-optimization", "create-skill"], "applications": ["inventory-mobile", "research-library"]},
+    "holdout": {"applications": ["workflow-builder", "saas-billing", "incident-console"]}
+  }
+}

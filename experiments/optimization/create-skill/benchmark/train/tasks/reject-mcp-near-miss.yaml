@@ -1,0 +1,14 @@
+id: reject-mcp-near-miss
+name: reject-mcp-near-miss
+description: 'Adversarial create-skill completion task: reject-mcp-near-miss.'
+tags:
+- near-miss
+- rejection
+- train
+inputs:
+  prompt: Create MCP servers that expose repository search.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

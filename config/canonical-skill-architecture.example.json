@@ -1,0 +1,13 @@
+{
+  "architecture_id": "<user-selected-architecture>",
+  "progressive_disclosure": "<inline_workflow-or-deferred_workflow>",
+  "admission_representation": "<grouped_lists-or-markdown_table-or-compact_rules>",
+  "workflow_location": "<user-selected-location>",
+  "required_files": [
+    "SKILL.md",
+    "references/original-spec.md"
+  ],
+  "mutable_markers": [
+    "<user-defined-mutable-marker>"
+  ]
+}

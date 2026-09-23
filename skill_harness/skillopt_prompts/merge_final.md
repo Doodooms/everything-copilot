@@ -1,0 +1,1 @@
+Combine the failure-driven and success-driven patches into the smallest safe coherent update. Failure prevention has priority. Preserve all immutable scaffold structure, frontmatter, provenance, grouped ACCEPT/REJECT lists, exact rejection contract, and inline workflow. Return JSON only with `reasoning` and an `edits` array.

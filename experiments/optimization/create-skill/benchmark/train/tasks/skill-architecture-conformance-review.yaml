@@ -1,0 +1,21 @@
+id: skill-architecture-conformance-review
+name: skill-architecture-conformance-review
+description: 'Adversarial create-skill completion task: skill-architecture-conformance-review.'
+tags:
+- skill-creation
+- adversarial
+- train
+inputs:
+  prompt: Authoring, repairing, restructuring, reviewing, and validating a production-ready
+    skill named architecture-conformance-review. Create or update deterministic VS
+    Code skill packages from a clear specification. This includes authoring, repairing,
+    restructuring, reviewing, or validating a skill and its support files. Define
+    its exact purpose and boundaries, include concrete acceptance and rejection cases,
+    preserve the canonical inline workflow and grouped ACCEPT/REJECT architecture,
+    keep provenance, and include only support files that the workflow truly consumes.
+    Validate the package and report unresolved risks.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: true

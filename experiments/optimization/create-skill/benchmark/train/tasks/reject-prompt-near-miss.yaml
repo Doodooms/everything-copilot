@@ -1,0 +1,14 @@
+id: reject-prompt-near-miss
+name: reject-prompt-near-miss
+description: 'Adversarial create-skill completion task: reject-prompt-near-miss.'
+tags:
+- near-miss
+- rejection
+- train
+inputs:
+  prompt: Create prompts for release notes.
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: false

@@ -1,0 +1,23 @@
+id: app-inventory-mobile
+name: app-inventory-mobile
+description: 'Adversarial create-skill completion task: app-inventory-mobile.'
+tags:
+- application
+- llm-judge
+- selection
+inputs:
+  prompt: 'Authoring, repairing, restructuring, reviewing, and validating a production-ready
+    skill that guides implementation of a mobile inventory scanner. Create or update
+    deterministic VS Code skill packages from a clear specification. This includes
+    authoring, repairing, restructuring, reviewing, or validating a skill and its
+    support files. The skill must turn this request into an executable, testable workflow:
+    Handle intermittent connectivity, barcode input, duplicate scans, inventory reconciliation,
+    and accessible touch workflows. Define the domain ontology, semantic boundaries,
+    acceptance criteria, failure handling, security and verification gates, and enough
+    downstream guidance for another agent to implement the project coherently. Use
+    the canonical inline grouped-list architecture and preserve source provenance.'
+  files:
+  - path: SKILL.md
+  - path: .github/skills/create-skill/SKILL.md
+expected:
+  should_trigger: true
