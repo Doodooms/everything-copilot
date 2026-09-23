@@ -264,6 +264,10 @@ class ProtectionTests(unittest.TestCase):
                 "import importlib\nimportlib.import_module('requests')\n",
                 "from importlib import import_module\nimport_module('requests')\n",
                 "import importlib as il\nil.import_module('requests')\n",
+                "import importlib\nmodule = importlib\nmodule.import_module('requests')\n",
+                "import importlib\nloader = importlib.import_module\nloader('requests')\n",
+                "import importlib\nloader = getattr(importlib, 'import_module')\nloader('requests')\n",
+                "import importlib\ngetattr(importlib, 'import_module')('requests')\n",
                 "from builtins import __import__ as load\nload('requests')\n",
                 "import builtins as b\nb.__import__('requests')\n",
             ):
@@ -523,11 +527,17 @@ class ProtectionTests(unittest.TestCase):
 
             def fake_run_waza(eval_path, output_path, **kwargs):
                 captured["eval"] = Path(eval_path)
-                task_ids = load_oracle_manifest(adapter.eval_root / "selection")
                 return type(
                     "Run",
                     (),
-                    {"payload": {"runs": [{"task_id": task_id, "passed": True} for task_id in task_ids]}},
+                    {
+                        "payload": {
+                            "runs": [
+                                {"task_id": task_id, "passed": True}
+                                for task_id in env["expected_task_ids"]
+                            ]
+                        }
+                    },
                 )()
 
             skill = Path(
@@ -539,6 +549,7 @@ class ProtectionTests(unittest.TestCase):
             payload = yaml.safe_load(captured["eval"].read_text(encoding="utf-8"))
             self.assertEqual(len(payload["tasks"]), 1)
             self.assertNotEqual(captured["eval"].parent, adapter.eval_root / "selection")
+            self.assertEqual(len(env["expected_task_ids"]), 1)
 
     def test_skillopt_requires_exactly_one_waza_result_per_task(self):
         adapter = WazaSkillOptAdapter(

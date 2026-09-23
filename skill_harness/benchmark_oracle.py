@@ -120,17 +120,19 @@ class _DynamicImportBindingTracker(ast.NodeVisitor):
                 and node.func.value.id in self.builtins_modules
             ):
                 self.found_dynamic_import = True
+        elif self._is_import_module_getattr(node.func):
+            self.found_dynamic_import = True
         self.generic_visit(node)
 
     def visit_Assign(self, node: ast.Assign) -> None:
         self.visit(node.value)
         for target in node.targets:
-            self._unbind_target(target)
+            self._bind_target(target, node.value)
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         if node.value is not None:
             self.visit(node.value)
-        self._unbind_target(node.target)
+        self._bind_target(node.target, node.value)
 
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
         self.visit(node.value)
@@ -150,6 +152,43 @@ class _DynamicImportBindingTracker(ast.NodeVisitor):
         elif isinstance(target, (ast.Tuple, ast.List)):
             for element in target.elts:
                 self._unbind_target(element)
+
+    def _bind_target(self, target: ast.AST, value: ast.AST | None) -> None:
+        self._unbind_target(target)
+        if not isinstance(target, ast.Name):
+            return
+        if isinstance(value, ast.Name):
+            if value.id in self.importlib_modules:
+                self.importlib_modules.add(target.id)
+            if value.id in self.import_module_functions:
+                self.import_module_functions.add(target.id)
+            if value.id in self.builtins_modules:
+                self.builtins_modules.add(target.id)
+            if value.id in self.import_functions:
+                self.import_functions.add(target.id)
+        elif self._is_import_module_reference(value) or self._is_import_module_getattr(value):
+            self.import_module_functions.add(target.id)
+
+    def _is_import_module_getattr(self, node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "getattr"
+            and len(node.args) >= 2
+            and self._is_importlib_module(node.args[0])
+            and isinstance(node.args[1], ast.Constant)
+            and node.args[1].value == "import_module"
+        )
+
+    def _is_import_module_reference(self, node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.Attribute)
+            and node.attr == "import_module"
+            and self._is_importlib_module(node.value)
+        )
+
+    def _is_importlib_module(self, node: ast.AST) -> bool:
+        return isinstance(node, ast.Name) and node.id in self.importlib_modules
 
     def _unbind(self, name: str) -> None:
         self.importlib_modules.discard(name)

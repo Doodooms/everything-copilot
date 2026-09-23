@@ -16,7 +16,8 @@ try:
     from skillopt.envs.base import EnvAdapter
 except ImportError:  # pragma: no cover - exercised only without optional SkillOpt
     class EnvAdapter:  # type: ignore[no-redef]
-        pass
+        def setup(self, cfg: dict) -> None:
+            self._cfg = cfg
 
 
 def normalize_rollout_result(row: dict[str, Any]) -> dict[str, Any]:
@@ -114,6 +115,21 @@ class WazaSkillOptAdapter(EnvAdapter):
         temporary_eval.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
         return temporary_eval
 
+    @staticmethod
+    def _expected_task_ids(eval_path: Path) -> set[str]:
+        try:
+            import yaml
+        except ImportError as exc:
+            raise RuntimeError("PyYAML is required to read Waza eval tasks") from exc
+        payload = yaml.safe_load(eval_path.read_text(encoding="utf-8")) or {}
+        task_patterns = payload.get("tasks")
+        if not isinstance(task_patterns, list):
+            raise ValueError(f"Waza eval tasks must be a list: {eval_path}")
+        task_ids = set()
+        for pattern in task_patterns:
+            task_ids.update(path.stem for path in sorted(eval_path.parent.glob(str(pattern))))
+        return task_ids
+
     def setup(self, cfg: dict) -> None:
         super().setup(cfg)
         self.analyst_workers = int(self._cfg.get("analyst_workers", 1))
@@ -135,9 +151,11 @@ class WazaSkillOptAdapter(EnvAdapter):
         return None
 
     def build_train_env(self, batch_size: int, seed: int, **kwargs):
+        eval_path = self._materialize_eval("train", kwargs.get("out_root"))
         return {
-            "eval": self._materialize_eval("train", kwargs.get("out_root")),
+            "eval": eval_path,
             "split": "train",
+            "expected_task_ids": self._expected_task_ids(eval_path),
         }
 
     def build_eval_env(self, env_num: int, split: str, seed: int, **kwargs):
@@ -150,9 +168,11 @@ class WazaSkillOptAdapter(EnvAdapter):
         if split not in split_map:
             raise ValueError(f"unsupported SkillOpt split: {split}")
         actual_split = split_map[split]
+        eval_path = self._materialize_eval(actual_split, kwargs.get("out_root"))
         return {
-            "eval": self._materialize_eval(actual_split, kwargs.get("out_root")),
+            "eval": eval_path,
             "split": actual_split,
+            "expected_task_ids": self._expected_task_ids(eval_path),
         }
 
     @staticmethod
@@ -191,9 +211,9 @@ class WazaSkillOptAdapter(EnvAdapter):
                     "rejection_reason": str(exc),
                 })]
         oracle_manifest = load_oracle_manifest(candidate_root)
+        expected_task_ids = set(env_manager.get("expected_task_ids", oracle_manifest))
         oracle_results = {}
-        for task_path in sorted((candidate_root / "tasks").glob("*.yaml")):
-            task_id = task_path.stem
+        for task_id in sorted(expected_task_ids):
             task_oracle = oracle_manifest.get(task_id)
             if task_oracle is None:
                 return [normalize_rollout_result({
@@ -219,7 +239,7 @@ class WazaSkillOptAdapter(EnvAdapter):
         output_path.parent.mkdir(parents=True, exist_ok=True)
         run = run_waza(candidate_eval, output_path, waza_bin=self.waza_bin, trials=1)
         rows = _extract_rows(run.payload)
-        _validate_waza_rows(rows, set(oracle_manifest))
+        _validate_waza_rows(rows, expected_task_ids)
         results = []
         for row in rows:
             task_id = str(row.get("id", row.get("task_id", "")))
