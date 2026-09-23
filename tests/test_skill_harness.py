@@ -1,9 +1,12 @@
 import unittest
 import json
 import importlib
+import sys
 from tempfile import TemporaryDirectory
 from pathlib import Path
 from unittest.mock import patch
+
+import yaml
 
 from skill_harness.benchmark import BenchmarkMutationError, freeze_benchmark, verify_benchmark
 from skill_harness.ablation import prepare_phase_0a
@@ -29,6 +32,55 @@ from skill_harness.optimize import clone_skill_workspace, validate_candidate_bef
 from skill_harness.waza_adapter import WazaError, configure_summary_only_discovery, run_waza
 from skill_harness.routing_observation import parse_routing_observation
 from skill_harness.sentinel import count_sentinels, insert_sentinel, remove_sentinel
+from scripts.build_create_skill_benchmark import FAMILIES, main as build_benchmark, validate_manifest
+
+
+class BenchmarkGenerationTests(unittest.TestCase):
+    repository_root = Path(__file__).parents[1]
+    manifest_path = repository_root / "experiments/optimization/create-skill/benchmark/benchmark_manifest.json"
+    source_skill = repository_root / ".github/skills/create-skill"
+
+    def test_manifest_families_and_holdout_are_disjoint(self):
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(set(manifest["families"]), set(FAMILIES))
+        self.assertTrue(
+            set(manifest["splits"]["train"]["applications"]).isdisjoint(
+                manifest["splits"]["holdout"]["applications"]
+            )
+        )
+        validate_manifest(manifest)
+
+    def test_generated_tasks_cover_frozen_support_files_and_hard_gates(self):
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        with TemporaryDirectory() as directory:
+            output = Path(directory) / "benchmark"
+            with patch.object(sys, "argv", [
+                "build_create_skill_benchmark",
+                "--manifest", str(self.manifest_path),
+                "--source-skill", str(self.source_skill),
+                "--output", str(output),
+            ]):
+                self.assertEqual(build_benchmark(), 0)
+
+            source_support = {
+                path.relative_to(self.source_skill).as_posix()
+                for path in self.source_skill.rglob("*")
+                if path.is_file() and path.name != "SKILL.md" and "__pycache__" not in path.parts and path.suffix != ".pyc"
+            }
+            for split in ("train", "selection", "holdout"):
+                task = yaml.safe_load(
+                    (output / split / "tasks" / "probe-support-file-discipline.yaml").read_text(encoding="utf-8")
+                )
+                oracle = task["oracle"]
+                self.assertFalse(oracle["support_files_optimized"])
+                self.assertEqual(set(oracle["required_support_files"]), source_support)
+                self.assertIn("self_containment", oracle["hard_gates"])
+                for path in oracle["required_support_files"]:
+                    self.assertTrue((output / split / ".github/skills/create-skill" / path).is_file())
+                self.assertEqual(
+                    {item["path"] for item in task["inputs"]["files"]},
+                    set(oracle["required_paths"]),
+                )
 
 
 class ManifestTests(unittest.TestCase):

@@ -1,10 +1,15 @@
 id: skill-packaging-release
 name: skill-packaging-release
-description: 'Adversarial create-skill completion task: skill-packaging-release.'
+description: Skill authoring semantics, ontology, contract, canonical topology, and
+  provenance.
+evaluates: Skill authoring semantics, ontology, contract, canonical topology, and
+  provenance.
+family: authoring-contract
 tags:
 - skill-creation
 - adversarial
 - train
+- family:authoring-contract
 inputs:
   prompt: Authoring, repairing, restructuring, reviewing, and validating a production-ready
     skill named packaging-release. Create or update deterministic VS Code skill packages
@@ -17,5 +22,57 @@ inputs:
   files:
   - path: SKILL.md
   - path: .github/skills/create-skill/SKILL.md
+  - path: .github/skills/create-skill/assets/ask_questions.json
+  - path: .github/skills/create-skill/assets/folder-template.md
+  - path: .github/skills/create-skill/assets/skill-template.md
+  - path: .github/skills/create-skill/references/ask_questions.md
+  - path: .github/skills/create-skill/references/final-checklist.md
+  - path: .github/skills/create-skill/references/latest-docs.md
+  - path: .github/skills/create-skill/references/original-spec.md
+  - path: .github/skills/create-skill/references/validation.md
+  - path: .github/skills/create-skill/scripts/lint.py
+  - path: .github/skills/create-skill/scripts/scaffold.py
+  - path: .github/skills/create-skill/scripts/skill_lint_core.py
+  - path: .github/skills/create-skill/scripts/validate.py
 expected:
   should_trigger: true
+  hard_gates: &id001
+  - package_validity
+  - provenance
+oracle:
+  type: package-contract
+  required_paths:
+  - SKILL.md
+  - .github/skills/create-skill/SKILL.md
+  - .github/skills/create-skill/assets/ask_questions.json
+  - .github/skills/create-skill/assets/folder-template.md
+  - .github/skills/create-skill/assets/skill-template.md
+  - .github/skills/create-skill/references/ask_questions.md
+  - .github/skills/create-skill/references/final-checklist.md
+  - .github/skills/create-skill/references/latest-docs.md
+  - .github/skills/create-skill/references/original-spec.md
+  - .github/skills/create-skill/references/validation.md
+  - .github/skills/create-skill/scripts/lint.py
+  - .github/skills/create-skill/scripts/scaffold.py
+  - .github/skills/create-skill/scripts/skill_lint_core.py
+  - .github/skills/create-skill/scripts/validate.py
+  required_support_files:
+  - assets/ask_questions.json
+  - assets/folder-template.md
+  - assets/skill-template.md
+  - references/ask_questions.md
+  - references/final-checklist.md
+  - references/latest-docs.md
+  - references/original-spec.md
+  - references/validation.md
+  - scripts/lint.py
+  - scripts/scaffold.py
+  - scripts/skill_lint_core.py
+  - scripts/validate.py
+  provenance_path: .github/skills/create-skill/references/original-spec.md
+  support_files_optimized: false
+  hard_gates: *id001
+  judge_dimensions:
+  - ontology clarity
+  - semantic contract and boundaries
+  - canonical topology and provenance

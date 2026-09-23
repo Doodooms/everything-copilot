@@ -1,4 +1,5 @@
 {
+  "schema_version": "1.1",
   "target_skill": "create-skill",
   "architecture": "phase-0b-inline-grouped-lists",
   "model": "gpt-5.6-luna",
@@ -22,9 +23,18 @@
     {"id": "research-library", "name": "research library and citation manager", "constraints": "Import metadata, deduplicate references, preserve provenance, export citations, and surface uncertain matches for review."},
     {"id": "workflow-builder", "name": "visual workflow builder", "constraints": "Support typed nodes, validation before execution, undo and redo, versioned persistence, and safe migration of old graphs."}
   ],
+  "families": {
+    "authoring-contract": "Skill authoring semantics, ontology, contract, canonical topology, and provenance.",
+    "support-file-discipline": "Asset consumption and support-file discipline.",
+    "review-and-checklist": "Point-of-need references, user review, and final checklist behavior.",
+    "scripts-validation": "Self-contained scripts and executable validation or repair.",
+    "repair-recovery": "Malformed or stale package repair and validation recovery.",
+    "routing-near-miss": "Rejection and routing of neighboring requests.",
+    "downstream-guidance": "Guidance quality for downstream project implementation and verification."
+  },
   "splits": {
     "train": {"all_skills": true, "applications": ["saas-billing", "offline-notes", "incident-console"]},
     "selection": {"skills": ["tdd", "security-review", "system-design", "e2e-testing", "performance-optimization", "create-skill"], "applications": ["inventory-mobile", "research-library"]},
-    "holdout": {"applications": ["workflow-builder", "saas-billing", "incident-console"]}
+    "holdout": {"applications": ["workflow-builder"]}
   }
 }
