@@ -68,6 +68,8 @@ guidance, and treating an unreviewed draft as complete. Reject near-miss request
 that belong to another skill. Return JSON with keys score (0-32), hard_pass (boolean),
 failures (array), and rationale (string)."""
 
+WAZA_RUBRIC = "helpfulness"
+
 
 def task_payload(
     task_id: str,
@@ -173,11 +175,20 @@ def write_eval(root: Path, split: str, task_count: int) -> None:
             "inject_skill_body": False,
         },
         "metrics": [
-            {"name": "llm_quality", "weight": 0.8, "threshold": 0.75, "description": JUDGE_RUBRIC},
+            {
+                "name": "llm_quality",
+                "weight": 0.8,
+                "threshold": 0.75,
+                "description": (
+                    f"{JUDGE_RUBRIC}\n\n"
+                    "The detailed dimensions above remain the benchmark's task-level rubric. "
+                    "Waza 0.38.7 executes its supported built-in helpfulness judge for this metric."
+                ),
+            },
             {"name": "efficiency", "weight": 0.2, "threshold": 0.5, "description": "Stay within the task timeout and avoid unnecessary actions."},
         ],
         "graders": [
-            {"type": "prompt", "name": "llm-quality", "config": {"rubric": JUDGE_RUBRIC}},
+            {"type": "prompt", "name": "llm-quality", "config": {"rubric": WAZA_RUBRIC}},
             {"type": "behavior", "name": "bounded-actions", "config": {"max_tokens": 6000}},
         ],
         "tasks": ["tasks/*.yaml"],
@@ -280,6 +291,8 @@ def main() -> int:
         "- `train`: broad optimization signal covering all manifest skills plus representative applications.\n"
         "- `selection`: held-in optimization selection signal with representative skills, applications, and near misses.\n"
         "- `holdout`: unseen application domains used only for final generalization checks; it is excluded from SkillOpt configuration.\n\n"
+        "## Grading\n\n"
+        "The detailed create-skill rubric is retained in the `llm_quality` metric description and task descriptions, covering ontology clarity, semantic boundaries, topology and provenance, executable workflow, support-file discipline, review evidence, downstream utility, and failure/security/verification coverage. Waza 0.38.7 does not accept that free-form rubric in grader configuration, so the prompt grader uses the supported built-in `helpfulness` rubric. The `llm_quality` threshold remains `0.75`, which is the normalized built-in grader score; nuanced create-skill dimensions remain evaluation guidance rather than Waza rubric configuration.\n\n"
         "Waza task files use the standard task schema. Adapter-only contract metadata is stored in each split's `adapter_manifest.json` and is executed by the local SkillOpt/Waza adapter before Waza runs: package shape, declared frozen support files, provenance, script self-containment, and routing metadata are deterministic hard gates. `support_files_optimized: false` explicitly records that SkillOpt changes only SKILL.md; assets, references, and scripts remain frozen fixtures. Near-miss result text receives a deterministic post-Waza routing gate. Application tasks judge package guidance only; downstream project execution is unavailable. Freeze this directory before optimization.\n",
         encoding="utf-8",
     )

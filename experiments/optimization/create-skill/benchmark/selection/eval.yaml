@@ -38,7 +38,11 @@ metrics:
 
     that belong to another skill. Return JSON with keys score (0-32), hard_pass (boolean),
 
-    failures (array), and rationale (string).'
+    failures (array), and rationale (string).
+
+
+    The detailed dimensions above remain the benchmark''s task-level rubric. Waza
+    0.38.7 executes its supported built-in helpfulness judge for this metric.'
 - name: efficiency
   weight: 0.2
   threshold: 0.5
@@ -47,34 +51,7 @@ graders:
 - type: prompt
   name: llm-quality
   config:
-    rubric: 'Judge the generated skill package against the requested skill or application.
-
-      Score 0-4 for each dimension: ontology clarity, semantic contract and boundaries,
-
-      canonical topology and provenance, executable workflow, self-contained support-file
-
-      discipline, structural validation and user-review evidence, downstream implementation
-
-      utility, and failure/security/verification coverage. For application tasks,
-      downstream
-
-      utility means that another agent could use the produced skill to build a coherent
-
-      project with explicit requirements, acceptance criteria, failure handling, and
-
-      verification gates; judge the skill''s guidance, not an imagined implementation.
-
-      Penalize invented architecture, vague discovery text, missing provenance, unsafe
-      or
-
-      unverifiable actions, external workspace imports, unnecessary tables, duplicated
-
-      guidance, and treating an unreviewed draft as complete. Reject near-miss requests
-
-      that belong to another skill. Return JSON with keys score (0-32), hard_pass
-      (boolean),
-
-      failures (array), and rationale (string).'
+    rubric: helpfulness
 - type: behavior
   name: bounded-actions
   config:

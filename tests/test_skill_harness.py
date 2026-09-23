@@ -34,7 +34,7 @@ from skill_harness.optimize import clone_skill_workspace, validate_candidate_bef
 from skill_harness.waza_adapter import WazaError, configure_summary_only_discovery, run_waza
 from skill_harness.routing_observation import parse_routing_observation
 from skill_harness.sentinel import count_sentinels, insert_sentinel, remove_sentinel
-from scripts.build_create_skill_benchmark import FAMILIES, main as build_benchmark, validate_manifest
+from scripts.build_create_skill_benchmark import FAMILIES, JUDGE_RUBRIC, WAZA_RUBRIC, main as build_benchmark, validate_manifest
 
 
 class BenchmarkGenerationTests(unittest.TestCase):
@@ -89,6 +89,26 @@ class BenchmarkGenerationTests(unittest.TestCase):
                 self.assertNotIn("oracle", task)
                 self.assertNotIn("family", task)
                 self.assertNotIn("evaluates", task)
+
+    def test_generated_eval_uses_supported_builtin_waza_rubric(self):
+        with TemporaryDirectory() as directory:
+            output = Path(directory) / "benchmark"
+            with patch.object(sys, "argv", [
+                "build_create_skill_benchmark",
+                "--manifest", str(self.manifest_path),
+                "--source-skill", str(self.source_skill),
+                "--output", str(output),
+            ]):
+                self.assertEqual(build_benchmark(), 0)
+
+            for split in ("train", "selection", "holdout"):
+                evaluation = yaml.safe_load((output / split / "eval.yaml").read_text(encoding="utf-8"))
+                prompt_grader = next(grader for grader in evaluation["graders"] if grader["type"] == "prompt")
+                self.assertEqual(prompt_grader["config"]["rubric"], WAZA_RUBRIC)
+                self.assertNotIn(JUDGE_RUBRIC, prompt_grader["config"].values())
+                metric = next(metric for metric in evaluation["metrics"] if metric["name"] == "llm_quality")
+                self.assertIn(JUDGE_RUBRIC, metric["description"])
+                self.assertIn("supported built-in helpfulness judge", metric["description"])
 
 
 class ManifestTests(unittest.TestCase):
