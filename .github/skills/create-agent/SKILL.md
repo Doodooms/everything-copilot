@@ -40,6 +40,7 @@ license: MIT
 - If the draft does **NOT** delegate, omit `agents:` and remove `agent` from `tools`.
 - Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
 - When a direct-user orchestrator is the sole user-facing entry point, set `user-invocable: false` on specialist agents so the picker routes users through the orchestrator. Keep `disable-model-invocation: false` unless the agent must also be unavailable to other agents.
+- The dedicated direct-user Orchestrator is the sole exception: set `user-invocable: true` and `disable-model-invocation: true`. It has no Step 0 because the user invokes it directly. Do **NOT** generalize this exception to specialists or any other agents.
 - `description` is the primary routing surface. It **MUST** use `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:` so the agent advertises both scope and refusal boundary before its body is loaded.
 - Keep the runtime contract in the agent file: persona or role, minimal tools, optional delegation, invocation mode, workflow, constraints, and output contract. Use explicit refusal or hand-off only when the role needs it.
 - There **MUST** be one source of truth per concept. If a matrix, mapping, or checklist already exists in one support file, later steps **MUST** point to it instead of restating it.
