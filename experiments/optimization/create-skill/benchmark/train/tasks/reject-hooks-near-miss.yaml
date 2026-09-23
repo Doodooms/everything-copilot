@@ -1,8 +1,8 @@
 id: reject-hooks-near-miss
-name: reject-hooks-near-miss
-description: Correct rejection and routing of requests owned by neighboring primitives.
-evaluates: Correct rejection and routing of requests owned by neighboring primitives.
-family: routing-near-miss
+name: 'reject-hooks-near-miss: Create hooks that run on every commit.'
+description: 'Correct rejection and routing of requests owned by neighboring primitives.
+  Create hooks that run on every commit. DO NOT USE FOR: agents, prompts, MCP servers,
+  hooks, benchmark optimization, or general application implementation.'
 tags:
 - near-miss
 - rejection
@@ -27,40 +27,3 @@ inputs:
   - path: .github/skills/create-skill/scripts/validate.py
 expected:
   should_trigger: false
-  hard_gates: &id001
-  - routing_correctness
-oracle:
-  type: package-contract
-  required_paths:
-  - SKILL.md
-  - .github/skills/create-skill/SKILL.md
-  - .github/skills/create-skill/assets/ask_questions.json
-  - .github/skills/create-skill/assets/folder-template.md
-  - .github/skills/create-skill/assets/skill-template.md
-  - .github/skills/create-skill/references/ask_questions.md
-  - .github/skills/create-skill/references/final-checklist.md
-  - .github/skills/create-skill/references/latest-docs.md
-  - .github/skills/create-skill/references/original-spec.md
-  - .github/skills/create-skill/references/validation.md
-  - .github/skills/create-skill/scripts/lint.py
-  - .github/skills/create-skill/scripts/scaffold.py
-  - .github/skills/create-skill/scripts/skill_lint_core.py
-  - .github/skills/create-skill/scripts/validate.py
-  required_support_files:
-  - assets/ask_questions.json
-  - assets/folder-template.md
-  - assets/skill-template.md
-  - references/ask_questions.md
-  - references/final-checklist.md
-  - references/latest-docs.md
-  - references/original-spec.md
-  - references/validation.md
-  - scripts/lint.py
-  - scripts/scaffold.py
-  - scripts/skill_lint_core.py
-  - scripts/validate.py
-  provenance_path: .github/skills/create-skill/references/original-spec.md
-  support_files_optimized: false
-  hard_gates: *id001
-  judge_dimensions:
-  - semantic contract and boundaries

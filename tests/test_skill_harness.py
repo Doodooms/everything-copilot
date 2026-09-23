@@ -9,6 +9,7 @@ from unittest.mock import patch
 import yaml
 
 from skill_harness.benchmark import BenchmarkMutationError, freeze_benchmark, verify_benchmark
+from skill_harness.benchmark_oracle import apply_routing_gate, evaluate_task, load_oracle_manifest
 from skill_harness.ablation import prepare_phase_0a
 from skill_harness.manifest import ArchitectureVariant, ManifestError, SemanticManifest
 from skill_harness.metrics import RoutingTrial, aggregate_trials
@@ -68,19 +69,25 @@ class BenchmarkGenerationTests(unittest.TestCase):
                 if path.is_file() and path.name != "SKILL.md" and "__pycache__" not in path.parts and path.suffix != ".pyc"
             }
             for split in ("train", "selection", "holdout"):
-                task = yaml.safe_load(
-                    (output / split / "tasks" / "probe-support-file-discipline.yaml").read_text(encoding="utf-8")
-                )
-                oracle = task["oracle"]
+                manifest = json.loads((output / split / "adapter_manifest.json").read_text(encoding="utf-8"))
+                oracle = manifest["tasks"]["probe-support-file-discipline"]
                 self.assertFalse(oracle["support_files_optimized"])
                 self.assertEqual(set(oracle["required_support_files"]), source_support)
                 self.assertIn("self_containment", oracle["hard_gates"])
                 for path in oracle["required_support_files"]:
                     self.assertTrue((output / split / ".github/skills/create-skill" / path).is_file())
                 self.assertEqual(
-                    {item["path"] for item in task["inputs"]["files"]},
+                    {item["path"] for item in yaml.safe_load(
+                        (output / split / "tasks" / "probe-support-file-discipline.yaml").read_text(encoding="utf-8")
+                    )["inputs"]["files"]},
                     set(oracle["required_paths"]),
                 )
+                task = yaml.safe_load(
+                    (output / split / "tasks" / "probe-support-file-discipline.yaml").read_text(encoding="utf-8")
+                )
+                self.assertNotIn("oracle", task)
+                self.assertNotIn("family", task)
+                self.assertNotIn("evaluates", task)
 
 
 class ManifestTests(unittest.TestCase):
@@ -116,6 +123,99 @@ class MetricsTests(unittest.TestCase):
 
 
 class ProtectionTests(unittest.TestCase):
+    def test_benchmark_oracle_rejects_missing_and_mutated_frozen_support(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / ".github/skills/create-skill"
+            fixture = root / "fixtures/.github/skills/create-skill"
+            package.mkdir(parents=True)
+            fixture.mkdir(parents=True)
+            skill = "---\nname: create-skill\n---\nSee references/original-spec.md\n"
+            (package / "SKILL.md").write_text(skill, encoding="utf-8")
+            (fixture / "SKILL.md").write_text(skill, encoding="utf-8")
+            (package / "references").mkdir()
+            (fixture / "references").mkdir()
+            (package / "references/original-spec.md").write_text("spec\n", encoding="utf-8")
+            (fixture / "references/original-spec.md").write_text("spec\n", encoding="utf-8")
+            (package / "references/final-checklist.md").write_text("changed\n", encoding="utf-8")
+            (fixture / "references/final-checklist.md").write_text("frozen\n", encoding="utf-8")
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "support-file-discipline",
+                    "should_trigger": True,
+                    "required_paths": [".github/skills/create-skill/references/final-checklist.md"],
+                    "required_support_files": ["references/final-checklist.md"],
+                    "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+                },
+                root,
+            )
+            self.assertFalse(result.passed)
+            self.assertFalse(result.checks["support_files"])
+            self.assertIn("support files were mutated", " ".join(result.failures))
+
+    def test_benchmark_oracle_rejects_deleted_frozen_script_and_support_file(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / ".github/skills/create-skill"
+            fixture = root / "fixtures/.github/skills/create-skill"
+            package.mkdir(parents=True)
+            fixture.mkdir(parents=True)
+            skill = "See references/original-spec.md\n"
+            (package / "SKILL.md").write_text(skill, encoding="utf-8")
+            (fixture / "SKILL.md").write_text(skill, encoding="utf-8")
+            for relative in ("references/original-spec.md", "references/final-checklist.md", "scripts/validate.py"):
+                for base in (package, fixture):
+                    target = base / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("frozen\n", encoding="utf-8")
+            (package / "scripts/validate.py").unlink()
+            (fixture / "references/final-checklist.md").unlink()
+
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "scripts-validation",
+                    "should_trigger": True,
+                    "required_paths": [
+                        ".github/skills/create-skill/scripts/validate.py",
+                        ".github/skills/create-skill/references/final-checklist.md",
+                    ],
+                    "required_support_files": [
+                        "scripts/validate.py",
+                        "references/final-checklist.md",
+                        "references/original-spec.md",
+                    ],
+                    "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+                },
+                root,
+            )
+
+            self.assertFalse(result.passed)
+            self.assertFalse(result.checks["package_shape"])
+            self.assertFalse(result.checks["support_files"])
+            self.assertTrue(any("validate.py" in failure for failure in result.failures))
+            self.assertTrue(any("final-checklist.md" in failure for failure in result.failures))
+
+    def test_oracle_manifest_must_match_waza_tasks(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "tasks").mkdir()
+            (root / "tasks" / "one.yaml").write_text("id: one\n", encoding="utf-8")
+            (root / "adapter_manifest.json").write_text(
+                json.dumps({"tasks": {"two": {"task_id": "two", "family": "routing-near-miss", "should_trigger": False}}}),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                load_oracle_manifest(root)
+
+    def test_near_miss_gate_rejects_unauthorized_create_skill_result(self):
+        passed, reason = apply_routing_gate(
+            {"final_output": "I created the create-skill package with SKILL.md"}, False
+        )
+        self.assertFalse(passed)
+        self.assertIn("unauthorized", reason)
+
     def test_skillopt_launcher_registers_create_skill_adapter(self):
         launcher = importlib.import_module("scripts.skillopt_train")
         launcher.register_create_skill()

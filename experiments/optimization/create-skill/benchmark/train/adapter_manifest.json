@@ -1,0 +1,4168 @@
+{
+  "tasks": {
+    "app-incident-console": {
+      "family": "downstream-guidance",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "downstream implementation utility",
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "app-incident-console"
+    },
+    "app-offline-notes": {
+      "family": "downstream-guidance",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "downstream implementation utility",
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "app-offline-notes"
+    },
+    "app-saas-billing": {
+      "family": "downstream-guidance",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "downstream implementation utility",
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "app-saas-billing"
+    },
+    "probe-repair-recovery": {
+      "family": "repair-recovery",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-repair-recovery"
+    },
+    "probe-review-and-checklist": {
+      "family": "review-and-checklist",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "structural validation and user-review evidence"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-review-and-checklist"
+    },
+    "probe-scripts-validation": {
+      "family": "scripts-validation",
+      "hard_gates": [
+        "package_validity",
+        "self_containment"
+      ],
+      "judge_dimensions": [
+        "executable workflow",
+        "structural validation and user-review evidence"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-scripts-validation"
+    },
+    "probe-support-file-discipline": {
+      "family": "support-file-discipline",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "self-contained support-file discipline"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-support-file-discipline"
+    },
+    "reject-agent-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-agent-near-miss"
+    },
+    "reject-application-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-application-near-miss"
+    },
+    "reject-benchmark-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-benchmark-near-miss"
+    },
+    "reject-hooks-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-hooks-near-miss"
+    },
+    "reject-mcp-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-mcp-near-miss"
+    },
+    "reject-prompt-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-prompt-near-miss"
+    },
+    "skill-acceptance-criteria-design": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-acceptance-criteria-design"
+    },
+    "skill-adversarial-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-adversarial-testing"
+    },
+    "skill-api-contract-design": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-api-contract-design"
+    },
+    "skill-api-doc-research": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-api-doc-research"
+    },
+    "skill-api-implementation": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-api-implementation"
+    },
+    "skill-architecture-conformance-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-architecture-conformance-review"
+    },
+    "skill-architecture-decision-record": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-architecture-decision-record"
+    },
+    "skill-architecture-red-team": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-architecture-red-team"
+    },
+    "skill-assumption-audit": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-assumption-audit"
+    },
+    "skill-benchmark-research": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-benchmark-research"
+    },
+    "skill-breaking-change-analysis": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-breaking-change-analysis"
+    },
+    "skill-canonical-task-state": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-canonical-task-state"
+    },
+    "skill-change-impact-routing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-change-impact-routing"
+    },
+    "skill-ci-cd": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-ci-cd"
+    },
+    "skill-classify-change-risk": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-classify-change-risk"
+    },
+    "skill-code-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-code-review"
+    },
+    "skill-concurrency-safe-implementation": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-concurrency-safe-implementation"
+    },
+    "skill-containerization": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-containerization"
+    },
+    "skill-data-architecture": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-data-architecture"
+    },
+    "skill-data-migration-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-data-migration-review"
+    },
+    "skill-database-migration-implementation": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-database-migration-implementation"
+    },
+    "skill-dependency-mapping": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-dependency-mapping"
+    },
+    "skill-dependency-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-dependency-review"
+    },
+    "skill-dependency-version-research": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-dependency-version-research"
+    },
+    "skill-deployment": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-deployment"
+    },
+    "skill-distributed-systems-design": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-distributed-systems-design"
+    },
+    "skill-documentation-consistency-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-documentation-consistency-review"
+    },
+    "skill-domain-modeling": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-domain-modeling"
+    },
+    "skill-e2e-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-e2e-testing"
+    },
+    "skill-edge-case-generation": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-edge-case-generation"
+    },
+    "skill-experiment-falsification": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-experiment-falsification"
+    },
+    "skill-failure-reproduction": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-failure-reproduction"
+    },
+    "skill-focused-refactoring": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-focused-refactoring"
+    },
+    "skill-fuzz-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-fuzz-testing"
+    },
+    "skill-git-task-lifecycle": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-git-task-lifecycle"
+    },
+    "skill-go-development": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-go-development"
+    },
+    "skill-go-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-go-review"
+    },
+    "skill-implementation-planning": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-implementation-planning"
+    },
+    "skill-infrastructure-as-code": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-infrastructure-as-code"
+    },
+    "skill-integration-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-integration-testing"
+    },
+    "skill-library-comparison": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-library-comparison"
+    },
+    "skill-migration-architecture": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-migration-architecture"
+    },
+    "skill-migration-failure-analysis": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-migration-failure-analysis"
+    },
+    "skill-migration-planning": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-migration-planning"
+    },
+    "skill-mutation-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-mutation-testing"
+    },
+    "skill-observability": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-observability"
+    },
+    "skill-operational-security": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-operational-security"
+    },
+    "skill-packaging-release": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-packaging-release"
+    },
+    "skill-paper-research": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-paper-research"
+    },
+    "skill-performance-optimization": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-performance-optimization"
+    },
+    "skill-performance-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-performance-review"
+    },
+    "skill-pre-mortem": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-pre-mortem"
+    },
+    "skill-property-based-testing": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-property-based-testing"
+    },
+    "skill-python-development": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-python-development"
+    },
+    "skill-python-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-python-review"
+    },
+    "skill-repository-archaeology": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-repository-archaeology"
+    },
+    "skill-reversibility-analysis": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-reversibility-analysis"
+    },
+    "skill-risk-driven-delivery": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-risk-driven-delivery"
+    },
+    "skill-rollout-planning": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-rollout-planning"
+    },
+    "skill-rollout-rollback": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-rollout-rollback"
+    },
+    "skill-runtime-configuration": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-runtime-configuration"
+    },
+    "skill-rust-development": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-rust-development"
+    },
+    "skill-rust-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-rust-review"
+    },
+    "skill-security-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-security-review"
+    },
+    "skill-specialist-handoff": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-specialist-handoff"
+    },
+    "skill-specify-requirements": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-specify-requirements"
+    },
+    "skill-standards-research": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-standards-research"
+    },
+    "skill-system-design": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-system-design"
+    },
+    "skill-tdd": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-tdd"
+    },
+    "skill-technology-selection": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-technology-selection"
+    },
+    "skill-test-quality-analysis": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-test-quality-analysis"
+    },
+    "skill-test-quality-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-test-quality-review"
+    },
+    "skill-threat-model-challenge": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-threat-model-challenge"
+    },
+    "skill-typescript-development": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-typescript-development"
+    },
+    "skill-typescript-review": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-typescript-review"
+    },
+    "skill-update-documentation": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-update-documentation"
+    },
+    "skill-update-runbook": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-update-runbook"
+    },
+    "skill-validation-planning": {
+      "family": "authoring-contract",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "ontology clarity",
+        "semantic contract and boundaries",
+        "canonical topology and provenance"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "skill-validation-planning"
+    }
+  },
+  "version": 1
+}

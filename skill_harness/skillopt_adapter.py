@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .benchmark import verify_benchmark
+from .benchmark_oracle import apply_routing_gate, evaluate_task, load_oracle_manifest
 from .scaffold import ScaffoldConfig
 from .validator import validate_skill_structure
 from .waza_adapter import run_waza
@@ -143,7 +144,7 @@ class WazaSkillOptAdapter(EnvAdapter):
             candidate_root,
             fixtures_root,
             dirs_exist_ok=True,
-            ignore=shutil.ignore_patterns("eval.yaml", "tasks", "fixtures", "*.json"),
+            ignore=shutil.ignore_patterns("eval.yaml", "tasks", "fixtures"),
         )
 
     def rollout(self, env_manager, skill_content: str, out_dir: str, **kwargs) -> list[dict]:
@@ -151,7 +152,8 @@ class WazaSkillOptAdapter(EnvAdapter):
         candidate_root = Path(out_dir) / f"candidate-{env_manager['split']}"
         if candidate_root.exists():
             shutil.rmtree(candidate_root)
-        shutil.copytree(eval_path.parent, candidate_root, ignore=shutil.ignore_patterns("*.json", "__pycache__"))
+        shutil.copytree(eval_path.parent, candidate_root, ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copy2(eval_path.parent / "adapter_manifest.json", candidate_root / "adapter_manifest.json")
         candidate_skill = candidate_root / ".github" / "skills" / "create-skill" / "SKILL.md"
         candidate_skill.write_text(skill_content, encoding="utf-8")
         top_level_skill = candidate_root / "SKILL.md"
@@ -170,11 +172,58 @@ class WazaSkillOptAdapter(EnvAdapter):
                     "rejected": True,
                     "rejection_reason": str(exc),
                 })]
+        oracle_manifest = load_oracle_manifest(candidate_root)
+        oracle_results = {}
+        for task_path in sorted((candidate_root / "tasks").glob("*.yaml")):
+            task_id = task_path.stem
+            task_oracle = oracle_manifest.get(task_id)
+            if task_oracle is None:
+                return [normalize_rollout_result({
+                    "id": task_id,
+                    "hard": False,
+                    "soft": 0.0,
+                    "rejected": True,
+                    "rejection_reason": "task is missing from adapter oracle manifest",
+                })]
+            result = evaluate_task(task_id, task_oracle, candidate_root)
+            oracle_results[task_id] = result
+            if not result.passed:
+                return [normalize_rollout_result({
+                    "id": task_id,
+                    "hard": False,
+                    "soft": 0.0,
+                    "rejected": True,
+                    "rejection_reason": "; ".join(result.failures),
+                    "oracle": result.as_dict(),
+                })]
         candidate_eval = candidate_root / eval_path.name
         output_path = Path(out_dir) / f"waza-{env_manager['split']}.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         run = run_waza(candidate_eval, output_path, waza_bin=self.waza_bin, trials=1)
-        return [normalize_rollout_result(row) for row in _extract_rows(run.payload)]
+        results = []
+        for row in _extract_rows(run.payload):
+            task_id = str(row.get("id", row.get("task_id", "")))
+            metadata = oracle_manifest.get(task_id, {})
+            routing_passed, routing_failure = apply_routing_gate(
+                row, bool(metadata.get("should_trigger", True))
+            )
+            if not routing_passed:
+                row = {
+                    **row,
+                    "passed": False,
+                    "hard": False,
+                    "rejected": True,
+                    "rejection_reason": routing_failure,
+                }
+            row["oracle"] = {
+                "checks": oracle_results.get(task_id).checks if task_id in oracle_results else {},
+                "support_files_optimized": False,
+                "support_files_source": "frozen fixture",
+                "downstream_execution": "unavailable; Waza judges package guidance only",
+                "routing_gate": "deterministic post-Waza result inspection",
+            }
+            results.append(normalize_rollout_result(row))
+        return results
 
     def get_task_types(self) -> list[str]:
         return ["waza-task"]

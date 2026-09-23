@@ -1,0 +1,488 @@
+{
+  "tasks": {
+    "app-workflow-builder": {
+      "family": "downstream-guidance",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "downstream implementation utility",
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "app-workflow-builder"
+    },
+    "probe-repair-recovery": {
+      "family": "repair-recovery",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "failure/security/verification coverage"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-repair-recovery"
+    },
+    "probe-review-and-checklist": {
+      "family": "review-and-checklist",
+      "hard_gates": [
+        "package_validity",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "structural validation and user-review evidence"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-review-and-checklist"
+    },
+    "probe-scripts-validation": {
+      "family": "scripts-validation",
+      "hard_gates": [
+        "package_validity",
+        "self_containment"
+      ],
+      "judge_dimensions": [
+        "executable workflow",
+        "structural validation and user-review evidence"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-scripts-validation"
+    },
+    "probe-support-file-discipline": {
+      "family": "support-file-discipline",
+      "hard_gates": [
+        "package_validity",
+        "self_containment",
+        "provenance"
+      ],
+      "judge_dimensions": [
+        "self-contained support-file discipline"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": true,
+      "support_files_optimized": false,
+      "task_id": "probe-support-file-discipline"
+    },
+    "reject-agent-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-agent-near-miss"
+    },
+    "reject-application-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-application-near-miss"
+    },
+    "reject-benchmark-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-benchmark-near-miss"
+    },
+    "reject-hooks-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-hooks-near-miss"
+    },
+    "reject-mcp-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-mcp-near-miss"
+    },
+    "reject-prompt-near-miss": {
+      "family": "routing-near-miss",
+      "hard_gates": [
+        "routing_correctness"
+      ],
+      "judge_dimensions": [
+        "semantic contract and boundaries"
+      ],
+      "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+      "required_paths": [
+        "SKILL.md",
+        ".github/skills/create-skill/SKILL.md",
+        ".github/skills/create-skill/assets/ask_questions.json",
+        ".github/skills/create-skill/assets/folder-template.md",
+        ".github/skills/create-skill/assets/skill-template.md",
+        ".github/skills/create-skill/references/ask_questions.md",
+        ".github/skills/create-skill/references/final-checklist.md",
+        ".github/skills/create-skill/references/latest-docs.md",
+        ".github/skills/create-skill/references/original-spec.md",
+        ".github/skills/create-skill/references/validation.md",
+        ".github/skills/create-skill/scripts/lint.py",
+        ".github/skills/create-skill/scripts/scaffold.py",
+        ".github/skills/create-skill/scripts/skill_lint_core.py",
+        ".github/skills/create-skill/scripts/validate.py"
+      ],
+      "required_support_files": [
+        "assets/ask_questions.json",
+        "assets/folder-template.md",
+        "assets/skill-template.md",
+        "references/ask_questions.md",
+        "references/final-checklist.md",
+        "references/latest-docs.md",
+        "references/original-spec.md",
+        "references/validation.md",
+        "scripts/lint.py",
+        "scripts/scaffold.py",
+        "scripts/skill_lint_core.py",
+        "scripts/validate.py"
+      ],
+      "should_trigger": false,
+      "support_files_optimized": false,
+      "task_id": "reject-prompt-near-miss"
+    }
+  },
+  "version": 1
+}

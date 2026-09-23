@@ -2,6 +2,15 @@
   "target_skill": "create-skill",
   "architecture": "phase-0b-inline-grouped-lists",
   "model": "gpt-5.6-luna",
+  "families": [
+    "authoring-contract",
+    "support-file-discipline",
+    "review-and-checklist",
+    "scripts-validation",
+    "repair-recovery",
+    "routing-near-miss",
+    "downstream-guidance"
+  ],
   "skills": [
     "specify-requirements", "classify-change-risk", "canonical-task-state", "specialist-handoff", "git-task-lifecycle", "change-impact-routing",
     "domain-modeling", "system-design", "api-contract-design", "data-architecture", "technology-selection", "migration-architecture", "distributed-systems-design", "architecture-decision-record",
@@ -25,6 +34,6 @@
   "splits": {
     "train": {"all_skills": true, "applications": ["saas-billing", "offline-notes", "incident-console"]},
     "selection": {"skills": ["tdd", "security-review", "system-design", "e2e-testing", "performance-optimization", "create-skill"], "applications": ["inventory-mobile", "research-library"]},
-    "holdout": {"applications": ["workflow-builder", "saas-billing", "incident-console"]}
+    "holdout": {"applications": ["workflow-builder"]}
   }
 }

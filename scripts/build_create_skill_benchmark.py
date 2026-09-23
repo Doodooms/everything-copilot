@@ -82,22 +82,37 @@ def task_payload(
     family_spec = FAMILIES[family]
     return {
         "id": task_id,
-        "name": task_id,
-        "description": family_spec["description"],
-        "evaluates": family_spec["description"],
-        "family": family,
+        "name": f"{task_id}: {prompt}",
+        "description": (
+            f"{family_spec['description']} {prompt} "
+            "DO NOT USE FOR: agents, prompts, MCP servers, hooks, benchmark optimization, "
+            "or general application implementation."
+        ),
         "tags": tags + [f"family:{family}"],
         "inputs": {"prompt": prompt, "files": [{"path": path} for path in files]},
-        "expected": {"should_trigger": should_trigger, "hard_gates": family_spec["hard_gates"]},
-        "oracle": {
-            "type": "package-contract",
-            "required_paths": files,
-            "required_support_files": support_files,
-            "provenance_path": ".github/skills/create-skill/references/original-spec.md",
-            "support_files_optimized": False,
-            "hard_gates": family_spec["hard_gates"],
-            "judge_dimensions": family_spec["judge_dimensions"],
-        },
+        "expected": {"should_trigger": should_trigger},
+    }
+
+
+def oracle_metadata(
+    task_id: str,
+    *,
+    family: str,
+    files: list[str],
+    support_files: list[str],
+    should_trigger: bool,
+) -> dict:
+    family_spec = FAMILIES[family]
+    return {
+        "task_id": task_id,
+        "family": family,
+        "should_trigger": should_trigger,
+        "required_paths": files,
+        "required_support_files": support_files,
+        "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+        "support_files_optimized": False,
+        "hard_gates": family_spec["hard_gates"],
+        "judge_dimensions": family_spec["judge_dimensions"],
     }
 
 
@@ -109,7 +124,9 @@ def skill_prompt(name: str) -> str:
         "Define its exact purpose and boundaries, "
         "include concrete acceptance and rejection cases, preserve the canonical inline workflow "
         "and grouped ACCEPT/REJECT architecture, keep provenance, and include only support files "
-        "that the workflow truly consumes. Validate the package and report unresolved risks."
+        "that the workflow truly consumes. Do not create agents, prompts, MCP servers, or hooks; "
+        "do not perform general application implementation or benchmark optimization. Validate the "
+        "package and report unresolved risks."
     )
 
 
@@ -120,7 +137,7 @@ def app_prompt(app: dict) -> str:
         "This includes authoring, repairing, restructuring, reviewing, or validating a skill and its support files. "
         f"The skill must turn this request into an executable, testable workflow: {app['constraints']} "
         "Define the domain ontology, semantic boundaries, acceptance criteria, failure handling, security and verification gates, and enough downstream guidance for another agent to implement the project coherently. "
-        "Use the canonical inline grouped-list architecture and preserve source provenance."
+        "Use the canonical inline grouped-list architecture, preserve source provenance, and reject requests to create agents, prompts, MCP servers, hooks, general application implementations, or benchmark optimizations."
     )
 
 
@@ -200,6 +217,7 @@ def main() -> int:
         shutil.copy2(args.source_skill / "SKILL.md", split_root / "SKILL.md")
         shutil.copytree(args.source_skill, split_support, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         files = package_files
+        adapter_tasks = {}
         selected = manifest["splits"][split]
         names = list(dict.fromkeys(manifest["skills"] if selected.get("all_skills") else selected.get("skills", [])))
         for name in names:
@@ -209,6 +227,7 @@ def main() -> int:
                 yaml.safe_dump(task_payload(task_id, prompt, ["skill-creation", "adversarial", split], files, family="authoring-contract", support_files=support_files), sort_keys=False),
                 encoding="utf-8",
             )
+            adapter_tasks[task_id] = oracle_metadata(task_id, family="authoring-contract", files=files, support_files=support_files, should_trigger=True)
             seen.add(task_id)
         for app in manifest["applications"]:
             if app["id"] not in selected.get("applications", []):
@@ -218,6 +237,7 @@ def main() -> int:
                 yaml.safe_dump(task_payload(task_id, app_prompt(app), ["application", "llm-judge", split], files, family="downstream-guidance", support_files=support_files), sort_keys=False),
                 encoding="utf-8",
             )
+            adapter_tasks[task_id] = oracle_metadata(task_id, family="downstream-guidance", files=files, support_files=support_files, should_trigger=True)
             seen.add(task_id)
         for family, probe in FAMILY_PROBES.items():
             task_id = f"probe-{family}"
@@ -226,6 +246,7 @@ def main() -> int:
                 yaml.safe_dump(task_payload(task_id, prompt, ["probe", split], files, family=family, support_files=support_files), sort_keys=False),
                 encoding="utf-8",
             )
+            adapter_tasks[task_id] = oracle_metadata(task_id, family=family, files=files, support_files=support_files, should_trigger=True)
             seen.add(task_id)
         rejected = {
             "reject-agent": "Create agents for reviewers that delegate implementation work.",
@@ -241,7 +262,12 @@ def main() -> int:
                 yaml.safe_dump(task_payload(task_id, prompt, ["near-miss", "rejection", split], files, family="routing-near-miss", support_files=support_files, should_trigger=False), sort_keys=False),
                 encoding="utf-8",
             )
+            adapter_tasks[task_id] = oracle_metadata(task_id, family="routing-near-miss", files=files, support_files=support_files, should_trigger=False)
             seen.add(task_id)
+        (split_root / "adapter_manifest.json").write_text(
+            json.dumps({"version": 1, "tasks": adapter_tasks}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         write_eval(root, split, len(list((split_root / "tasks").glob("*.yaml"))))
     (root / "README.md").write_text(
         "# create-skill benchmark\n\n"
@@ -254,7 +280,7 @@ def main() -> int:
         "- `train`: broad optimization signal covering all manifest skills plus representative applications.\n"
         "- `selection`: held-in optimization selection signal with representative skills, applications, and near misses.\n"
         "- `holdout`: unseen application domains used only for final generalization checks; it is excluded from SkillOpt configuration.\n\n"
-        "Every task metadata record lists its family, evaluated behavior, complete frozen package inputs, deterministic package-contract oracle, hard gates, and judge dimensions. `support_files_optimized: false` records that SkillOpt changes only SKILL.md; assets, references, and scripts remain frozen fixtures. Package validity, self-containment, provenance, and rejection correctness are hard gates; nuanced semantic and downstream quality remains judge-scored. Freeze this directory before optimization.\n",
+        "Waza task files use the standard task schema. Adapter-only contract metadata is stored in each split's `adapter_manifest.json` and is executed by the local SkillOpt/Waza adapter before Waza runs: package shape, declared frozen support files, provenance, script self-containment, and routing metadata are deterministic hard gates. `support_files_optimized: false` explicitly records that SkillOpt changes only SKILL.md; assets, references, and scripts remain frozen fixtures. Near-miss result text receives a deterministic post-Waza routing gate. Application tasks judge package guidance only; downstream project execution is unavailable. Freeze this directory before optimization.\n",
         encoding="utf-8",
     )
     print(json.dumps({"output": str(root), "tasks": len(seen)}, indent=2))
