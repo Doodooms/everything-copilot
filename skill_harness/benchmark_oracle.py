@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -232,13 +233,18 @@ def _safe_candidate_path(candidate_root: Path, relative: str, base: Path | None 
     raw_path = Path(relative)
     if raw_path.is_absolute():
         return None
-    base = (base or candidate_root).resolve()
-    resolved = (base / raw_path).resolve()
+    base = base or candidate_root
+    candidate_path = Path(os.path.abspath(base / raw_path))
     try:
-        resolved.relative_to(candidate_root)
+        relative_path = candidate_path.relative_to(candidate_root)
     except ValueError:
         return None
-    return resolved
+    current = candidate_root
+    for component in relative_path.parts:
+        current /= component
+        if current.is_symlink():
+            return None
+    return candidate_path.resolve()
 
 
 def evaluate_task(task_id: str, task_metadata: dict[str, Any], candidate_root: Path) -> OracleResult:

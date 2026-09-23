@@ -124,6 +124,38 @@ class MetricsTests(unittest.TestCase):
 
 
 class ProtectionTests(unittest.TestCase):
+    def test_benchmark_oracle_rejects_support_symlink_to_fixture(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / ".github/skills/create-skill"
+            fixture = root / "fixtures/.github/skills/create-skill"
+            package.mkdir(parents=True)
+            fixture.mkdir(parents=True)
+            skill = "See references/original-spec.md\n"
+            (package / "SKILL.md").write_text(skill, encoding="utf-8")
+            (fixture / "SKILL.md").write_text(skill, encoding="utf-8")
+            (fixture / "references").mkdir()
+            fixture_spec = fixture / "references/original-spec.md"
+            fixture_spec.write_text("spec\n", encoding="utf-8")
+            (package / "references").mkdir()
+            (package / "references/original-spec.md").symlink_to(fixture_spec)
+
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "support-file-discipline",
+                    "should_trigger": True,
+                    "required_paths": [".github/skills/create-skill/references/original-spec.md"],
+                    "required_support_files": ["references/original-spec.md"],
+                    "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+                },
+                root,
+            )
+
+            self.assertFalse(result.passed)
+            self.assertFalse(result.checks["package_shape"])
+            self.assertFalse(result.checks["support_files"])
+
     def test_benchmark_oracle_rejects_missing_and_mutated_frozen_support(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
