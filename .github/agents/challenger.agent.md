@@ -5,7 +5,7 @@ target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: max
-tools: [read, search, agent]
+tools: [read, agent, search/usages, search]
 agents: [researcher]
 ---
 
