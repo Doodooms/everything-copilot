@@ -17,24 +17,22 @@ class CreateAgentValidatorTests(unittest.TestCase):
         body: str | None = None,
     ) -> subprocess.CompletedProcess[str]:
         body = body or """
-# Role
-
-## Responsibilities
-
-- Keep the role focused.
-
-## Workflow
-
-1. Inspect the assigned work.
-
-## Constraints
-
-- Do not exceed the role.
-
-## Output Contract
-
-- Return the scoped result.
-"""
+    <rules>
+    ## Role
+    Own one focused role.
+    ## Responsibilities
+    - Keep the role focused.
+    ## Constraints
+    - Do not exceed the role.
+    ## Output Contract
+    - Return the scoped result.
+    </rules>
+    <workflow>
+    ## Step 1 - Gather context.
+    ## Step 2 - Perform the role.
+    ## Step 3 - Return the result.
+    </workflow>
+    """
         with TemporaryDirectory() as directory:
             agent_file = Path(directory) / filename
             agent_file.write_text(f"---\n{frontmatter}---\n{body}", encoding="utf-8")
@@ -74,6 +72,35 @@ class CreateAgentValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertNotIn("Step 0", result.stdout)
         self.assertNotIn("refusal", result.stdout.lower())
+
+    def test_accepts_canonical_agent_with_nonempty_optional_definitions(self):
+        body = """
+<definitions>
+- **defect packet** : a minimal reproduction and evidence for the repair owner
+</definitions>
+<rules>
+## Role
+Own one focused role.
+## Responsibilities
+- Keep the role focused.
+## Constraints
+- Do not exceed the role.
+## Output Contract
+- Return the scoped result.
+</rules>
+<workflow>
+## Step 1 - Gather context.
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "defined.agent.md",
+            "name: defined\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stdout)
 
     def test_rejects_empty_optional_definitions_block(self):
         body = """
@@ -165,6 +192,58 @@ class CreateAgentValidatorTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Wrapped agents must keep this order", result.stdout)
+
+    def test_rejects_legacy_nested_workflow_and_rules(self):
+        body = """
+<definitions>
+- **handoff** : evidence sent to the owner of the next action
+</definitions>
+<workflow>
+## Role
+Own one focused role.
+<rules>
+## Responsibilities
+- Perform that role.
+## Constraints
+- Stay within scope.
+## Output Contract
+- Return the defined handoff.
+</rules>
+## Step 1 - Gather context.
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "legacy.agent.md",
+            "name: legacy\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("canonical", result.stdout.lower())
+
+    def test_rejects_legacy_unwrapped_agent_body(self):
+        body = """
+# Role
+Own one focused role.
+## Responsibilities
+- Perform that role.
+## Workflow
+1. Complete the scoped method.
+## Constraints
+- Stay within scope.
+## Output Contract
+- Return the defined handoff.
+"""
+        result = self.run_validator(
+            "legacy-unwrapped.agent.md",
+            "name: legacy-unwrapped\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("canonical", result.stdout.lower())
 
     def test_rejects_invalid_delegation_contract(self):
         result = self.run_validator(

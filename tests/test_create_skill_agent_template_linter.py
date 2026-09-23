@@ -15,6 +15,21 @@ SPEC.loader.exec_module(LINTER)
 
 
 class EmbeddedAgentTemplateLinterTests(unittest.TestCase):
+    def test_create_skill_admission_and_rejection_contract_remain_intact(self):
+        skill_text = (ROOT / ".github/skills/create-skill/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertLess(skill_text.index("<admission>"), skill_text.index("<workflow>"))
+        self.assertIn("## ACCEPT", skill_text)
+        self.assertIn("## REJECT", skill_text)
+        self.assertIn("For REJECT, return exactly:", skill_text)
+        self.assertIn(
+            '{"status":"rejected","skill":"create-skill","reason":"<concise reason>","routing":"<route or null>"}',
+            skill_text,
+        )
+        self.assertIn("## Step 1 - Establish the specification", skill_text)
+
     def test_accepts_canonical_agent_without_definitions_or_step_zero(self):
         body = """
 <rules>
@@ -119,6 +134,31 @@ The agent owns one focused role.
 
         errors = LINTER.validate_agent_template_markdown_block(body)
         self.assertTrue(any("exactly ## Step 1" in error for error in errors), errors)
+
+    def test_rejects_nested_rules_inside_workflow(self):
+        body = """
+<workflow>
+<rules>
+## Role
+The agent owns one focused role.
+## Responsibilities
+- Perform that role.
+## Constraints
+- Stay within scope.
+## Output Contract
+- Return the defined handoff.
+</rules>
+## Step 1 - Gather context.
+1. Inspect the assigned work.
+## Step 2 - Perform the role.
+1. Complete the scoped method.
+## Step 3 - Return the result.
+1. Provide the promised handoff.
+</workflow>
+"""
+
+        errors = LINTER.validate_agent_template_markdown_block(body)
+        self.assertTrue(any("separate <workflow>" in error for error in errors), errors)
 
 
 if __name__ == "__main__":

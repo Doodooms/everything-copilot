@@ -22,8 +22,8 @@ Automatic checks
 - Wrong-layer raw tool names such as `run_in_terminal` or `vscode_askQuestions` are rejected with local alias suggestions.
 - `agents:` must be a valid list, must include only known workspace agents, and must be paired with the `agent` tool.
 - Broad `agent` usage without an explicit `agents:` allowlist is warned.
-- The canonical wrapped shape uses optional `<definitions>` followed by `<rules>` containing `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`, then a separate `<workflow>` containing ordered Steps 1-3. Existing legacy wrappers may still validate with warnings, but agent admission belongs in the frontmatter description and Step 0 is not valid in any agent body.
-- Routing is validated primarily through the frontmatter description. Body-level routing and explicit refusal or hand-off text remain role-dependent rather than universal.
+- Every agent body must use the canonical shape: optional non-empty `<definitions>`, then `<rules>` containing `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`, followed by a separate `<workflow>` containing ordered Steps 1-3. Legacy wrapped or unwrapped bodies are rejected.
+- Agent selection and admission belong solely in the frontmatter description; Step 0 and body-level admission matrices are not allowed. No refusal JSON contract is required. Role-specific hand-off or refusal text may be used when the role needs it.
 - Legacy routing-file agents are still recognized, but they warn and must keep valid sibling routing files if they still use that older mode.
 
 What still needs the final checklist

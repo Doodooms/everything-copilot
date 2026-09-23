@@ -1,7 +1,3 @@
-# Agent Template
-
-Use this as a scaffold for one self-contained `.agent.md`, not as a package template. The description is the primary routing surface; the generated agent contains its own role, workflow, delegation boundary, invocation semantics, constraints, and output contract.
-
 ```yaml
 ---
 name: agent-slug               # REQUIRED. Lowercase + hyphens only, 1-64 chars. MUST match the `.agent.md` filename stem exactly.
@@ -16,7 +12,6 @@ tools: [read, search]          # OPTIONAL. Add only tools the agent genuinely ne
 # disable-model-invocation: true # OPTIONAL. Set only when this agent must never be invoked as a subagent.
 ---
 ```
-
 ```markdown
 <definitions>
 
@@ -25,12 +20,50 @@ Give definitions that will help the agent understand its role, do NOT give usele
 Include only definitions that help the agent perform its role. -->
 
 - **useful definition 1** : a definition useful for the **agent** being invoked
-- **useful definition 2** : another definition useful for the **agent** being invoked
 
 </definitions>
 
+<rules>
+
+## Role
+
+State the specific role this agent owns and the work it performs.
+
+## Responsibilities
+
+- Name the primary capability owned by the agent.
+- Include only secondary responsibilities that belong to the same role.
+
+## Constraints
+
+- State the work outside this agent's boundary.
+- Keep tool and delegation constraints consistent with frontmatter.
+
+## Output Contract
+
+- Name the result, fields, or artifacts the agent must return.
+
+</rules>
+
+<workflow>
+
+## Step 1 - Gather the context needed for the task.
+
+1. <name the inputs, files, or evidence this role must inspect>
+
+## Step 2 - Apply the role-specific method.
+
+1. <describe the main action the agent performs within its role>
+
+## Step 3 - Return the promised result.
+
+1. <describe the concrete handoff or result returned to the caller>
+
+</workflow>
 
 ```
+
+Use this as a scaffold for one self-contained `.agent.md`, not as a package template. The frontmatter `description` is the sole routing and admission surface; the body defines the role and execution contract after selection.
 
 ## Authoring Notes
 
@@ -40,8 +73,8 @@ Include only definitions that help the agent perform its role. -->
 +------------------+-----------------------------------------+---------------------------------------------+
 | File target      | `.github/agents/<slug>.agent.md`        | package-style routing sidecars for new drafts |
 | Discovery text   | `WHAT:` + `INVOKE FOR:` + `DO NOT ...`  | vague summaries like `Helpful helper.`       |
-| Routing          | clear description clauses; optional body guidance | duplicating a full routing matrix          |
-| Constraints      | forbidden work in `## Constraints`      | mixing refusal rules into random steps       |
+| Routing          | clear description clauses; execution details in the workflow | body-level admission rules or a routing matrix |
+| Constraints      | forbidden work in `## Constraints`      | burying constraints in workflow actions       |
 | Output contract  | exact result shape in `## Output...`    | generic outputs like `Return a helpful answer.` |
 | Delegation       | `agent` only with scoped `agents:`      | default `agents: *`                          |
 +------------------+-----------------------------------------+---------------------------------------------+
@@ -49,7 +82,7 @@ Include only definitions that help the agent perform its role. -->
 
 - Use the tool snapshot or the chat "Configure Tools..." button when tool names are unclear.
 - If `agents:` is absent, remove `agent` from `tools`.
-- If the description cannot disambiguate a real boundary, add a short `## Routing` section or make it the first workflow action.
+- The description alone decides whether this agent should be selected. Put any role-specific execution branches in the workflow, not in a body-level admission section.
 
 ## Discovery and routing example
 
@@ -91,6 +124,6 @@ Include only definitions that help the agent perform its role. -->
 | Use  | Surface         | Example                                                       |
 +------+-----------------+---------------------------------------------------------------+
 | Bad  | output contract | `Return a helpful answer.`                                    |
-| Good | output contract | Name the exact sections, fields, artifacts, or refusal shape  |
+| Good | output contract | Name the exact result fields or artifact shape                 |
 +------+-----------------+---------------------------------------------------------------+
 ```

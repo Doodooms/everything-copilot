@@ -648,15 +648,15 @@ def lint_agent_markdown_contract(
         if _looks_like_canonical_wrapped_agent(stripped_lines):
             return _validate_canonical_wrapped_agent_body(body, agent_file)
         result = _validate_legacy_wrapped_agent_body(body, agent_file)
-        if not result.errors:
-            result.warnings.append(
-                "Agent body uses the legacy nested wrapper. New agents should keep `<rules>` and `<workflow>` as separate blocks."
-            )
+        result.warnings.clear()
+        result.errors.append(
+            "Agent bodies must use the canonical shape: optional non-empty `<definitions>`, a `<rules>` block containing Role, Responsibilities, Constraints, and Output Contract, followed by a separate `<workflow>` with Steps 1-3."
+        )
         return result
 
     result = _validate_legacy_agent_body_sections(body)
-    if not result.errors:
-        result.warnings.append(
-            "Agent body uses the legacy unwrapped contract. New agents should use the wrapped role, rules, and ordered workflow contract."
-        )
+    result.warnings.clear()
+    result.errors.append(
+        "Agent bodies must use the canonical shape: optional non-empty `<definitions>`, a `<rules>` block containing Role, Responsibilities, Constraints, and Output Contract, followed by a separate `<workflow>` with Steps 1-3."
+    )
     return result
