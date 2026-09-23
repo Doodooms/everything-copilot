@@ -100,6 +100,16 @@ def _script_is_self_contained(
             root = (node.module or "").split(".")[0]
             if root not in allowed and root not in package_imports:
                 return False
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id == "__import__":
+                return False
+            if (
+                isinstance(node.func, ast.Attribute)
+                and node.func.attr == "import_module"
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "importlib"
+            ):
+                return False
     return True
 
 

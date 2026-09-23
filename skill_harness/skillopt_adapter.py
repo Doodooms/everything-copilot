@@ -10,7 +10,7 @@ from .benchmark import verify_benchmark
 from .benchmark_oracle import apply_routing_gate, evaluate_task, load_oracle_manifest
 from .scaffold import ScaffoldConfig
 from .validator import validate_skill_structure
-from .waza_adapter import run_waza
+from .waza_adapter import WazaError, run_waza
 
 try:
     from skillopt.envs.base import EnvAdapter
@@ -36,6 +36,22 @@ def _extract_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
         if isinstance(value, list):
             return [row for row in value if isinstance(row, dict)]
     return []
+
+
+def _validate_waza_rows(rows: list[dict[str, Any]], expected_task_ids: set[str]) -> None:
+    if not rows:
+        raise WazaError("Waza returned no task results")
+    seen: set[str] = set()
+    for row in rows:
+        task_id = str(row.get("id", row.get("task_id", "")))
+        if task_id in seen:
+            raise WazaError(f"Waza returned duplicate task result: {task_id}")
+        if task_id not in expected_task_ids:
+            raise WazaError(f"Waza returned unknown task result: {task_id}")
+        seen.add(task_id)
+    missing = sorted(expected_task_ids - seen)
+    if missing:
+        raise WazaError(f"Waza omitted task results: {', '.join(missing)}")
 
 
 class WazaSkillOptAdapter(EnvAdapter):
@@ -138,10 +154,10 @@ class WazaSkillOptAdapter(EnvAdapter):
         }
 
     @staticmethod
-    def _populate_fixtures(candidate_root: Path) -> None:
+    def _populate_fixtures(candidate_root: Path, source_root: Path) -> None:
         fixtures_root = candidate_root / "fixtures"
         shutil.copytree(
-            candidate_root,
+            source_root,
             fixtures_root,
             dirs_exist_ok=True,
             ignore=shutil.ignore_patterns("eval.yaml", "tasks", "fixtures"),
@@ -159,7 +175,7 @@ class WazaSkillOptAdapter(EnvAdapter):
         top_level_skill = candidate_root / "SKILL.md"
         if top_level_skill.exists():
             top_level_skill.write_text(skill_content, encoding="utf-8")
-        self._populate_fixtures(candidate_root)
+        self._populate_fixtures(candidate_root, eval_path.parent)
         config_path = self._cfg.get("canonical_config")
         if config_path:
             try:
@@ -200,8 +216,10 @@ class WazaSkillOptAdapter(EnvAdapter):
         output_path = Path(out_dir) / f"waza-{env_manager['split']}.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         run = run_waza(candidate_eval, output_path, waza_bin=self.waza_bin, trials=1)
+        rows = _extract_rows(run.payload)
+        _validate_waza_rows(rows, set(oracle_manifest))
         results = []
-        for row in _extract_rows(run.payload):
+        for row in rows:
             task_id = str(row.get("id", row.get("task_id", "")))
             metadata = oracle_manifest.get(task_id, {})
             routing_passed, routing_failure = apply_routing_gate(

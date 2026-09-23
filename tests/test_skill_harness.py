@@ -1,6 +1,7 @@
 import unittest
 import json
 import importlib
+import shutil
 import sys
 from tempfile import TemporaryDirectory
 from pathlib import Path
@@ -256,21 +257,27 @@ class ProtectionTests(unittest.TestCase):
             package = Path(directory) / ".github/skills/create-skill"
             script = package / "scripts/check.py"
             script.parent.mkdir(parents=True)
-            script.write_text("import requests\nfrom skill_lint_core import lint\n", encoding="utf-8")
             (package / "scripts/skill_lint_core.py").write_text("def lint(): pass\n", encoding="utf-8")
-            result = evaluate_task(
-                "probe",
-                {
-                    "family": "scripts-validation",
-                    "should_trigger": True,
-                    "required_paths": [".github/skills/create-skill/SKILL.md"],
-                    "required_support_files": ["scripts/check.py"],
-                    "provenance_path": ".github/skills/create-skill/SKILL.md",
-                },
-                Path(directory),
-            )
-            self.assertFalse(result.checks["script_self_containment"])
-            self.assertIn("non-self-contained scripts", " ".join(result.failures))
+            for source in (
+                "import requests\nfrom skill_lint_core import lint\n",
+                "__import__('requests')\n",
+                "import importlib\nimportlib.import_module('requests')\n",
+            ):
+                with self.subTest(source=source):
+                    script.write_text(source, encoding="utf-8")
+                    result = evaluate_task(
+                        "probe",
+                        {
+                            "family": "scripts-validation",
+                            "should_trigger": True,
+                            "required_paths": [".github/skills/create-skill/SKILL.md"],
+                            "required_support_files": ["scripts/check.py"],
+                            "provenance_path": ".github/skills/create-skill/SKILL.md",
+                        },
+                        Path(directory),
+                    )
+                    self.assertFalse(result.checks["script_self_containment"])
+                    self.assertIn("non-self-contained scripts", " ".join(result.failures))
 
     def test_near_miss_gate_rejects_unauthorized_create_skill_result(self):
         passed, reason = apply_routing_gate(
@@ -501,6 +508,67 @@ class ProtectionTests(unittest.TestCase):
             payload = yaml.safe_load(captured["eval"].read_text(encoding="utf-8"))
             self.assertEqual(len(payload["tasks"]), 1)
             self.assertNotEqual(captured["eval"].parent, adapter.eval_root / "selection")
+
+    def test_skillopt_requires_exactly_one_waza_result_per_task(self):
+        adapter = WazaSkillOptAdapter(
+            "experiments/optimization/create-skill/benchmark",
+            ".tools/bin/waza",
+        )
+        adapter._cfg = {}
+        env = adapter.build_eval_env(1, "valid_seen", 42)
+        skill = Path(
+            "experiments/optimization/create-skill/benchmark/selection"
+            "/.github/skills/create-skill/SKILL.md"
+        ).read_text(encoding="utf-8")
+        expected = sorted(path.stem for path in (adapter.eval_root / "selection" / "tasks").glob("*.yaml"))
+        cases = {
+            "empty": [],
+            "unknown": [{"task_id": "unknown", "passed": True}],
+            "duplicate": [{"task_id": expected[0], "passed": True}, {"task_id": expected[0], "passed": True}],
+            "missing": [{"task_id": task_id, "passed": True} for task_id in expected[:-1]],
+        }
+        for name, rows in cases.items():
+            with self.subTest(case=name), TemporaryDirectory() as directory, patch(
+                "skill_harness.skillopt_adapter.run_waza",
+                return_value=type("Run", (), {"payload": {"runs": rows}})(),
+            ):
+                with self.assertRaises(WazaError):
+                    adapter.rollout(env, skill, directory)
+
+    def test_skillopt_fixtures_copy_frozen_source_after_candidate_support_mutation(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            candidate = root / "candidate"
+            (source / ".github/skills/create-skill/references").mkdir(parents=True)
+            (source / ".github/skills/create-skill/SKILL.md").write_text(
+                "See references/original-spec.md\n", encoding="utf-8"
+            )
+            (source / ".github/skills/create-skill/references/original-spec.md").write_text(
+                "frozen\n", encoding="utf-8"
+            )
+            (source / "SKILL.md").write_text("See original-spec.md\n", encoding="utf-8")
+            shutil.copytree(source, candidate)
+            support = candidate / ".github/skills/create-skill/references/original-spec.md"
+            support.write_text("mutated\n", encoding="utf-8")
+
+            WazaSkillOptAdapter._populate_fixtures(candidate, source)
+
+            fixture = candidate / "fixtures/.github/skills/create-skill/references/original-spec.md"
+            self.assertEqual(fixture.read_text(encoding="utf-8"), "frozen\n")
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "support-file-discipline",
+                    "should_trigger": True,
+                    "required_paths": [".github/skills/create-skill/SKILL.md"],
+                    "required_support_files": ["references/original-spec.md"],
+                    "provenance_path": ".github/skills/create-skill/references/original-spec.md",
+                },
+                candidate,
+            )
+            self.assertFalse(result.passed)
+            self.assertFalse(result.checks["support_files"])
 
     def test_skillopt_populates_waza_fixtures_before_run(self):
         adapter = WazaSkillOptAdapter(
