@@ -262,6 +262,10 @@ class ProtectionTests(unittest.TestCase):
                 "import requests\nfrom skill_lint_core import lint\n",
                 "__import__('requests')\n",
                 "import importlib\nimportlib.import_module('requests')\n",
+                "from importlib import import_module\nimport_module('requests')\n",
+                "import importlib as il\nil.import_module('requests')\n",
+                "from builtins import __import__ as load\nload('requests')\n",
+                "import builtins as b\nb.__import__('requests')\n",
             ):
                 with self.subTest(source=source):
                     script.write_text(source, encoding="utf-8")
@@ -278,6 +282,28 @@ class ProtectionTests(unittest.TestCase):
                     )
                     self.assertFalse(result.checks["script_self_containment"])
                     self.assertIn("non-self-contained scripts", " ".join(result.failures))
+
+    def test_script_self_containment_allows_normal_local_imports(self):
+        with TemporaryDirectory() as directory:
+            package = Path(directory) / ".github/skills/create-skill"
+            script = package / "scripts/check.py"
+            script.parent.mkdir(parents=True)
+            script.write_text(
+                "import importlib\nfrom importlib import import_module\nimport yaml\n",
+                encoding="utf-8",
+            )
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "scripts-validation",
+                    "should_trigger": True,
+                    "required_paths": [".github/skills/create-skill/SKILL.md"],
+                    "required_support_files": ["scripts/check.py"],
+                    "provenance_path": ".github/skills/create-skill/SKILL.md",
+                },
+                Path(directory),
+            )
+            self.assertTrue(result.checks["script_self_containment"])
 
     def test_near_miss_gate_rejects_unauthorized_create_skill_result(self):
         passed, reason = apply_routing_gate(
@@ -497,7 +523,12 @@ class ProtectionTests(unittest.TestCase):
 
             def fake_run_waza(eval_path, output_path, **kwargs):
                 captured["eval"] = Path(eval_path)
-                return type("Run", (), {"payload": {"runs": []}})()
+                task_ids = load_oracle_manifest(adapter.eval_root / "selection")
+                return type(
+                    "Run",
+                    (),
+                    {"payload": {"runs": [{"task_id": task_id, "passed": True} for task_id in task_ids]}},
+                )()
 
             skill = Path(
                 "experiments/optimization/create-skill/benchmark/selection"
@@ -534,6 +565,24 @@ class ProtectionTests(unittest.TestCase):
             ):
                 with self.assertRaises(WazaError):
                     adapter.rollout(env, skill, directory)
+
+    def test_skillopt_rejects_non_dictionary_waza_result(self):
+        adapter = WazaSkillOptAdapter(
+            "experiments/optimization/create-skill/benchmark",
+            ".tools/bin/waza",
+        )
+        adapter._cfg = {}
+        env = adapter.build_eval_env(1, "valid_seen", 42)
+        skill = Path(
+            "experiments/optimization/create-skill/benchmark/selection"
+            "/.github/skills/create-skill/SKILL.md"
+        ).read_text(encoding="utf-8")
+        with TemporaryDirectory() as directory, patch(
+            "skill_harness.skillopt_adapter.run_waza",
+            return_value=type("Run", (), {"payload": {"runs": [None]}})(),
+        ):
+            with self.assertRaisesRegex(WazaError, "non-object"):
+                adapter.rollout(env, skill, directory)
 
     def test_skillopt_fixtures_copy_frozen_source_after_candidate_support_mutation(self):
         with TemporaryDirectory() as directory:
@@ -586,7 +635,8 @@ class ProtectionTests(unittest.TestCase):
                 self.assertTrue(
                     (candidate_root / "fixtures" / ".github" / "skills" / "create-skill" / "SKILL.md").is_file()
                 )
-                return type("Run", (), {"payload": {"runs": []}})()
+                task_ids = [path.stem for path in (Path(eval_path).parent / "tasks").glob("*.yaml")]
+                return type("Run", (), {"payload": {"runs": [{"task_id": task_id} for task_id in task_ids]}})()
 
             skill = Path(
                 "experiments/optimization/create-skill/benchmark/selection"

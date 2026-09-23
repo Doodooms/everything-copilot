@@ -30,19 +30,21 @@ def normalize_rollout_result(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _extract_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def _extract_rows(payload: dict[str, Any]) -> list[Any]:
     for key in ("runs", "results", "tasks", "outcomes"):
         value = payload.get(key)
         if isinstance(value, list):
-            return [row for row in value if isinstance(row, dict)]
+            return value
     return []
 
 
-def _validate_waza_rows(rows: list[dict[str, Any]], expected_task_ids: set[str]) -> None:
+def _validate_waza_rows(rows: list[Any], expected_task_ids: set[str]) -> None:
     if not rows:
         raise WazaError("Waza returned no task results")
     seen: set[str] = set()
     for row in rows:
+        if not isinstance(row, dict):
+            raise WazaError("Waza returned a non-object task result")
         task_id = str(row.get("id", row.get("task_id", "")))
         if task_id in seen:
             raise WazaError(f"Waza returned duplicate task result: {task_id}")

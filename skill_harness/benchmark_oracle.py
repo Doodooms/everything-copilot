@@ -77,6 +77,87 @@ def _package_import_roots(package_root: Path) -> set[str]:
     return roots
 
 
+class _DynamicImportBindingTracker(ast.NodeVisitor):
+    def __init__(self) -> None:
+        self.importlib_modules: set[str] = set()
+        self.import_module_functions: set[str] = set()
+        self.builtins_modules: set[str] = set()
+        self.import_functions: set[str] = {"__import__"}
+        self.found_dynamic_import = False
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            bound_name = alias.asname or alias.name.split(".")[0]
+            self._unbind(bound_name)
+            if alias.name == "importlib":
+                self.importlib_modules.add(bound_name)
+            elif alias.name == "builtins":
+                self.builtins_modules.add(bound_name)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if node.level != 0:
+            return
+        module = node.module or ""
+        for alias in node.names:
+            bound_name = alias.asname or alias.name
+            self._unbind(bound_name)
+            if module == "importlib" and alias.name == "import_module":
+                self.import_module_functions.add(bound_name)
+            elif module == "builtins" and alias.name == "__import__":
+                self.import_functions.add(bound_name)
+
+    def visit_Call(self, node: ast.Call) -> None:
+        if isinstance(node.func, ast.Name) and node.func.id in (
+            self.import_module_functions | self.import_functions
+        ):
+            self.found_dynamic_import = True
+        elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            if (
+                node.func.attr == "import_module"
+                and node.func.value.id in self.importlib_modules
+            ) or (
+                node.func.attr == "__import__"
+                and node.func.value.id in self.builtins_modules
+            ):
+                self.found_dynamic_import = True
+        self.generic_visit(node)
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        self.visit(node.value)
+        for target in node.targets:
+            self._unbind_target(target)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        if node.value is not None:
+            self.visit(node.value)
+        self._unbind_target(node.target)
+
+    def visit_AugAssign(self, node: ast.AugAssign) -> None:
+        self.visit(node.value)
+        self._unbind_target(node.target)
+
+    def visit_NamedExpr(self, node: ast.NamedExpr) -> None:
+        self.visit(node.value)
+        self._unbind_target(node.target)
+
+    def visit_Delete(self, node: ast.Delete) -> None:
+        for target in node.targets:
+            self._unbind_target(target)
+
+    def _unbind_target(self, target: ast.AST) -> None:
+        if isinstance(target, ast.Name):
+            self._unbind(target.id)
+        elif isinstance(target, (ast.Tuple, ast.List)):
+            for element in target.elts:
+                self._unbind_target(element)
+
+    def _unbind(self, name: str) -> None:
+        self.importlib_modules.discard(name)
+        self.import_module_functions.discard(name)
+        self.builtins_modules.discard(name)
+        self.import_functions.discard(name)
+
+
 def _script_is_self_contained(
     path: Path,
     package_root: Path,
@@ -88,6 +169,10 @@ def _script_is_self_contained(
         return False
     allowed = set(sys.stdlib_module_names) | (allowed_imports or set())
     package_imports = _package_import_roots(package_root)
+    dynamic_imports = _DynamicImportBindingTracker()
+    dynamic_imports.visit(tree)
+    if dynamic_imports.found_dynamic_import:
+        return False
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             if any(
@@ -99,16 +184,6 @@ def _script_is_self_contained(
         elif isinstance(node, ast.ImportFrom) and node.level == 0:
             root = (node.module or "").split(".")[0]
             if root not in allowed and root not in package_imports:
-                return False
-        elif isinstance(node, ast.Call):
-            if isinstance(node.func, ast.Name) and node.func.id == "__import__":
-                return False
-            if (
-                isinstance(node.func, ast.Attribute)
-                and node.func.attr == "import_module"
-                and isinstance(node.func.value, ast.Name)
-                and node.func.value.id == "importlib"
-            ):
                 return False
     return True
 
