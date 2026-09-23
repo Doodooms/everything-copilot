@@ -209,6 +209,69 @@ class ProtectionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 load_oracle_manifest(root)
 
+    def test_oracle_manifest_rejects_task_id_mismatch(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "tasks").mkdir()
+            (root / "tasks" / "one.yaml").write_text("id: two\n", encoding="utf-8")
+            (root / "adapter_manifest.json").write_text(
+                json.dumps({"tasks": {"one": {"task_id": "one", "family": "probe", "should_trigger": True}}}),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "task id does not match filename"):
+                load_oracle_manifest(root)
+
+    def test_benchmark_oracle_rejects_paths_outside_candidate_root(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / ".github/skills/create-skill"
+            fixture = root / "fixtures/.github/skills/create-skill"
+            package.mkdir(parents=True)
+            fixture.mkdir(parents=True)
+            (package / "SKILL.md").write_text("See references/original-spec.md\n", encoding="utf-8")
+            (fixture / "SKILL.md").write_text("See references/original-spec.md\n", encoding="utf-8")
+            outside = root.parent / "oracle-outside-sentinel.txt"
+            outside.write_text("sentinel\n", encoding="utf-8")
+            try:
+                result = evaluate_task(
+                    "probe",
+                    {
+                        "family": "probe",
+                        "should_trigger": True,
+                        "required_paths": ["../oracle-outside-sentinel.txt", str(outside)],
+                        "required_support_files": ["../../oracle-outside-sentinel.txt"],
+                        "provenance_path": ".github/skills/create-skill/SKILL.md",
+                    },
+                    root,
+                )
+            finally:
+                outside.unlink()
+            self.assertFalse(result.passed)
+            self.assertFalse(result.checks["package_shape"])
+            self.assertFalse(result.checks["support_files"])
+            self.assertIn("escape candidate root", " ".join(result.failures))
+
+    def test_script_self_containment_rejects_undeclared_third_party_import(self):
+        with TemporaryDirectory() as directory:
+            package = Path(directory) / ".github/skills/create-skill"
+            script = package / "scripts/check.py"
+            script.parent.mkdir(parents=True)
+            script.write_text("import requests\nfrom skill_lint_core import lint\n", encoding="utf-8")
+            (package / "scripts/skill_lint_core.py").write_text("def lint(): pass\n", encoding="utf-8")
+            result = evaluate_task(
+                "probe",
+                {
+                    "family": "scripts-validation",
+                    "should_trigger": True,
+                    "required_paths": [".github/skills/create-skill/SKILL.md"],
+                    "required_support_files": ["scripts/check.py"],
+                    "provenance_path": ".github/skills/create-skill/SKILL.md",
+                },
+                Path(directory),
+            )
+            self.assertFalse(result.checks["script_self_containment"])
+            self.assertIn("non-self-contained scripts", " ".join(result.failures))
+
     def test_near_miss_gate_rejects_unauthorized_create_skill_result(self):
         passed, reason = apply_routing_gate(
             {"final_output": "I created the create-skill package with SKILL.md"}, False
