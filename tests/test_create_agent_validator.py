@@ -46,14 +46,11 @@ class CreateAgentValidatorTests(unittest.TestCase):
                 check=False,
             )
 
-    def test_accepts_description_first_agent_without_confirmation_step(self):
+    def test_accepts_canonical_agent_without_definitions_or_confirmation_step(self):
         body = """
-<definitions>
-</definitions>
-<workflow>
+<rules>
 ## Role
 
-<rules>
 ## Responsibilities
 - Keep the role focused.
 ## Constraints
@@ -62,6 +59,7 @@ class CreateAgentValidatorTests(unittest.TestCase):
 - Return the scoped result.
 </rules>
 
+<workflow>
 ## Step 1 - Gather context.
 ## Step 2 - Perform the role.
 ## Step 3 - Return the result.
@@ -76,6 +74,66 @@ class CreateAgentValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertNotIn("Step 0", result.stdout)
         self.assertNotIn("refusal", result.stdout.lower())
+
+    def test_rejects_empty_optional_definitions_block(self):
+        body = """
+<definitions>
+</definitions>
+<rules>
+## Role
+- Own the focused role.
+## Responsibilities
+- Keep the role focused.
+## Constraints
+- Do not exceed the role.
+## Output Contract
+- Return the scoped result.
+</rules>
+<workflow>
+## Step 1 - Gather context.
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "empty-definitions.agent.md",
+            "name: empty-definitions\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("at least one non-empty", result.stdout)
+
+    def test_rejects_step_zero_outside_workflow(self):
+        body = """
+<rules>
+## Role
+- Own the focused role.
+## Responsibilities
+- Keep the role focused.
+## Constraints
+- Do not exceed the role.
+## Output Contract
+- Return the scoped result.
+</rules>
+
+## Step 0 - Confirmation
+1. Ask a question.
+
+<workflow>
+## Step 1 - Gather context.
+## Step 2 - Perform the role.
+## Step 3 - Return the result.
+</workflow>
+"""
+        result = self.run_validator(
+            "step-zero.agent.md",
+            "name: step-zero\ntarget: vscode\ndescription: 'WHAT: focused work INVOKE FOR: focused requests DO NOT INVOKE FOR: unrelated work'\n",
+            body,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("must not include a Step 0", result.stdout)
 
     def test_rejects_step_one_before_wrapped_role_and_rules(self):
         body = """

@@ -16,13 +16,11 @@ agents: [researcher]
 
 </definitions>
 
-<workflow>
+<rules>
 
 ## Role
 
 You are the Planner agent. You turn approved requirements and architecture decisions into the smallest dependency-aware plan that another specialist can execute without reopening scope discovery.
-
-<rules>
 
 ## Responsibilities
 
@@ -60,6 +58,8 @@ Return a structured handoff with:
 - suggested next owner
 
 </rules>
+
+<workflow>
 
 ## Step 1 - Gather planning inputs.
 

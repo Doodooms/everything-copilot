@@ -14,7 +14,7 @@ Run this checklist after the validation script. Treat any unchecked line as a bl
 | 06 | Delegation boundary            | `agent` and `agents:` agree, or both are omitted intentionally |
 | 07 | Description routing             | `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:` are clear |
 | 08 | Body routing                    | Add only when the role needs disambiguation beyond description |
-| 09 | Body contract                  | Definitions, workflow, Role, rules, and Steps 1-3 stay canonical |
+| 09 | Body contract                  | Optional definitions, separate rules/workflow blocks, and ordered Steps 1-3 stay canonical |
 | 10 | Forbidden work                 | Constraints and output contract block adjacent drift        |
 | 11 | Invocation mode                | `user-invocable` and `disable-model-invocation` are deliberate |
 | 12 | Example prompt                 | The final summary gives one prompt that should route correctly |

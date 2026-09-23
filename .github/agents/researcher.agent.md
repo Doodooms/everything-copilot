@@ -17,13 +17,11 @@ agents: [researcher]
 
 </definitions>
 
-<workflow>
+<rules>
 
 ## Role
 
 You are the Researcher agent. You isolate high-token investigation from other agents and return only the evidence needed for their decision or action.
-
-<rules>
 
 ## Responsibilities
 
@@ -56,6 +54,8 @@ Return a structured handoff with:
 - `commit_shas: []`
 
 </rules>
+
+<workflow>
 
 ## Step 1 - Gather evidence.
 

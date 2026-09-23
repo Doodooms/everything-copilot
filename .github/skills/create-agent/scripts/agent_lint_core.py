@@ -216,7 +216,20 @@ def _looks_like_wrapped_agent(stripped_lines: list[str], body: str) -> bool:
         "## Role" in stripped_lines
         or "<workflow>" in stripped_lines
         or "<definitions>" in stripped_lines
+        or "<rules>" in stripped_lines
     )
+
+
+def _looks_like_canonical_wrapped_agent(stripped_lines: list[str]) -> bool:
+    try:
+        return (
+            stripped_lines.index("<rules>")
+            < stripped_lines.index("## Role")
+            < stripped_lines.index("</rules>")
+            < stripped_lines.index("<workflow>")
+        )
+    except ValueError:
+        return False
 
 
 def _validate_optional_wrapper(
@@ -289,7 +302,136 @@ def _validate_optional_wrapper(
         )
 
 
-def _validate_wrapped_agent_body(body: str, agent_file: Path) -> LintResult:
+def _validate_canonical_wrapped_agent_body(body: str, agent_file: Path) -> LintResult:
+    result = LintResult()
+    stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
+
+    required_tags = ("<rules>", "</rules>", "<workflow>", "</workflow>")
+    tag_positions: dict[str, int] = {}
+    for tag in required_tags:
+        positions = [index for index, line in enumerate(stripped_lines) if line == tag]
+        if len(positions) != 1:
+            result.errors.append(
+                f"Canonical wrapped agents must contain exactly one `{tag}` tag."
+            )
+            return result
+        tag_positions[tag] = positions[0]
+
+    definition_open_positions = [
+        index for index, line in enumerate(stripped_lines) if line == "<definitions>"
+    ]
+    definition_close_positions = [
+        index for index, line in enumerate(stripped_lines) if line == "</definitions>"
+    ]
+    if bool(definition_open_positions) != bool(definition_close_positions):
+        result.errors.append(
+            "Agent body must either omit `<definitions>` entirely or use both `<definitions>` and `</definitions>`."
+        )
+        return result
+    if len(definition_open_positions) > 1 or len(definition_close_positions) > 1:
+        result.errors.append("Canonical wrapped agents may contain only one definitions block.")
+        return result
+
+    rules_open = tag_positions["<rules>"]
+    rules_close = tag_positions["</rules>"]
+    workflow_open = tag_positions["<workflow>"]
+    workflow_close = tag_positions["</workflow>"]
+    if definition_open_positions:
+        definitions_open = definition_open_positions[0]
+        definitions_close = definition_close_positions[0]
+        if not definitions_open < definitions_close < rules_open:
+            result.errors.append(
+                "When present, `<definitions>` must be non-empty and precede the `<rules>` block."
+            )
+            return result
+        if not _has_definition_bullet(body):
+            result.errors.append(
+                "When present, `<definitions>` must contain at least one non-empty `- **term** : definition` bullet."
+            )
+            return result
+
+    if not rules_open < rules_close < workflow_open < workflow_close:
+        result.errors.append(
+            "Canonical agents must keep `<rules>` and `<workflow>` separate, with rules before workflow."
+        )
+        return result
+
+    rules_lines = stripped_lines[rules_open + 1 : rules_close]
+    required_rule_sections = (
+        "## Role",
+        "## Responsibilities",
+        "## Constraints",
+        "## Output Contract",
+    )
+    rule_positions = {}
+    for section in required_rule_sections:
+        positions = [index for index, line in enumerate(rules_lines) if line == section]
+        if len(positions) != 1:
+            result.errors.append(
+                "Canonical `<rules>` must contain exactly one each of `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`."
+            )
+            return result
+        rule_positions[section] = positions[0]
+
+    if list(rule_positions.values()) != sorted(rule_positions.values()):
+        result.errors.append(
+            "Canonical `<rules>` sections must appear in this order: `## Role`, `## Responsibilities`, `## Constraints`, `## Output Contract`."
+        )
+        return result
+
+    workflow_lines = stripped_lines[workflow_open + 1 : workflow_close]
+    step_lines = [line for line in workflow_lines if STEP_HEADING_PATTERN.match(line)]
+    all_step_lines = [
+        line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)
+    ]
+    step_patterns = (
+        r"^##\s+Step\s+1\s+-\s+.+$",
+        r"^##\s+Step\s+2\s+-\s+.+$",
+        r"^##\s+Step\s+3\s+-\s+.+$",
+    )
+    if (
+        len(all_step_lines) != len(step_patterns)
+        or all_step_lines != step_lines
+        or any(
+            not re.fullmatch(pattern, line)
+            for pattern, line in zip(step_patterns, all_step_lines)
+        )
+    ):
+        result.errors.append(
+            "Canonical agents must contain exactly `## Step 1 - ...`, "
+            "`## Step 2 - ...`, and `## Step 3 - ...`, all inside "
+            "`<workflow>` and in order."
+        )
+        return result
+
+    if "<role>" in stripped_lines or "</role>" in stripped_lines:
+        result.errors.append(
+            "Agent markdown body should not wrap content in a `<role>` block; use the `## Role` heading instead."
+        )
+    if "# Role" in rules_lines:
+        result.errors.append(
+            "Canonical wrapped agents must use `## Role` inside `<rules>`, not `# Role`."
+        )
+
+    uses_routing_file_refs = _uses_routing_file_refs(body)
+    if uses_routing_file_refs:
+        if agent_file.parent.name == "agents":
+            result.errors.append(
+                "Legacy agents that still read sibling routing files must live in a dedicated package directory such as `.github/agents/<slug>/<slug>.agent.md` so those paths resolve per-agent."
+            )
+            return result
+
+        for support_name in ("USEFOR.md", "DONOTUSEFOR.md"):
+            support_path = agent_file.parent / "references" / support_name
+            if not support_path.exists():
+                result.errors.append(
+                    f"Legacy agents that use sibling routing files must include the support file: {support_path}"
+                )
+
+    return result
+
+
+def _validate_legacy_wrapped_agent_body(body: str, agent_file: Path) -> LintResult:
     result = LintResult()
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
     required_tokens = [
@@ -491,8 +633,26 @@ def lint_agent_markdown_contract(
     frontmatter: dict[str, Any] | None = None,
 ) -> LintResult:
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
+    has_step_zero = any(
+        re.match(r"^##\s+Step\s+0\b", line, re.IGNORECASE)
+        for line in stripped_lines
+    )
+    if has_step_zero:
+        result = LintResult()
+        result.errors.append(
+            "Agent bodies must not include a Step 0; express admission in the "
+            "frontmatter description and begin workflows at Step 1."
+        )
+        return result
     if _looks_like_wrapped_agent(stripped_lines, body):
-        return _validate_wrapped_agent_body(body, agent_file)
+        if _looks_like_canonical_wrapped_agent(stripped_lines):
+            return _validate_canonical_wrapped_agent_body(body, agent_file)
+        result = _validate_legacy_wrapped_agent_body(body, agent_file)
+        if not result.errors:
+            result.warnings.append(
+                "Agent body uses the legacy nested wrapper. New agents should keep `<rules>` and `<workflow>` as separate blocks."
+            )
+        return result
 
     result = _validate_legacy_agent_body_sections(body)
     if not result.errors:

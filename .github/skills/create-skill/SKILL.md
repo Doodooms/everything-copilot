@@ -12,6 +12,8 @@ license: MIT
 
 <definitions>
 
+- **agent**: A reusable persona with a bounded role and tool, invocation, and delegation contract, authored as one `.agent.md` file.
+- **skill**: A reusable capability and workflow that an agent loads to perform repeatable work, rather than a specialist persona.
 - **skill package**: A `SKILL.md` definition plus only the support files that its workflow actually consumes.
 - **canonical architecture**: The repository-approved package topology and routing contract. Do not redesign it during skill creation.
 - **mutable semantic region**: Wording, rules, examples, edge cases, and workflow guidance that may be authored or improved after the scaffold exists.

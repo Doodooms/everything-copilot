@@ -11,12 +11,6 @@ import yaml
 
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n?(.*)\Z", re.DOTALL)
 STEP_HEADING_PATTERN = re.compile(r"^##\s+Step\s+(\d+)\b", re.IGNORECASE)
-AGENT_REFUSAL_JSON_TOKENS = (
-    '"status": "refused"',
-    '"agent":',
-    '"reason":',
-    '"suggested_alternative":',
-)
 REQUIRED_SKILL_BLOCKS = ("rules", "workflow")
 CONTEXT_ONLY_TOOL_NAMES = {
     "read",
@@ -48,7 +42,6 @@ TEMPLATE_LEFTOVER_MARKERS = {
 EXPECTED_AGENT_TEMPLATE_POST_HEADINGS = [
     "Authoring Notes",
     "Discovery and routing example",
-    "Step 0 refusal example",
     "Workflow specificity example",
     "Delegation boundary example",
     "Output contract example",
@@ -460,78 +453,106 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
         )
         return errors
 
-    required_tokens = [
-        "<definitions>",
-        "</definitions>",
-        "<workflow>",
-        "## Step 0 - **CONFIRMATION**",
-        "## Role",
-        "<rules>",
-        "## Responsibilities",
-        "## Constraints",
-        "## Output Contract",
-        "</rules>",
-        "</workflow>",
+    tag_positions = {}
+    for tag in ("<rules>", "</rules>", "<workflow>", "</workflow>"):
+        positions = [index for index, line in enumerate(stripped_lines) if line == tag]
+        if len(positions) != 1:
+            errors.append(
+                "must keep exactly one <rules> and <workflow> block in the canonical agent markdown example"
+            )
+            return errors
+        tag_positions[tag] = positions[0]
+
+    definitions_open = [
+        index for index, line in enumerate(stripped_lines) if line == "<definitions>"
     ]
-    token_positions = {}
-    for token in required_tokens:
-        try:
-            token_positions[token] = stripped_lines.index(token)
-        except ValueError:
-            if token in {
-                "<definitions>",
-                "<workflow>",
-                "</workflow>",
-                "<rules>",
-                "</rules>",
-            }:
-                errors.append(
-                    "must keep <definitions>, a <workflow> wrapper, and a <rules> wrapper in the canonical agent markdown example"
-                )
-            else:
-                errors.append(
-                    "must keep Step 0, Role, Responsibilities, Constraints, Output Contract, and Step 1/2/3 headings in the canonical agent markdown example"
-                )
+    definitions_close = [
+        index for index, line in enumerate(stripped_lines) if line == "</definitions>"
+    ]
+    if bool(definitions_open) != bool(definitions_close):
+        errors.append(
+            "must either omit <definitions> or include matching <definitions> and </definitions> tags"
+        )
+        return errors
+    if len(definitions_open) > 1 or len(definitions_close) > 1:
+        errors.append("must keep at most one optional <definitions> block")
+        return errors
+    if definitions_open:
+        definitions_start = definitions_open[0]
+        definitions_end = definitions_close[0]
+        definitions_text = "\n".join(stripped_lines[definitions_start + 1 : definitions_end])
+        if (
+            definitions_start >= definitions_end
+            or definitions_end >= tag_positions["<rules>"]
+            or not re.search(
+                r"^\s*-\s+\*\*[^*]+\*\*\s*:\s+\S+",
+                definitions_text,
+                re.MULTILINE,
+            )
+        ):
+            errors.append(
+                "when present, <definitions> must precede <rules> and contain a non-empty `- **term** : definition` bullet"
+            )
             return errors
 
-    definitions_match = re.search(
-        r"<definitions>(.*?)</definitions>", content, re.DOTALL | re.IGNORECASE
-    )
-    if not definitions_match or not re.search(
-        r"^\s*-\s+\*\*[^*]+\*\*\s*:\s+\S+",
-        definitions_match.group(1),
-        re.MULTILINE,
-    ):
+    rules_start = tag_positions["<rules>"]
+    rules_end = tag_positions["</rules>"]
+    workflow_start = tag_positions["<workflow>"]
+    workflow_end = tag_positions["</workflow>"]
+    if not rules_start < rules_end < workflow_start < workflow_end:
         errors.append(
-            "must keep at least one definition bullet in <definitions> using `- **term** : definition`"
-        )
-
-    step_lines = [line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)]
-    step_patterns = [
-        r"^##\s+Step\s+0\s+-\s+\*\*CONFIRMATION\*\*$",
-        r"^##\s+Step\s+1\s+-\s+.+$",
-        r"^##\s+Step\s+2\s+-\s+.+$",
-        r"^##\s+Step\s+3\s+-\s+.+$",
-    ]
-    if len(step_lines) != len(step_patterns) or any(
-        not re.fullmatch(pattern, line)
-        for pattern, line in zip(step_patterns, step_lines)
-    ):
-        errors.append(
-            "must keep canonical agent markdown sections in this order: ## Step 0 - **CONFIRMATION**, ## Role, ## Responsibilities, ## Constraints, ## Output Contract, ## Step 1 - ..., ## Step 2 - ..., ## Step 3 - ..."
+            "must keep <rules> before a separate <workflow> block in the canonical agent markdown example"
         )
         return errors
 
-    normalized_lines = [_normalize_agent_heading(line) for line in stripped_lines]
-    matrix_lines = [line for line in normalized_lines if "|" in line]
-    has_header = any(
-        "REQUEST SHAPE" in line and "INVOKE?" in line for line in matrix_lines
+    rules_lines = stripped_lines[rules_start + 1 : rules_end]
+    required_sections = (
+        "## Role",
+        "## Responsibilities",
+        "## Constraints",
+        "## Output Contract",
     )
-    has_yes = any(re.search(r"\|\s*YES\s*\|", line) for line in matrix_lines)
-    has_no = any(re.search(r"\|\s*NO\s*\|", line) for line in matrix_lines)
-    if not (has_header and has_yes and has_no):
+    section_positions = []
+    for section in required_sections:
+        positions = [index for index, line in enumerate(rules_lines) if line == section]
+        if len(positions) != 1:
+            errors.append(
+                "must keep ## Role, ## Responsibilities, ## Constraints, and ## Output Contract inside <rules>"
+            )
+            return errors
+        section_positions.append(positions[0])
+    if section_positions != sorted(section_positions):
         errors.append(
-            "must keep one dense routing decision matrix in Step 0 of the canonical agent markdown example"
+            "must keep Role, Responsibilities, Constraints, and Output Contract in order inside <rules>"
+        )
+        return errors
+
+    workflow_lines = stripped_lines[workflow_start + 1 : workflow_end]
+    workflow_steps = [
+        line for line in workflow_lines if STEP_HEADING_PATTERN.match(line)
+    ]
+    all_steps = [line for line in stripped_lines if STEP_HEADING_PATTERN.match(line)]
+    step_patterns = (
+        r"^##\s+Step\s+1\s+-\s+.+$",
+        r"^##\s+Step\s+2\s+-\s+.+$",
+        r"^##\s+Step\s+3\s+-\s+.+$",
+    )
+    if len(all_steps) != 3 or all_steps != workflow_steps or any(
+        not re.fullmatch(pattern, line)
+        for pattern, line in zip(step_patterns, workflow_steps)
+    ):
+        errors.append(
+            "must keep exactly ## Step 1 - ..., ## Step 2 - ..., and ## Step 3 - ... inside <workflow>"
+        )
+        return errors
+
+    if (
+        "# Role" in rules_lines
+        or "<role>" in stripped_lines
+        or "</role>" in stripped_lines
+    ):
+        errors.append(
+            "must use ## Role inside <rules> instead of a # Role heading or <role> wrapper"
         )
 
     if (
@@ -540,32 +561,6 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
     ):
         errors.append(
             "must keep routing inside the `.agent.md` file instead of reading sibling routing files in the canonical agent markdown example"
-        )
-
-    if any(token not in content for token in AGENT_REFUSAL_JSON_TOKENS):
-        errors.append(
-            'must keep the Step 0 JSON refusal example with `"status": "refused"`, `"agent"`, `"reason"`, and `"suggested_alternative"` fields in the canonical agent markdown example'
-        )
-
-    step_positions = {line: stripped_lines.index(line) for line in step_lines}
-    if not (
-        token_positions["<definitions>"]
-        < token_positions["</definitions>"]
-        < token_positions["<workflow>"]
-        < step_positions[step_lines[0]]
-        < token_positions["## Role"]
-        < token_positions["<rules>"]
-        < token_positions["## Responsibilities"]
-        < token_positions["## Constraints"]
-        < token_positions["## Output Contract"]
-        < token_positions["</rules>"]
-        < step_positions[step_lines[1]]
-        < step_positions[step_lines[2]]
-        < step_positions[step_lines[3]]
-        < token_positions["</workflow>"]
-    ):
-        errors.append(
-            "must keep <definitions>, <workflow>, Step 0, ## Role, <rules>, ## Responsibilities, ## Constraints, ## Output Contract, </rules>, Step 1, Step 2, Step 3, and </workflow> in canonical order"
         )
 
     return errors

@@ -41,7 +41,7 @@ license: MIT
 - Prefer `user-invocable` and `disable-model-invocation` for invocation control. Do **NOT** introduce deprecated `infer`.
 - When a direct-user orchestrator is the sole user-facing entry point, set `user-invocable: false` on specialist agents so the picker routes users through the orchestrator. Keep `disable-model-invocation: false` unless the agent must also be unavailable to other agents.
 - The dedicated direct-user Orchestrator is the sole exception: set `user-invocable: true` and `disable-model-invocation: true`. It has no Step 0 because the user invokes it directly. Do **NOT** generalize this exception to specialists or any other agents.
-- `description` is the primary routing surface. It **MUST** use `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:` so the agent advertises both scope and refusal boundary before its body is loaded.
+- Agent admission is determined solely by the frontmatter `description`, which **MUST** use `WHAT:`, `INVOKE FOR:`, and `DO NOT INVOKE FOR:`. Body guidance may clarify execution after selection but must not add Step 0 admission matrices or refusal JSON.
 - Keep the runtime contract in the agent file: persona or role, minimal tools, optional delegation, invocation mode, workflow, constraints, and output contract. Use explicit refusal or hand-off only when the role needs it.
 - There **MUST** be one source of truth per concept. If a matrix, mapping, or checklist already exists in one support file, later steps **MUST** point to it instead of restating it.
 - If extra routing help is still needed before the workflow loads, keep it in one dense support surface. Do **NOT** split the same yes or no boundary across multiple files.
@@ -62,7 +62,7 @@ license: MIT
 2. Confirm current host requirements only when they matter for this draft.
    - Use #tool:read on #file:./references/latest-docs.md only when you need to confirm current VS Code custom-agent frontmatter, location, picker behavior, or subagent behavior.
    - Review [custom agent docs](./references/custom_agent.md) and [subagent docs](./references/sub_agent.md) only for the specific ambiguity that still remains after [latest-docs](./references/latest-docs.md).
-3. Confirm the canonical body shape before you draft: `<definitions>`, `<workflow>`, `## Role`, `<rules>` with Responsibilities, Constraints, and Output Contract, then ordered Steps 1-3. Add a short `## Routing` section or a first workflow action only when the role genuinely needs disambiguation beyond its description.
+3. Confirm the canonical body shape before drafting: optional `<definitions>` only when role-specific terms need clarification, followed by a `<rules>` block containing `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`, then a separate `<workflow>` block with ordered Steps 1-3. Add a short `## Routing` section or a first workflow action only when the role genuinely needs disambiguation beyond its description.
    - Use the current [agent template](./assets/agent-template.md) as the canonical draft scaffold when you need to confirm the expected body shape.
 
 ## Step 2 - Capture the missing agent contract
@@ -97,7 +97,7 @@ license: MIT
 5. Resolve tricky delegation or invocation decisions before finalizing the draft.
    - If invocation mode or delegation still feels tricky while drafting, review [delegation and invocation guidance](./references/delegation_and_invocation.md) before setting `agent`, `agents:`, `user-invocable`, or `disable-model-invocation`.
 6. Keep the generated body aligned with the canonical structure.
-   - Keep drafts agent-shaped with `<definitions>`, then a `<workflow>` wrapper containing `## Role`, a `<rules>` block with `## Responsibilities`, `## Constraints`, and `## Output Contract`, then `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
+   - Keep drafts agent-shaped with optional `<definitions>` before a `<rules>` block containing `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`, followed by a separate `<workflow>` block containing `## Step 1 - ...`, `## Step 2 - ...`, and `## Step 3 - ...`.
    - Inside the workflow, prefer ordered `1. 2. 3.` lists when actions must happen in sequence and keep sub-checks, exceptions, or examples under those actions as `-` bullets.
    - Keep routing, workflow, delegation boundaries, and output requirements inside the `.agent.md` file itself instead of splitting runtime behavior into sibling support files.
 7. Use the template wrappers as scaffolding for new drafts.
@@ -111,7 +111,7 @@ license: MIT
    - Ensure the agent stays a single `.agent.md` file under `.github/agents/`.
    - Ensure the description, tools, invocation mode, delegation, workflow, constraints, and output contract agree with the intended role.
    - Ensure `description`, `tools`, `agents:`, `user-invocable`, and `disable-model-invocation` all agree with the intended role.
-   - If you used the template wrappers for a new draft, keep `<workflow>` around the full runtime contract and `<rules>` around `## Responsibilities`, `## Constraints`, plus `## Output Contract`.
+   - If you used the template wrappers for a new draft, keep optional `<definitions>` outside the wrappers, `<rules>` around `## Role`, `## Responsibilities`, `## Constraints`, and `## Output Contract`, and a separate `<workflow>` around the ordered Steps 1-3.
 
 ## Step 5 - Validate
 

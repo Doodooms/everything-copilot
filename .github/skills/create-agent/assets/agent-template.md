@@ -7,10 +7,11 @@ Use this as a scaffold for one self-contained `.agent.md`, not as a package temp
 name: agent-slug               # REQUIRED. Lowercase + hyphens only, 1-64 chars. MUST match the `.agent.md` filename stem exactly.
 description: 'WHAT: <one-sentence summary of the unique job this agent owns>. INVOKE FOR: <trigger phrases or scenarios that should route work to this agent>. DO NOT INVOKE FOR: <nearby tasks or situations outside this agent boundary>.' # REQUIRED. Primary routing surface.
 target: vscode                 # REQUIRED for workspace agents in this repository.
-tools: [read, search]          # REQUIRED. Keep this list minimal and use real workspace agent-facing tool names only. Confirm live availability via the chat "Configure Tools..." button or the copilot-tool-snapshot workflow before finalizing the list.
+tools: [read, search]          # OPTIONAL. Add only tools the agent genuinely needs; omit when the default is sufficient, or use [] only for an intentional tool-free agent. Confirm live availability before finalizing names.
+# model: GPT-6 Luna (copilot) # OPTIONAL. Always check last available version and pin only when necessary.
+# reasoning-effort: max # OPTIONAL. Always review official model benchmarks to select the best reasoning-effort for cost-efficiency
 # agents: [research]           # OPTIONAL. Add only when this agent delegates. If present, include `agent` in `tools` and list explicit allowed subagents or `*` intentionally.
 # argument-hint: "Optional hint shown in the chat input" # OPTIONAL. Use when a short picker hint improves invocation.
-# model: GPT-5.6-luna (copilot)     # OPTIONAL. Pin only when the task genuinely requires a specific model.
 # user-invocable: false        # OPTIONAL. Set for hidden helper agents that should stay out of the picker.
 # disable-model-invocation: true # OPTIONAL. Set only when this agent must never be invoked as a subagent.
 ---
@@ -19,7 +20,8 @@ tools: [read, search]          # REQUIRED. Keep this list minimal and use real w
 ```markdown
 <definitions>
 
-<!-- Give definitions that will help the agent understand its role, do NOT give useless definitions that would clutter its understanding and cost tokens.
+<!-- Optional: omit this entire block when no non-obvious role vocabulary needs clarification.
+Give definitions that will help the agent understand its role, do NOT give useless definitions that would clutter its understanding and cost tokens.
 Include only definitions that help the agent perform its role. -->
 
 - **useful definition 1** : a definition useful for the **agent** being invoked
