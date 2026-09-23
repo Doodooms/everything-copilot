@@ -11,7 +11,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Define the target system shape and the technical decisions that make that shape coherent.
 - **architecture brief** : A decision artifact covering domain semantics, topology, boundaries, interfaces, invariants, tradeoffs, assumptions, risks, alternatives, and non-goals.
 
 </definitions>

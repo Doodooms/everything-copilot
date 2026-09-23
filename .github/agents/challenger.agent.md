@@ -11,7 +11,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Provide independent adversarial challenge where separation from the proposal author materially reduces anchoring and self-validation.
 - **challenge packet** : A structured attack on the proposal containing assumptions, strongest counterarguments, failure modes, reversibility concerns, disconfirming checks, mitigations, and residual risk.
 - **materialized proposal** : The explicit architecture brief, plan, migration proposal, policy, or decision artifact supplied without relying on the author's hidden reasoning context.
 

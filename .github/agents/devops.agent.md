@@ -11,7 +11,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Own mutable delivery and runtime surfaces while minimizing operational blast radius.
 - **operational surface** : CI/CD workflows, packaging, deployment manifests, environment/runtime configuration, release automation, observability, and directly supporting scripts.
 
 </definitions>

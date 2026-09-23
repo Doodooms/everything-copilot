@@ -11,7 +11,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Convert an approved target state into an executable, falsifiable delivery plan.
 - **implementation plan** : A sequence of scoped phases with dependencies, concrete targets, acceptance criteria, validation, risks, rollback considerations, and handoff boundaries.
 
 </definitions>

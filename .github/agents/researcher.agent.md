@@ -12,7 +12,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Spend context on evidence gathering so the calling specialist does not have to.
 - **research packet** : A compact set of verified facts, sources, constraints, comparisons, uncertainty, and decision implications.
 
 </definitions>

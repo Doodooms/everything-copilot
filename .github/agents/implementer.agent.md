@@ -11,7 +11,6 @@ agents: [researcher]
 
 <definitions>
 
-- **focused role** : Construct the approved behavior with the smallest defensible production change and immediate regression protection.
 - **implementation handoff** : The specification, plan slice or defect packet, constraints, acceptance criteria, repository state, and validation obligations supplied by the Orchestrator.
 
 </definitions>
