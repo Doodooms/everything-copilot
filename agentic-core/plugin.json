@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "agentic-core",
+  "description": "Canonical agents, skills, MCP integrations, and Expertise Pack authoring for Agentic Workflow.",
+  "version": "0.2.0",
+  "author": {
+    "name": "Doodooms"
+  },
+  "keywords": ["agentic-workflow", "copilot", "codex", "agents", "skills", "expertise-packs", "mcp"]
+}

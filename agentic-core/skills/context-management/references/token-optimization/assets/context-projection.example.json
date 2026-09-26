@@ -1,0 +1,20 @@
+{
+  "warning_budget_tokens": null,
+  "agents": {
+    "<agent-id>": {
+      "definition": "relative/path/to/agent.agent.md",
+      "skills": [
+        "relative/path/to/skill/SKILL.md"
+      ],
+      "workflows": [
+        "relative/path/to/skill/workflows/expertise.md"
+      ],
+      "references": [
+        "relative/path/to/skill/references/background.md"
+      ],
+      "tools": [
+        "relative/path/to/tool-schema.json"
+      ]
+    }
+  }
+}

@@ -1,0 +1,100 @@
+# Orchestration and history schema
+
+Use these files only for a coordinated task that needs durable cross-agent state. A trivial or single-agent task may use the native session todos without creating a repository history.
+
+## File ownership
+
+| Path | Owner | Source of truth |
+|---|---|---|
+| `docs/harness-history/<task-id>/manifest.json` | Orchestrator | Current approved specification reference, phase/gate status, lifecycle pointers, and links to derived artifacts |
+| `docs/harness-history/<task-id>/events.jsonl` | Orchestrator | Append-only decisions and specialist handoff summaries |
+| `docs/planner-history/<task-id>/plan-r<revision>.md` | Planner | Approved task definitions, dependency DAG, file scopes, phase checks, and validation plan |
+| `docs/tasks-history/<task-id>.jsonl` | Orchestrator | Append-only state transitions for plan task IDs and specialist attempts |
+
+The manifest MUST reference the current plan path/revision and task ledger. Do not copy plan/task descriptions into the manifest or duplicate full specification text into event records. Record stable IDs and evidence paths instead.
+
+## Manifest
+
+```json
+{
+  "id": "task_1",
+  "title": "Change summary",
+  "description": "Approved objective and bounded scope",
+  "status": "in_progress",
+  "base_revision": "git SHA",
+  "specification": {
+    "id": "SPEC-1",
+    "revision": 1,
+    "status": "ready",
+    "requirements": ["REQ-1"],
+    "acceptance_criteria": ["AC-1"]
+  },
+  "architecture_ref": null,
+  "plan_ref": {
+    "path": "docs/planner-history/task_1/plan-r1.md",
+    "revision": 1,
+    "spec_revision": 1
+  },
+  "task_events_ref": "docs/tasks-history/task_1.jsonl",
+  "selected_phases": [],
+  "skipped_phases": [],
+  "open_blockers": [],
+  "lifecycle": {
+    "branch": null,
+    "worktree": null,
+    "commit_shas": [],
+    "pull_request": null,
+    "cleanup": "not_requested"
+  },
+  "updated_at": "UTC ISO-8601 timestamp"
+}
+```
+
+`status` is `planned | in_progress | success | partial | failed | blocked`. Omit fields that do not apply; never fabricate a branch, worktree, PR, commit, or validation result. Include detailed SDD requirement objects in the manifest only when required; otherwise reference an approved source document by path/revision.
+
+## Orchestration event
+
+Append one JSON object per line to `events.jsonl`. Each event MUST include:
+
+- `task_id`, `timestamp` (UTC ISO-8601), `type`, and observed `status`.
+- Relevant `spec_revision`, `plan_revision`, `agent_id`, and unique `attempt_id`.
+- Bounded handoff/result references, evidence paths or commands, changed files, and commit SHAs.
+- Deviations, blockers, next owner, and exact resume point when applicable.
+
+Store structured specialist return fields needed for audit, not duplicated plan/spec prose or entire tool transcripts.
+
+## Planner plan
+
+Each `plan-rN.md` MUST identify `task_id`, plan revision, consumed spec/architecture revisions, requirement/acceptance/decision IDs, phases, and task DAG. Each task records:
+
+- `TASK-*` ID, objective, owner/custom agent, bounded files/components, and expected output.
+- Dependencies and safe parallel group; the dependency graph MUST be acyclic.
+- Validation evidence, separate phase exit checks, risk, and next handoff.
+
+Product acceptance remains specification-owned. The plan MUST NOT change or weaken it.
+
+## Task status event
+
+Append one JSON object per line to `docs/tasks-history/<task-id>.jsonl`:
+
+```json
+{
+  "parent_task_id": "task_1",
+  "task_id": "TASK-1",
+  "attempt_id": "attempt-1",
+  "agent_id": "implementer",
+  "status": "running",
+  "timestamp": "UTC ISO-8601 timestamp",
+  "evidence": null
+}
+```
+
+Allowed statuses: `planned`, `queued`, `running`, `completed`, `partial`, `failed`, `blocked`, `unknown`, `cancelled`. An attempt follows observed transitions; terminal failures are retained, and retry starts a new `attempt_id`. Every outcome references actual evidence or the observed reason no result exists. Do not interpret time elapsed alone as proof of crash; when a session resumes and the host cannot establish a `running` attempt's state, append `unknown`.
+
+Native todos are a session UI compiled from top-level plan phases/tasks. Use meaningful dependency links, update a todo after recording the corresponding durable event, and do not mark completion before evidence exists.
+
+## GitHub and hooks
+
+The official custom-agent schema does not define a `github:` YAML key. Configure GitHub access using tools/MCP servers supported by the selected harness; an enabled GitHub tool does not transfer lifecycle ownership from the Orchestrator.
+
+Hooks are harness- and event-specific. They MAY record a supported event, but MUST NOT be treated as a recurring timer, guaranteed heartbeat, or guaranteed crash notification. Verify hook support and payload against the active harness before authoring one.

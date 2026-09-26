@@ -1,0 +1,12 @@
+{
+  "architecture_id": "skill-package-v2",
+  "required_files": [
+    "SKILL.md",
+    "references/original-spec.md"
+  ],
+  "mutable_markers": [
+    "[skill-name]",
+    "[what this skill does]",
+    "[workflow-id]"
+  ]
+}

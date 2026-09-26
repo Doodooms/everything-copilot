@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "--yes",
+        "@upstash/context7-mcp@4.1.1"
+      ]
+    },
+    "semgrep": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "semgrep==1.177.0",
+        "semgrep",
+        "mcp",
+        "-t",
+        "stdio"
+      ]
+    }
+  }
+}

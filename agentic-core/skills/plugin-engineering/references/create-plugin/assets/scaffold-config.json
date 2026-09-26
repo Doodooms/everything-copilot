@@ -1,0 +1,17 @@
+{
+  "architecture_id": "expertise-pack-authoring-v1",
+  "required_files": [
+    "SKILL.md",
+    "references/plugin-contract.md",
+    "references/skill-composition.md",
+    "assets/pack-options-template.md",
+    "assets/child-handoff-template.md"
+  ],
+  "mutable_markers": [
+    "[pack-id]",
+    "[capability-id]",
+    "[agent-id]",
+    "[skill-id]",
+    "[mcp-server-id]"
+  ]
+}

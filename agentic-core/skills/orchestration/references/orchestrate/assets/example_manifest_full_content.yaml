@@ -1,0 +1,29 @@
+id: task_2
+title: Refactor model heads into a dedicated package
+description: Move the approved model-head implementation and update its callers.
+status: in_progress
+base_revision: "def456"
+specification:
+  id: SPEC-2
+  revision: 2
+  status: ready
+  requirements: [REQ-2, REQ-3]
+  acceptance_criteria: [AC-2, AC-3]
+architecture_ref:
+  path: docs/architecture/model-heads.md
+  revision: 1
+plan_ref:
+  path: docs/planner-history/task_2/plan-r2.md
+  revision: 2
+  spec_revision: 2
+task_events_ref: docs/tasks-history/task_2.jsonl
+selected_phases: [architecture, implementation, qa, review]
+skipped_phases: []
+open_blockers: []
+lifecycle:
+  branch: orchestrator/refactor-models
+  worktree: null
+  commit_shas: []
+  pull_request: null
+  cleanup: not_requested
+updated_at: "2026-09-23T00:00:00Z"
