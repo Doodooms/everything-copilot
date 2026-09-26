@@ -202,6 +202,14 @@ def main() -> int:
     parser.add_argument("--source-skill", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    source_definition = args.source_skill / "SKILL.md"
+    if not source_definition.is_file():
+        source_definition = args.source_skill / "method-source.md"
+    if not source_definition.is_file():
+        raise SystemExit(
+            f"source package must contain SKILL.md or method-source.md: {args.source_skill}"
+        )
+
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     validate_manifest(manifest)
     root = args.output
@@ -209,9 +217,18 @@ def main() -> int:
         raise SystemExit(f"refusing to overwrite benchmark: {root}")
     root.mkdir(parents=True)
     shutil.copy2(args.manifest, root / "benchmark_manifest.json")
-    shutil.copy2(args.source_skill / "SKILL.md", root / "SKILL.md")
+    shutil.copy2(source_definition, root / "SKILL.md")
     support = root / ".github" / "skills" / "create-skill"
-    shutil.copytree(args.source_skill, support, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    ignored = ["__pycache__", "*.pyc"]
+    if source_definition.name != "SKILL.md":
+        ignored.append(source_definition.name)
+    shutil.copytree(
+        args.source_skill,
+        support,
+        ignore=shutil.ignore_patterns(*ignored),
+    )
+    if source_definition.name != "SKILL.md":
+        shutil.copy2(source_definition, support / "SKILL.md")
     support_files = sorted(
         path.relative_to(support).as_posix()
         for path in support.rglob("*")
@@ -225,8 +242,14 @@ def main() -> int:
         split_root = root / split
         (split_root / "tasks").mkdir(parents=True)
         split_support = split_root / ".github" / "skills" / "create-skill"
-        shutil.copy2(args.source_skill / "SKILL.md", split_root / "SKILL.md")
-        shutil.copytree(args.source_skill, split_support, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        shutil.copy2(source_definition, split_root / "SKILL.md")
+        shutil.copytree(
+            args.source_skill,
+            split_support,
+            ignore=shutil.ignore_patterns(*ignored),
+        )
+        if source_definition.name != "SKILL.md":
+            shutil.copy2(source_definition, split_support / "SKILL.md")
         files = package_files
         adapter_tasks = {}
         selected = manifest["splits"][split]

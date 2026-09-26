@@ -46,14 +46,18 @@ def parse_routing_observation(
         for event in events
         for token in ("skill_invocation", "skill-invocation", '"skill":')
     )
-    target_probe_indices = [
-        index
-        for index, event in enumerate(events)
-        if event.get("type") == "tool.execution_start"
-        and event.get("tool_name") == "view"
-        and "/.github/skills/tdd/" in str(event.get("arguments", {}).get("path", "")).lower()
-        and "__routing_probe__.md" in str(event.get("arguments", {}).get("path", "")).lower()
-    ]
+    target_probe_indices = []
+    for index, event in enumerate(events):
+        if event.get("type") != "tool.execution_start" or event.get("tool_name") != "view":
+            continue
+        path = str(event.get("arguments", {}).get("path", "")).lower().replace("\\", "/")
+        normalized_path = f"/{path.lstrip('/')}"
+        is_tdd_skill_path = any(
+            f"/{root}/tdd/" in normalized_path
+            for root in ("agentic-core/skills", ".github/skills")
+        )
+        if is_tdd_skill_path and "__routing_probe__.md" in normalized_path:
+            target_probe_indices.append(index)
     generic_sentinel_indices = [
         index
         for index, event in enumerate(events)
@@ -93,9 +97,13 @@ def parse_routing_observation(
     for event in events:
         if event.get("type") != "tool.execution_start" or event.get("tool_name") != "view":
             continue
-        path = str(event.get("arguments", {}).get("path", "")).lower()
+        path = str(event.get("arguments", {}).get("path", "")).lower().replace("\\", "/")
+        normalized_path = f"/{path.lstrip('/')}"
         for route in specialist_routes:
-            if f"/.github/skills/{route}/skill.md" in path:
+            if any(
+                f"/{root}/{route}/skill.md" in normalized_path
+                for root in ("agentic-core/skills", ".github/skills")
+            ):
                 actual_route = route
                 if route == "verification-loop":
                     discovery_actual = True

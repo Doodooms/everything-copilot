@@ -40,7 +40,10 @@ from scripts.build_create_skill_benchmark import FAMILIES, JUDGE_RUBRIC, WAZA_RU
 class BenchmarkGenerationTests(unittest.TestCase):
     repository_root = Path(__file__).parents[1]
     manifest_path = repository_root / "experiments/optimization/create-skill/benchmark/benchmark_manifest.json"
-    source_skill = repository_root / ".github/skills/create-skill"
+    source_skill = (
+        repository_root
+        / "agentic-core/skills/plugin-engineering/references/create-skill"
+    )
 
     def test_manifest_families_and_holdout_are_disjoint(self):
         manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
@@ -67,7 +70,11 @@ class BenchmarkGenerationTests(unittest.TestCase):
             source_support = {
                 path.relative_to(self.source_skill).as_posix()
                 for path in self.source_skill.rglob("*")
-                if path.is_file() and path.name != "SKILL.md" and "__pycache__" not in path.parts and path.suffix != ".pyc"
+                if path.is_file()
+                and path.relative_to(self.source_skill).as_posix() != "method-source.md"
+                and path.name != "SKILL.md"
+                and "__pycache__" not in path.parts
+                and path.suffix != ".pyc"
             }
             for split in ("train", "selection", "holdout"):
                 manifest = json.loads((output / split / "adapter_manifest.json").read_text(encoding="utf-8"))
@@ -77,6 +84,12 @@ class BenchmarkGenerationTests(unittest.TestCase):
                 self.assertIn("self_containment", oracle["hard_gates"])
                 for path in oracle["required_support_files"]:
                     self.assertTrue((output / split / ".github/skills/create-skill" / path).is_file())
+                projected_skill = output / split / ".github/skills/create-skill"
+                self.assertEqual(
+                    (projected_skill / "SKILL.md").read_text(encoding="utf-8"),
+                    (self.source_skill / "method-source.md").read_text(encoding="utf-8"),
+                )
+                self.assertFalse((projected_skill / "method-source.md").exists())
                 self.assertEqual(
                     {item["path"] for item in yaml.safe_load(
                         (output / split / "tasks" / "probe-support-file-discipline.yaml").read_text(encoding="utf-8")
@@ -763,6 +776,40 @@ class ProtectionTests(unittest.TestCase):
         self.assertEqual(trial.sentinel_events, 1)
         self.assertEqual(trial.tool_calls, 3)
 
+    def test_routing_trace_parser_recognizes_plugin_and_workspace_skill_paths(self):
+        for root in ("agentic-core/skills", ".github/skills"):
+            with self.subTest(root=root):
+                trial = parse_routing_observation(
+                    {
+                        "transcript": [
+                            {
+                                "type": "tool.execution_start",
+                                "tool_name": "view",
+                                "arguments": {
+                                    "path": f"/workspace/{root}/tdd/references/__routing_probe__.md"
+                                },
+                            },
+                            {"type": "skill.invoked"},
+                            {
+                                "type": "tool.execution_start",
+                                "tool_name": "view",
+                                "arguments": {
+                                    "path": f"/workspace/{root}/create-skill/SKILL.md"
+                                },
+                            },
+                        ]
+                    },
+                    expected_route="create-skill",
+                    discovery_expected=True,
+                    admission_expected=True,
+                )
+
+                self.assertTrue(trial.discovery_actual)
+                self.assertTrue(trial.admission_actual)
+                self.assertEqual(trial.actual_route, "create-skill")
+                self.assertEqual(trial.sentinel_events, 1)
+                self.assertEqual(trial.post_sentinel_tool_calls, 1)
+
     def test_candidate_is_cloned_and_structurally_gated_before_waza(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)
@@ -950,7 +997,7 @@ class ProtectionTests(unittest.TestCase):
                 "<workflow>\n## Step 0 - Run\n1. Test\n</workflow>\n",
                 encoding="utf-8",
             )
-            for catalogue, names in ((one, ("tdd",)), (five, ("tdd", "create-agent", "create-prompt", "code-exploration", "create-skill"))):
+            for catalogue, names in ((one, ("tdd",)), (five, ("tdd", "create-agent", "create-hook", "code-exploration", "create-skill"))):
                 skills = catalogue / ".github" / "skills"
                 for name in names:
                     (skills / name).mkdir(parents=True)
