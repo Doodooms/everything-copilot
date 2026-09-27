@@ -11,6 +11,7 @@
     "description": "Preserve 11 domain skill entrypoints with complete nested workflow subskills, verify Codex agents/MCP and reconcile todos before resuming cost-eval-opt.",
     "id": "task_5",
     "implementation": {
+      "current_tasks": [],
       "evidence": [
         "EVIDENCE-CODEX-AGENT-INSTALL",
         "EVIDENCE-CODEX-QA-ROLE-LOAD",
@@ -21,9 +22,10 @@
         "EVIDENCE-MANIFEST-SCHEMA-FIX-20260927-R1",
         "EVIDENCE-CODEX-PLUGIN-REINSTALL-20260927-R1",
         "EVIDENCE-CODEX-FRESH-SKILL-LOAD-20260927-R1",
-        "EVIDENCE-CODEX-ROLE-DISPATCH-SURFACE-20260927-R1"
+        "EVIDENCE-CODEX-ROLE-DISPATCH-SURFACE-20260927-R1",
+        "EVIDENCE-TASK-5-OWNERSHIP-RELEASE-20260927-R1"
       ],
-      "status": "in_progress"
+      "status": "complete"
     },
     "lifecycle": {
       "branch": "main",
@@ -35,7 +37,7 @@
       ],
       "commit_status": "created",
       "pull_request": null,
-      "workspace_note": "Local-only checkpoint commits were created under the user authorization. Task 3 and uncertain workspace files remain uncommitted; no remote refs or tags changed.",
+      "workspace_note": "Task_5 implementation ownership is released with no current implementation tasks. The task remains partial because QA and Reviewer are NOT_EXECUTED_INTERFACE_LIMITATION and the secondary SDD validator has documented historical-state discrepancies. No remote operation was performed.",
       "worktree": null
     },
     "open_blockers": [
@@ -49,11 +51,11 @@
         "status": "resolved"
       },
       {
-        "evidence": "EVIDENCE-CODEX-QA-ROLE-LOAD proves an earlier fresh Codex subagent process resolved the installed quality-assurance role, and the user reports VS Code agent selection works. The current conversation exposes no plugin-role dispatch surface; local codex exec --help has no --agent selector. This host did not invoke QA or Reviewer, and no unrelated system agent was substituted.",
+        "evidence": "QA and Reviewer remain NOT_EXECUTED_INTERFACE_LIMITATION. Earlier evidence confirms QA can load in a separate Codex subagent process, but this active conversation exposes no plugin-role dispatch surface and codex exec --help has no --agent selector. Neither gate was invoked here.",
         "id": "BLOCKER-CUSTOM-AGENT-DELEGATION",
-        "next_action": "Use a Codex host surface that exposes the installed quality-assurance and reviewer roles, then record their actual handoffs.",
-        "owner": "orchestrator",
-        "reason": "The installed QA role itself has already loaded successfully in a separate Codex subagent process. The active conversation tool surface cannot dispatch that installed role, and codex exec offers no direct --agent selector; the plugin agent configuration is not the blocker.",
+        "next_action": "A future session may claim the QA and Reviewer gates when its host exposes the installed roles; record actual handoffs and keep both gates blocked until then.",
+        "owner": "unassigned",
+        "reason": "Independent QA and Reviewer were not executed because the active interface cannot dispatch the installed roles. Task_5 implementation ownership has been released; no implementation task is currently assigned.",
         "scope": "Independent Quality Assurance and Reviewer invocation from this active conversation surface",
         "status": "blocked"
       }
@@ -243,7 +245,7 @@
         "requirements": [
           "REQ-1"
         ],
-        "status": "in_progress"
+        "status": "completed"
       },
       {
         "acceptance_criteria": [
@@ -357,7 +359,7 @@
         "requirements": [
           "REQ-2"
         ],
-        "status": "in_progress"
+        "status": "blocked"
       },
       {
         "acceptance_criteria": [
@@ -416,7 +418,7 @@
         "requirements": [
           "REQ-5"
         ],
-        "status": "in_progress"
+        "status": "blocked"
       },
       {
         "acceptance_criteria": [
@@ -443,7 +445,7 @@
       }
     ],
     "title": "Agentic Core normalization and complete Codex installation",
-    "updated_at": "2026-09-27T16:25:06Z",
+    "updated_at": "2026-09-27T18:33:04Z",
     "validation_evidence": [
       {
         "acceptance_criteria": [
@@ -1038,10 +1040,26 @@
         "result": "pass",
         "spec_revision": 2,
         "subject_revision": "task_5 plan r10 and current workspace ownership checkpoint"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-5",
+          "AC-6"
+        ],
+        "check": "Release task_5 implementation ownership with no active implementation tasks and preserve external gates as partial",
+        "command": "record-manifest --status partial; validate the current manifest-record; append a schema-validated ownership-release event; inspect the review-gate backlog",
+        "environment": "Local agentic-workflow worktree; 2026-09-27",
+        "id": "EVIDENCE-TASK-5-OWNERSHIP-RELEASE-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Implementation complete with current_tasks empty; QA and Reviewer remain NOT_EXECUTED_INTERFACE_LIMITATION; the historical SDD validator mismatch remains documented."
       }
     ]
   },
   "status": "partial",
   "task_id": "task_5",
-  "updated_at": "2026-09-27T16:25:06Z"
+  "updated_at": "2026-09-27T18:33:04Z"
 }

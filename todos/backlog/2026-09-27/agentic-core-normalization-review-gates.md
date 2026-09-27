@@ -1,22 +1,22 @@
-# Agentic Core normalization: pending independent gates
+# Agentic Core normalization: released implementation, pending gates
 
-**Status:** partial; implementation and automated validation are recorded, but the task is not fully accepted.
-**Owner:** Orchestrator on a Codex host that can invoke the installed custom roles
-**Source task:** `task_5`, plan r10
+**Status:** `PARTIAL_WITH_DOCUMENTED_GATES`.
+**Implementation ownership:** released; no current implementation task is assigned.
+**Next owner:** unassigned. A future session may claim the external gates when its host exposes the installed custom roles.
+**Source task:** `task_5`, plan r10.
 
-## Remaining work
+The approved plan r10 remains unchanged as planning history. This release checkpoint supersedes its in-progress task labels for current ownership. The task remains partial; historical evidence is preserved.
 
-- Reconcile `docs/harness-history/task_5/manifest.json` with `validate_sdd_state.py`'s embedded lifecycle model. The canonical `manifest-record` validator passes, while the SDD validator reports stale spec-revision-1 evidence, missing embedded architecture/plan objects, stale ADR references, and the legacy `validation` gate name. Preserve historical evidence in the append-only ledgers; only update current state from evidence that still applies.
-- Run the installed Quality Assurance role against the r10 acceptance criteria, workflow topology and routes, MCP authoring guidance and launcher evidence, session coordination safety, Codex host claims, and source-provenance disposition.
-- Run the installed Reviewer role after QA and reconcile its findings against AC-1 through AC-6.
-- Update the `task_5` manifest and this backlog only from actual handoffs. Keep QA and Reviewer marked blocked/not executed until then.
+## Remaining gates
 
-## Evidence and current limit
+- **QA:** `NOT_EXECUTED_INTERFACE_LIMITATION`. The active conversation host cannot dispatch the installed Quality Assurance role. No QA handoff was performed.
+- **Reviewer:** `NOT_EXECUTED_INTERFACE_LIMITATION`. No Reviewer handoff was performed; it remains pending QA and a host that can dispatch the installed role.
+- **Secondary SDD validation:** the previously documented validator mismatch remains a known historical-state discrepancy. The canonical manifest-record validation and the secondary `validate_sdd_state.py` validation are distinct; do not rewrite prior evidence to manufacture a pass.
 
-The task ledgers report 25 targeted source tests, Ruff checks, manifest validation, 54 task-history transitions, and `git diff --check` as passing. This checkpoint reruns the locally available targeted source tests, Ruff, and current manifest/history validation. Independent QA and Reviewer handoffs were not executed: this conversation's host exposes no custom-role dispatch mechanism, and `codex exec --help` has no `--agent` selector.
+No functional implementation work is currently assigned. Resume the QA gate, then Reviewer, only after a future session claims those gates through a host that exposes the installed roles. Do not substitute a generic agent or record either gate as passed without an actual handoff.
 
-The plugin is installed at 0.3.3; source/cache inventory is 11 domain skills plus 59 nested workflows, no peer packages, and nine Codex agent files. A fresh Codex process loaded orchestration. The workspace MCP is user-reported as running via `.vscode/mcp.json`.
+## Evidence retained
 
-## Resume condition
+The existing task report records 25 targeted source tests, Ruff checks, manifest validation, task-history transitions, and the fresh-process plugin/agent checks. This release updates current ownership and gate labels only; it does not rewrite those historical proofs or assert that task_5 validation was rerun in this checkpoint.
 
-Resume when the host can select the installed `quality-assurance` and `reviewer` agents. Do not substitute a generic agent or record either gate as passed.
+The task report remains [here](../../done/2026-09-27/agentic-core-normalization-report.md); the canonical task state remains in [the task_5 manifest](../../../docs/harness-history/task_5/manifest.json) and [task history](../../../docs/tasks-history/task_5.jsonl).
