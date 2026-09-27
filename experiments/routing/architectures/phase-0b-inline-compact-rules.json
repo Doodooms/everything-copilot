@@ -1,0 +1,6 @@
+{
+  "id": "phase-0b-inline-compact-rules",
+  "progressive_disclosure": "inline_workflow",
+  "admission_representation": "compact_rules",
+  "workflow_location": "SKILL.md"
+}

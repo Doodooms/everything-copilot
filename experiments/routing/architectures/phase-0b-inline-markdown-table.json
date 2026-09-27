@@ -1,0 +1,6 @@
+{
+  "id": "phase-0b-inline-markdown-table",
+  "progressive_disclosure": "inline_workflow",
+  "admission_representation": "markdown_table",
+  "workflow_location": "SKILL.md"
+}

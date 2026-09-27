@@ -1,0 +1,54 @@
+{
+  "id": "tdd",
+  "name": "tdd",
+  "description": "WHAT: Apply a test-first RED-GREEN-REFACTOR workflow with evidence gates. USE FOR: implementing features, fixing bugs, refactoring code, or adding tests when the acceptance criterion can be tested. DO NOT USE FOR: architecture-only planning, documentation-only edits, deployment operations, or tasks with no executable behavior.",
+  "accept_rules": [
+    "the request changes executable code and has an acceptance criterion expressible as a test",
+    "the request asks to implement a feature, fix a bug, refactor code, or add tests"
+  ],
+  "reject_rules": [
+    {"case": "architecture-only planning without implementation", "route": "architecture-design"},
+    {"case": "skill, agent, or prompt authoring", "route": "create-skill"},
+    {"case": "documentation-only work or deployment operations", "route": "appropriate-specialist"}
+  ],
+  "workflow_payload": "Establish the test target, prove RED, implement the minimum change, prove GREEN, refactor, verify coverage, and run the final quality gate.",
+  "cases": [
+    {
+      "id": "explicit-tdd",
+      "prompt": "Use TDD to add a login endpoint: write the failing tests first, implement the smallest fix, then verify coverage.",
+      "should_use_skill": true,
+      "expected_admission": "accept"
+    },
+    {
+      "id": "implicit-test-first",
+      "prompt": "Add validation for empty search queries. Start from an executable reproducer, make it fail, then fix the implementation and keep the existing tests green.",
+      "should_use_skill": true,
+      "expected_admission": "accept"
+    },
+    {
+      "id": "boundary-refactor",
+      "prompt": "Refactor the payment service for readability and performance, but first lock down the current behavior with tests and check the error paths.",
+      "should_use_skill": true,
+      "expected_admission": "accept"
+    },
+    {
+      "id": "false-positive-agent",
+      "prompt": "Create a custom .agent.md file for a reviewer that can inspect test failures and delegate implementation work.",
+      "should_use_skill": false,
+      "expected_admission": "reject",
+      "expected_route": "create-agent"
+    },
+    {
+      "id": "ambiguous-final-verification",
+      "prompt": "The login endpoint implementation was completed through a RED-GREEN-REFACTOR cycle, and its focused tests already pass. Before opening a pull request, run the repository's build, type-check, lint, full test and coverage, security, and diff checks, then report whether the change is ready. Do not modify the implementation or tests.",
+      "should_use_skill": true,
+      "expected_admission": "accept",
+      "expected_route": "verification-loop"
+    }
+  ],
+  "metadata": {
+    "fixture_class": "real_tdd_routing",
+    "source_skill": ".github/skills/tdd/SKILL.md",
+    "catalogue_sizes": ["1-skill", "5-skills", "N-skills"]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "id": "phase-0a-simple",
+  "progressive_disclosure": "simple_inline",
+  "admission_representation": "grouped_lists",
+  "workflow_location": "SKILL.md"
+}

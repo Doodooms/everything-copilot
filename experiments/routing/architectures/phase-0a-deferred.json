@@ -1,0 +1,6 @@
+{
+  "id": "phase-0a-deferred",
+  "progressive_disclosure": "deferred_workflow",
+  "admission_representation": "grouped_lists",
+  "workflow_location": "references/workflow.md"
+}

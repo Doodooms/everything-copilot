@@ -1,0 +1,6 @@
+{
+  "id": "phase-0b-inline-grouped-lists",
+  "progressive_disclosure": "inline_workflow",
+  "admission_representation": "grouped_lists",
+  "workflow_location": "SKILL.md"
+}
