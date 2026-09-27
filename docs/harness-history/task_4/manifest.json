@@ -1,0 +1,1242 @@
+{
+  "manifest": {
+    "architecture": {
+      "decisions": [
+        {
+          "id": "ADR-CORE1",
+          "requirements": [
+            "REQ-1",
+            "REQ-2",
+            "REQ-3",
+            "REQ-4",
+            "REQ-5",
+            "REQ-6",
+            "REQ-7",
+            "REQ-8"
+          ],
+          "statement": "Keep the canonical plugin and thin host adapters; use portable schemas plus local validation, preserve host ownership of live session state and credentials, and correct demonstrated exchange defects at their existing boundaries."
+        }
+      ],
+      "revision": 3,
+      "spec_revision": 4,
+      "status": "ready"
+    },
+    "architecture_ref": "docs/harness-history/task_4/architecture-r3.md",
+    "base_revision": "5c6dcd401e9a0d115e79c19f02de96ffed694686",
+    "convergence": {
+      "status": "gaps_found"
+    },
+    "description": "Complete SPEC-CORE-ENHANCEMENTS@4 implementation and close the task state while preserving task_3.",
+    "id": "task_4",
+    "implementation": {
+      "evidence": [
+        {
+          "acceptance_criteria": [
+            "AC-1",
+            "AC-2"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-IMPLEMENT-MH-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-SKILLS-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-IMPLEMENT-EXCHANGE-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-EXCHANGE-FINAL1",
+            "EVIDENCE-SDD-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-4"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-IMPLEMENT-MCPRUST-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-SKILLS-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-5"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-IMPLEMENT-RESEARCH-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-RESEARCH-FINAL1",
+            "EVIDENCE-SKILLS-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-5"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-RESEARCH-CANDIDATES-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-RESEARCH-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-ARCH-TRACE-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-ARCH-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-EXCHANGE-CORR-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-EXCHANGE-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-2"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-MH-DISTRIBUTION-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-SKILLS-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3",
+            "AC-8"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-MANIFEST-SDD-CONTRACT-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-SCHEMA-FINAL1",
+            "EVIDENCE-SDD-FIX1",
+            "EVIDENCE-PRESERVE-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-7",
+            "AC-9"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-TRACK-CLOSE-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-TRACK-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-8"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-PRESERVE-TASK3-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-PRESERVE-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3",
+            "AC-8"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-SDD-EVIDENCE-CLOSE-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-SDD-FIX1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-7"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-PLUGIN-SYNC-04",
+          "validation_evidence_refs": [
+            "EVIDENCE-PLUGIN-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3",
+            "AC-7",
+            "AC-8",
+            "AC-9"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-VALIDATE-CLOSE-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-SDD-FINAL1",
+            "EVIDENCE-RUFF-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-3",
+            "AC-8"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-REVIEW-CLOSE-03",
+          "validation_evidence_refs": [
+            "EVIDENCE-REVIEW-FINAL1"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-7",
+            "AC-9"
+          ],
+          "implementation_revision": "agentic-core-0.3.3-source",
+          "spec_revision": 4,
+          "status": "pass",
+          "task_id": "TASK-TRACK-CLOSE-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-TRACK-FINAL1"
+          ]
+        }
+      ],
+      "revision": "agentic-core-0.3.3-source",
+      "status": "complete"
+    },
+    "lifecycle": {
+      "branch": null,
+      "cleanup": "not_requested",
+      "commit_reason": "No commit was authorized; the shared worktree contains unrelated in-progress work.",
+      "commit_shas": [],
+      "commit_status": "not_created",
+      "pull_request": null,
+      "worktree": null
+    },
+    "open_blockers": [
+      "The custom quality-assurance agent type is unavailable; focused local checks do not count as its independent verdict.",
+      "Copilot CLI reported its monthly quota exhausted before a response; successful cross-harness smoke is deferred."
+    ],
+    "open_findings": [],
+    "plan": {
+      "approval": "approved-orchestrator-fallback",
+      "revision": 5,
+      "spec_revision": 4,
+      "status": "ready"
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/task_4/plan-r5.md",
+      "revision": 5,
+      "spec_revision": 4,
+      "status": "approved-orchestrator-fallback"
+    },
+    "qa": {
+      "acceptance_criteria": [],
+      "status": "blocked",
+      "validation_evidence_refs": [
+        "EVIDENCE-QABLOCK1"
+      ]
+    },
+    "required_gates": [
+      "architecture",
+      "plan",
+      "implementation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-3",
+        "AC-8"
+      ],
+      "status": "blocked",
+      "validation_evidence_refs": [
+        "EVIDENCE-CODEX-FINDINGS1",
+        "EVIDENCE-REVIEW-FINAL1"
+      ]
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "architecture",
+      "architecture-ideas-disposition",
+      "backlog-triage",
+      "existing-solution-research",
+      "implementation",
+      "local-plugin-cache-refresh",
+      "copilot-local-plugin-reinstall",
+      "live-harness-status",
+      "post-fix-read-only-review",
+      "exchange-contract-corrections",
+      "cross-harness-budget-precheck",
+      "architecture-input-correction",
+      "tracking-closure",
+      "planning",
+      "research",
+      "review",
+      "specification",
+      "validation"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "harness-evaluation-implementation",
+        "reason": "Separate task_3 is active in another session; preserve its files."
+      },
+      {
+        "phase": "Copilot successful model response",
+        "reason": "Fresh Copilot CLI usage and prompt surfaces report the monthly quota exhausted; the blocked path was observed and must not be bypassed."
+      },
+      {
+        "phase": "custom quality-assurance agent",
+        "reason": "The host rejected the quality-assurance agent type. Focused isolated checks were run and are not presented as an independent agent verdict."
+      },
+      {
+        "phase": "whole-repository audit",
+        "reason": "The supplied file is a general review brief, while this task is scoped to agentic-core enhancements; its review criteria were applied only to the relevant plugin surfaces."
+      },
+      {
+        "phase": "automatic provider quota monitoring",
+        "reason": "The plugin intentionally supports manual host-reported snapshots only; no polling or private account API is authorized or available."
+      },
+      {
+        "phase": "external tool integration",
+        "reason": "The supplied projects are being assessed; none has an approved, measured product requirement requiring a new dependency now."
+      },
+      {
+        "phase": "reply from the other active session",
+        "reason": "The exact task_3 session was not resumed or messaged. A separate read-only Codex CLI review covered task_4 files only and is not evidence from task_3."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-1",
+          "requirements": [
+            "REQ-1"
+          ],
+          "statement": "multi-harness exposes smart-compact with distinct host-reported, local-estimate, and unknown states plus safe handoff and phase-boundary rules."
+        },
+        {
+          "id": "AC-2",
+          "requirements": [
+            "REQ-2"
+          ],
+          "statement": "multi-harness exposes harness-distribution with evidence fields, check points, and fail-closed behavior for unavailable or exhausted budgets."
+        },
+        {
+          "id": "AC-3",
+          "requirements": [
+            "REQ-3"
+          ],
+          "statement": "Versioned exchange schemas and a local validator require validated handoffs and reject incorrect or unverifiable commit and artifact claims."
+        },
+        {
+          "id": "AC-4",
+          "requirements": [
+            "REQ-4"
+          ],
+          "statement": "The MCP authoring route links to one Rust-specific workflow with version-grounded API guidance."
+        },
+        {
+          "id": "AC-5",
+          "requirements": [
+            "REQ-5"
+          ],
+          "statement": "The feasibility report assesses all in-scope candidates and omits excluded subject matter."
+        },
+        {
+          "id": "AC-6",
+          "requirements": [
+            "REQ-6"
+          ],
+          "statement": "The architecture report identifies the source as a review brief and records a bounded architecture conclusion without attributing absent proposals."
+        },
+        {
+          "id": "AC-7",
+          "requirements": [
+            "REQ-7"
+          ],
+          "statement": "The tracking index distinguishes idea intake, active work, backlog, and completed reports and links exact task artifacts."
+        },
+        {
+          "id": "AC-8",
+          "requirements": [
+            "REQ-8"
+          ],
+          "statement": "task_3 and harness_factory phase-1 source, tests, and canonical ledger are preserved without task_4 edits."
+        },
+        {
+          "id": "AC-9",
+          "requirements": [
+            "REQ-7"
+          ],
+          "statement": "At closure todos/in_progress has no files and unfinished work remains discoverable in todos/backlog with its blocked or deferred state."
+        }
+      ],
+      "assumptions": [
+        "Provider quotas and active-session telemetry are host-specific observations.",
+        "Unknown usage is not zero and is not inferred from earlier sessions."
+      ],
+      "constraints": [
+        "Do not inspect or change provider credentials.",
+        "Do not modify task_3 or harness_factory.",
+        "Do not stage, commit, reset, or clean the shared worktree."
+      ],
+      "id": "SPEC-CORE-ENHANCEMENTS",
+      "non_goals": [
+        "A central tool-call gateway.",
+        "Automatic quota polling or private account API access.",
+        "External runtime or provider integration without a measured product requirement."
+      ],
+      "objective": "Improve agentic-core context and harness decisions, validate structured exchanges, modernize Rust MCP authoring guidance, assess supplied candidates, and close task tracking.",
+      "open_decisions": [],
+      "path": "todos/done/2026-09-27/agentic-core-enhancements-spec.md",
+      "requirements": [
+        {
+          "id": "REQ-1",
+          "statement": "Add smart-compact using exact active-host context telemetry only when exposed; otherwise label local estimates or unknown, and compact only after a durable phase-boundary handoff."
+        },
+        {
+          "id": "REQ-2",
+          "statement": "Add harness-distribution with fresh host-reported usage snapshots at task start, before expensive dispatches, and at meaningful phase boundaries; preserve unknown and fail closed before cross-harness contact when destination budget is stale, exhausted, or unknown."
+        },
+        {
+          "id": "REQ-3",
+          "statement": "Define language-neutral versioned exchange contracts and validate them before handoff and persistence; distinguish Git commit object IDs from SHA-256 artifact digests and verify repository claims when a repository is available."
+        },
+        {
+          "id": "REQ-4",
+          "statement": "Integrate version-grounded Rust MCP authoring guidance into the existing MCP route without presenting unverified snippets as current APIs."
+        },
+        {
+          "id": "REQ-5",
+          "statement": "Assess in-scope candidates from the supplied repository list for fit, integration, maturity, licensing, cost, and recommendation without adding unapproved integrations."
+        },
+        {
+          "id": "REQ-6",
+          "statement": "Treat agent_architect_ideas.md as a review-method brief rather than a prioritized proposal list; record a bounded and accurate architecture disposition."
+        },
+        {
+          "id": "REQ-7",
+          "statement": "Keep one tracking index for idea intake, active work, completion reports, and backlog; leave todos/in_progress empty at closure and classify unfinished work as backlog."
+        },
+        {
+          "id": "REQ-8",
+          "statement": "Preserve task_3 and harness_factory phase-1 source, tests, and canonical task ledger without task_4 edits."
+        }
+      ],
+      "revision": 4,
+      "semantic_model": {
+        "concepts": [
+          {
+            "id": "CONCEPT-CONTEXTOBS",
+            "identity": "One observation from one named source at one time.",
+            "kind": "observation",
+            "meaning": "A host-reported count, local estimate, or unknown value for active context at a time.",
+            "term": "Context observation"
+          },
+          {
+            "id": "CONCEPT-BUDGETSNAP",
+            "identity": "One provider window observation at one time.",
+            "kind": "observation",
+            "meaning": "Provider usage information with harness, window, source, and observation time.",
+            "term": "Harness budget snapshot"
+          },
+          {
+            "id": "CONCEPT-HANDOFF",
+            "identity": "One task attempt exchange.",
+            "kind": "exchange",
+            "meaning": "A versioned bounded exchange with producer, recipient, evidence, validation, and commit claims.",
+            "term": "Handoff envelope"
+          }
+        ],
+        "invariants": [
+          {
+            "concept_ids": [
+              "CONCEPT-CONTEXTOBS",
+              "CONCEPT-HANDOFF"
+            ],
+            "id": "INV-PHASESAFE",
+            "statement": "Compaction or session transfer is eligible only after a durable handoff at a safe phase boundary."
+          },
+          {
+            "concept_ids": [
+              "CONCEPT-HANDOFF"
+            ],
+            "id": "INV-EXCHANGEACCEPT",
+            "statement": "A queued or structurally parsed handoff is not proof of receipt or acceptance."
+          }
+        ],
+        "schema_version": 1,
+        "scope": "Portable context, budget, and handoff observations across agent harnesses.",
+        "unknowns": [
+          {
+            "id": "UNKNOWN-LIVETELEMETRY",
+            "owner": "orchestrator",
+            "question": "Which current context and provider usage fields does each host expose at the next phase boundary?"
+          }
+        ]
+      },
+      "status": "ready"
+    },
+    "stale_artifacts": [],
+    "status": "partial",
+    "task_events_ref": "docs/tasks-history/task_4.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-IMPLEMENT-MH-01",
+        "requirements": [
+          "REQ-1",
+          "REQ-2"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-IMPLEMENT-EXCHANGE-01",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-4"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-IMPLEMENT-MCPRUST-01",
+        "requirements": [
+          "REQ-4"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-IMPLEMENT-RESEARCH-01",
+        "requirements": [
+          "REQ-5"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-RESEARCH-CANDIDATES-01",
+        "requirements": [
+          "REQ-5"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-ARCH-TRACE-02",
+        "requirements": [
+          "REQ-6"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-IMPLEMENT-EXCHANGE-01"
+        ],
+        "id": "TASK-EXCHANGE-CORR-02",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-IMPLEMENT-MH-01"
+        ],
+        "id": "TASK-MH-DISTRIBUTION-02",
+        "requirements": [
+          "REQ-2"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-MANIFEST-SDD-CONTRACT-02",
+        "requirements": [
+          "REQ-3",
+          "REQ-8"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-VALIDATE-CLOSE-01"
+        ],
+        "id": "TASK-PLUGIN-SYNC-03",
+        "requirements": [
+          "REQ-7"
+        ],
+        "status": "stale"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7",
+          "AC-9"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-TRACK-CLOSE-01",
+        "requirements": [
+          "REQ-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-7",
+          "AC-9"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-EXCHANGE-CORR-02",
+          "TASK-MH-DISTRIBUTION-02",
+          "TASK-MANIFEST-SDD-CONTRACT-02"
+        ],
+        "id": "TASK-VALIDATE-CLOSE-01",
+        "requirements": [
+          "REQ-3",
+          "REQ-7"
+        ],
+        "status": "stale"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-8"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [],
+        "id": "TASK-PRESERVE-TASK3-01",
+        "requirements": [
+          "REQ-8"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-VALIDATE-CLOSE-01"
+        ],
+        "id": "TASK-REVIEW-CLOSE-02",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "stale"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-VALIDATE-CLOSE-01"
+        ],
+        "id": "TASK-QA-CLOSE-01",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-QA-CLOSE-01"
+        ],
+        "id": "TASK-REVIEW-CLOSE-01",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-MH-DISTRIBUTION-02"
+        ],
+        "id": "TASK-CLI-SMOKE-02",
+        "requirements": [
+          "REQ-2"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-MANIFEST-SDD-CONTRACT-02"
+        ],
+        "id": "TASK-SDD-EVIDENCE-CLOSE-01",
+        "requirements": [
+          "REQ-3",
+          "REQ-8"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-SDD-EVIDENCE-CLOSE-01"
+        ],
+        "id": "TASK-PLUGIN-SYNC-04",
+        "requirements": [
+          "REQ-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-7",
+          "AC-8",
+          "AC-9"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-SDD-EVIDENCE-CLOSE-01",
+          "TASK-PLUGIN-SYNC-04"
+        ],
+        "id": "TASK-VALIDATE-CLOSE-02",
+        "requirements": [
+          "REQ-3",
+          "REQ-7",
+          "REQ-8"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-VALIDATE-CLOSE-02"
+        ],
+        "id": "TASK-REVIEW-CLOSE-03",
+        "requirements": [
+          "REQ-3",
+          "REQ-8"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7",
+          "AC-9"
+        ],
+        "architecture_decisions": [
+          "ADR-CORE1"
+        ],
+        "depends_on": [
+          "TASK-VALIDATE-CLOSE-02",
+          "TASK-REVIEW-CLOSE-03"
+        ],
+        "id": "TASK-TRACK-CLOSE-02",
+        "requirements": [
+          "REQ-7"
+        ],
+        "status": "completed"
+      }
+    ],
+    "title": "Agentic Core context, harness routing, validated handoffs, and Rust MCP guidance",
+    "unrequested_material_changes": [],
+    "updated_at": "2026-09-27T07:30:33Z",
+    "validation_evidence": [
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2"
+        ],
+        "check": "multi-harness workflow package validation",
+        "command": "skill validator on multi-harness",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-MH1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "focused exchange and persistence regressions",
+        "command": "isolated assertions for merge paths, ordinary commit paths, required commit_shas, and invalid-event no-write behavior",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-EXCHANGE1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "check": "exchange JSON Schema and manifest compatibility",
+        "command": "Draft 2020-12 meta-validation and manifest-record validation for task_3 and task_4",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SCHEMA1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-4",
+          "AC-5"
+        ],
+        "check": "changed skill package validation",
+        "command": "package validator for multi-harness, context-management, orchestration, research, and plugin-engineering",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SKILLS1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "candidate feasibility evidence review",
+        "command": "review of the in-scope supplied candidates recorded in integration-feasibility.md",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-RESEARCH1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6"
+        ],
+        "check": "architecture source and disposition review",
+        "command": "compare source review brief with bounded architecture disposition",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-ARCH1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "targeted Ruff checks",
+        "command": "uvx ruff check on orchestration scripts and SDD state validator; format checks on changed scripts",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-RUFF1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7"
+        ],
+        "check": "installed plugin version and source parity",
+        "command": "Codex and Copilot plugin lists plus recursive source/cache diff excluding generated bytecode",
+        "environment": "Codex and Copilot local plugin installations",
+        "id": "EVIDENCE-PLUGIN1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7",
+          "AC-9"
+        ],
+        "check": "tracking closure check",
+        "command": "find todos/in_progress -type f returned no paths; todo index and reports linked",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-TRACK1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-8"
+        ],
+        "check": "task_3 scope preservation",
+        "command": "task_4 changed-file scope and task ledger review; no task_3 or harness_factory path was edited",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-PRESERVE1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "bounded independent read-only review",
+        "command": "ephemeral read-only Codex CLI review of changed schema, scripts, contracts, and workflows",
+        "environment": "Codex CLI ephemeral read-only session",
+        "id": "EVIDENCE-REVIEW1",
+        "producer": "codex-cli-review",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "custom QA role availability",
+        "command": "host rejected quality-assurance agent type; local checks are not an independent QA verdict",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-QABLOCK1",
+        "producer": "orchestrator",
+        "result": "blocked",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "check": "Copilot cross-harness smoke",
+        "command": "Copilot CLI reported monthly quota exhausted before a model response; no retry or account change",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-COPILOTBLOCK1",
+        "producer": "orchestrator",
+        "result": "blocked",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "check": "bounded SDD manifest-contract review",
+        "command": "Review identified three actionable SDD evidence/schema gaps; local corrections are applied, with follow-up review pending.",
+        "environment": "ephemeral Codex CLI read-only invocation",
+        "id": "EVIDENCE-CODEX-FINDINGS1",
+        "producer": "codex-cli-review",
+        "result": "partial",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.2-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-4",
+          "AC-5"
+        ],
+        "check": "Changed skill package validation",
+        "command": "Agentic create-skill validator passed for multi-harness, context-management, orchestration, plugin-engineering, and research; existing optional-reference/tool-marker warnings remain.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SKILLS-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "Exchange behavior and schema validation",
+        "command": "Focused exchange checks plus Draft 2020-12 meta-validation passed; task_3 and task_4 manifest-record envelopes validated.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-EXCHANGE-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "check": "SDD contract and task_3 compatibility",
+        "command": "Final manifest schema and SDD validator accepted task_4 state; task_3 manifest passed updated outer exchange schema without task_3 edits.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SCHEMA-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "check": "SDD evidence safeguards regression checks",
+        "command": "Blocked evidence exclusion, missing revisions/references, completed-task criterion coverage, partial QA coverage, and existing_evidence schema behavior passed targeted assertions.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SDD-FIX1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-7",
+          "AC-8",
+          "AC-9"
+        ],
+        "check": "Canonical SDD closure validation",
+        "command": "Final task_4 manifest passed SDD validation, traceability coverage, and exchange-envelope validation after plugin synchronization.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-SDD-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "Python lint and format checks",
+        "command": "uvx ruff check and uvx ruff format --check passed for orchestrator.py, validate_exchange.py, and validate_sdd_state.py.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-RUFF-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Candidate feasibility report review",
+        "command": "Completed feasibility report covers the in-scope supplied candidates and excludes the user-specified subjects.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-RESEARCH-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6"
+        ],
+        "check": "Architecture input disposition",
+        "command": "Supplied architecture file is recorded as a review brief; disposition and architecture-r3 decision match its scope.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-ARCH-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7"
+        ],
+        "check": "Installed plugin version and source parity",
+        "command": "Codex and Copilot report agentic-core 0.3.3 enabled; installed trees match source excluding generated Python bytecode.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-PLUGIN-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-7",
+          "AC-9"
+        ],
+        "check": "Tracking closure check",
+        "command": "Todo index links final report and plan r5; todos/in_progress is absent and empty; blocked follow-ups remain in backlog.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-TRACK-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-8"
+        ],
+        "check": "Parallel task preservation",
+        "command": "Task_4 writes did not target task_3 source or canonical ledger; task_3 manifest-record validation passed.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-PRESERVE-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3",
+          "AC-8"
+        ],
+        "check": "Final bounded read-only review",
+        "command": "Ephemeral Codex review reported no actionable finding in final SDD safeguards; reviewer execution was sandbox-blocked and local regressions were run separately.",
+        "environment": "local workspace; isolated uv environment",
+        "id": "EVIDENCE-REVIEW-FINAL1",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 4,
+        "subject_revision": "agentic-core-0.3.3-source"
+      }
+    ]
+  },
+  "status": "partial",
+  "task_id": "task_4",
+  "updated_at": "2026-09-27T07:30:33Z"
+}

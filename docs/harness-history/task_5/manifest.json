@@ -1,0 +1,1043 @@
+{
+  "manifest": {
+    "architecture_ref": {
+      "path": "docs/harness-history/task_5/architecture-skill-topology-r6.md",
+      "revision": 6
+    },
+    "base_revision": "5c6dcd401e9a0d115e79c19f02de96ffed694686",
+    "convergence": {
+      "status": "gaps_found"
+    },
+    "description": "Preserve 11 domain skill entrypoints with complete nested workflow subskills, verify Codex agents/MCP and reconcile todos before resuming cost-eval-opt.",
+    "id": "task_5",
+    "implementation": {
+      "evidence": [
+        "EVIDENCE-CODEX-AGENT-INSTALL",
+        "EVIDENCE-CODEX-QA-ROLE-LOAD",
+        "EVIDENCE-CODEX-SEM-GREP",
+        "EVIDENCE-ARCH-SKILL-TOPOLOGY",
+        "EVIDENCE-ALL-33-SOURCE-COMPARISONS-20260927-R1",
+        "EVIDENCE-TOPOLOGY-SOURCE-CACHE-DISTINCTION-20260927-R1",
+        "EVIDENCE-MANIFEST-SCHEMA-FIX-20260927-R1",
+        "EVIDENCE-CODEX-PLUGIN-REINSTALL-20260927-R1",
+        "EVIDENCE-CODEX-FRESH-SKILL-LOAD-20260927-R1",
+        "EVIDENCE-CODEX-ROLE-DISPATCH-SURFACE-20260927-R1"
+      ],
+      "status": "in_progress"
+    },
+    "lifecycle": {
+      "branch": null,
+      "cleanup": "not_requested",
+      "commit_reason": "No commit was authorized; preserve the shared worktree state.",
+      "commit_shas": [],
+      "commit_status": "not_created",
+      "pull_request": null,
+      "worktree": null
+    },
+    "open_blockers": [
+      {
+        "evidence": "EVIDENCE-GITHUB-MCP-READONLY-HANDSHAKE-20260927-R1 records the stdio --read-only initialize/tools-list exchange. The user confirms the normal workspace server is configured in .vscode/mcp.json and is running. The separate smoke from /tmp did not load that workspace configuration and does not indicate a workspace MCP failure.",
+        "id": "BLOCKER-GITHUB-MCP-ENV",
+        "next_action": "No further workspace MCP startup action. Keep .vscode/mcp.json as the workspace launcher configuration.",
+        "owner": "orchestrator",
+        "reason": "The prior read-only MCP handshake passed, and the user confirms the workspace GitHub MCP runs through .vscode/mcp.json. The /tmp Codex smoke tested a separate plugin MCP process, not the workspace MCP.",
+        "scope": "GitHub App MCP runtime only",
+        "status": "resolved"
+      },
+      {
+        "evidence": "EVIDENCE-CODEX-QA-ROLE-LOAD proves an earlier fresh Codex subagent process resolved the installed quality-assurance role, and the user reports VS Code agent selection works. The current conversation exposes no plugin-role dispatch surface; local codex exec --help has no --agent selector. This host did not invoke QA or Reviewer, and no unrelated system agent was substituted.",
+        "id": "BLOCKER-CUSTOM-AGENT-DELEGATION",
+        "next_action": "Use a Codex host surface that exposes the installed quality-assurance and reviewer roles, then record their actual handoffs.",
+        "owner": "orchestrator",
+        "reason": "The installed QA role itself has already loaded successfully in a separate Codex subagent process. The active conversation tool surface cannot dispatch that installed role, and codex exec offers no direct --agent selector; the plugin agent configuration is not the blocker.",
+        "scope": "Independent Quality Assurance and Reviewer invocation from this active conversation surface",
+        "status": "blocked"
+      }
+    ],
+    "plan_ref": {
+      "path": "docs/planner-history/task_5/plan-r10.md",
+      "revision": 10,
+      "spec_revision": 2,
+      "status": "approved"
+    },
+    "qa": {
+      "acceptance_criteria": [
+        "AC-1",
+        "AC-2",
+        "AC-5"
+      ],
+      "status": "blocked",
+      "validation_evidence_refs": []
+    },
+    "required_gates": [
+      "implementation",
+      "validation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-1",
+        "AC-5",
+        "AC-6"
+      ],
+      "status": "blocked",
+      "validation_evidence_refs": []
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "codex-agent-projection-and-installation",
+      "workflow-skill-topology-architecture-and-migration",
+      "workflow-skill-topology",
+      "mcp-authoring-deduplication",
+      "temporary-plugin-artifact-cleanup",
+      "same-harness-session-coordination",
+      "dual-host-package-refresh-and-verification",
+      "todo-audit-and-convergence"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "task_3 cost-eval-opt implementation",
+        "reason": "A separate Codex session owns task_3 and its canonical files; resume only after this cleanup handoff."
+      },
+      {
+        "phase": "message to the task_3 session",
+        "reason": "The attached session note documents a prior test and does not authorize a new message."
+      },
+      {
+        "phase": "Copilot runtime call",
+        "reason": "Not required for local Codex agent installation and would consume scarce Copilot quota."
+      },
+      {
+        "phase": "Git commit or cleanup",
+        "reason": "No commit/reset/clean action was authorized; preserve the shared dirty worktree."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-1",
+          "requirements": [
+            "REQ-1"
+          ],
+          "statement": "Exactly 11 top-level domain skills route to 59 current complete workflow subskills under their owning workflows/ directories; no workflow subskill is packaged as an independent top-level skill."
+        },
+        {
+          "id": "AC-2",
+          "requirements": [
+            "REQ-2"
+          ],
+          "statement": "The generic MCP and Rust rmcp authoring skills pass validation and share common rules without duplicated procedures."
+        },
+        {
+          "id": "AC-3",
+          "requirements": [
+            "REQ-3"
+          ],
+          "statement": "No unowned temporary routing artifacts remain in the plugin source or target output."
+        },
+        {
+          "id": "AC-4",
+          "requirements": [
+            "REQ-4"
+          ],
+          "statement": "Same-harness session coordination is documented and does not authorize outbound messages by itself."
+        },
+        {
+          "id": "AC-5",
+          "requirements": [
+            "REQ-5"
+          ],
+          "statement": "The plugin is enabled and nine Codex custom-agent TOMLs are valid, installed in the active Codex agent directory, and loadable after a fresh process reload or precisely blocked."
+        },
+        {
+          "id": "AC-6",
+          "requirements": [
+            "REQ-6"
+          ],
+          "statement": "The todo index matches the current ledgers and reports; task_3 remains unchanged and cost-eval-opt remains a separate follow-on."
+        }
+      ],
+      "constraints": [
+        "Do not edit task_3 canonical files or harness_factory.",
+        "Do not send or queue a message to another session without explicit authorization.",
+        "Do not inspect credentials or perform Git lifecycle actions.",
+        "Use the existing Codex projection adapter rather than adding a competing converter.",
+        "Do not run costly behavioral evaluation during cleanup."
+      ],
+      "id": "SPEC-AGENTIC-CORE-NORMALIZATION",
+      "non_goals": [
+        "Completing the cost-eval-opt behavioral evaluation in task_3.",
+        "Changing plugin role semantics or GitHub authorization.",
+        "Migrating unrelated workspace files or removing unrelated generated caches."
+      ],
+      "objective": "Normalize agentic-core and workspace tracking while preserving 11 domain skills and their complete nested workflow subskills; verify the full Codex installation before resuming the separate cost-eval-opt task.",
+      "path": "todos/in_progress/2026-09-27/agentic-core-normalization.md",
+      "requirements": [
+        {
+          "id": "REQ-1",
+          "statement": "Keep 11 domain expertise packages as the only top-level skills. Their complete subdomain procedures remain under workflows/ and are selected through two-stage domain-to-subskill disclosure; workflows are not separate Agent Skill packages."
+        },
+        {
+          "id": "REQ-2",
+          "statement": "MCP authoring skills are complementary, validated, and non-duplicative."
+        },
+        {
+          "id": "REQ-3",
+          "statement": "Stale generated plugin scratch artifacts are removed only after proving no consumer depends on them."
+        },
+        {
+          "id": "REQ-4",
+          "statement": "Same-harness session coordination distinguishes status, authorization, queue acceptance, consumption, reply, and bounded handoff."
+        },
+        {
+          "id": "REQ-5",
+          "statement": "The native Codex plugin supplies its supported skills and MCP components, and all nine custom agents are projected and installed under CODEX_HOME/agents using the existing adapter."
+        },
+        {
+          "id": "REQ-6",
+          "statement": "Todo indices link accurately to active work, completed reports, blocked inputs, and backlog while task_3 remains untouched."
+        }
+      ],
+      "revision": 2,
+      "status": "ready"
+    },
+    "status": "partial",
+    "task_events_ref": "docs/tasks-history/task_5.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "id": "TASK-5-01",
+        "requirements": [
+          "REQ-5"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "architecture_decisions": [
+          "ADR-ACN-001"
+        ],
+        "id": "TASK-5-02",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "depends_on": [
+          "TASK-5-02"
+        ],
+        "id": "TASK-5-03",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "in_progress"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "architecture_decisions": [
+          "ADR-ACN-004"
+        ],
+        "depends_on": [
+          "TASK-5-02"
+        ],
+        "id": "TASK-5-03E",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "depends_on": [
+          "TASK-5-02"
+        ],
+        "id": "TASK-5-03A",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "stale"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "depends_on": [
+          "TASK-5-02"
+        ],
+        "id": "TASK-5-03A-R10",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "depends_on": [
+          "TASK-5-03A-R10"
+        ],
+        "id": "TASK-5-03B",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "depends_on": [
+          "TASK-5-03B",
+          "TASK-5-05B",
+          "TASK-5-06"
+        ],
+        "id": "TASK-5-03C",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-4"
+        ],
+        "depends_on": [
+          "TASK-5-03A-R10",
+          "TASK-5-03B",
+          "TASK-5-03C",
+          "TASK-5-05B",
+          "TASK-5-06"
+        ],
+        "id": "TASK-5-03D",
+        "requirements": [
+          "REQ-1",
+          "REQ-2",
+          "REQ-4"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "id": "TASK-5-04",
+        "requirements": [
+          "REQ-3"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "depends_on": [
+          "TASK-5-05B"
+        ],
+        "id": "TASK-5-05",
+        "requirements": [
+          "REQ-2"
+        ],
+        "status": "in_progress"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "architecture_decisions": [
+          "ADR-ACN-003"
+        ],
+        "depends_on": [
+          "TASK-5-02"
+        ],
+        "id": "TASK-5-05A",
+        "requirements": [
+          "REQ-2"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "depends_on": [
+          "TASK-5-03A-R10",
+          "TASK-5-05A"
+        ],
+        "id": "TASK-5-05B",
+        "requirements": [
+          "REQ-2"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-4"
+        ],
+        "depends_on": [
+          "TASK-5-03A-R10"
+        ],
+        "id": "TASK-5-06",
+        "requirements": [
+          "REQ-4"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "depends_on": [
+          "TASK-5-03D",
+          "TASK-5-04",
+          "TASK-5-05",
+          "TASK-5-06"
+        ],
+        "id": "TASK-5-07",
+        "requirements": [
+          "REQ-5"
+        ],
+        "status": "in_progress"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6"
+        ],
+        "depends_on": [
+          "TASK-5-07"
+        ],
+        "id": "TASK-5-08",
+        "requirements": [
+          "REQ-6"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "id": "TASK-5-03H",
+        "requirements": [
+          "REQ-1"
+        ],
+        "status": "completed"
+      }
+    ],
+    "title": "Agentic Core normalization and complete Codex installation",
+    "updated_at": "2026-09-27T16:14:30Z",
+    "validation_evidence": [
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-4"
+        ],
+        "check": "Plugin Planner decomposition and Orchestrator-checked 57-method migration source map",
+        "command": "Read-only custom Planner handoff through a fresh Codex process; compare all routed workflow IDs against the pre-migration source tree",
+        "environment": "Codex CLI 0.157.1; planner role installed under CODEX_HOME/agents; agentic-core source",
+        "id": "EVIDENCE-TASK-5-PLANNER-PLAN",
+        "producer": "agentic-core planner role and root Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "plan-r4 and workflow-skill-source-map in task_5"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2"
+        ],
+        "check": "Read-only Architect review preserving explicit peer-skill composition while maintaining two-stage taxonomy",
+        "command": "Inspect existing MCP and research composition, then encode ADR-ACN-004 and typed route edge rules",
+        "environment": "Codex CLI 0.157.1; architect role installed under CODEX_HOME/agents; Codex and Copilot Agent Plugins documentation",
+        "id": "EVIDENCE-PEER-SKILL-COMPOSITION",
+        "producer": "agentic-core architect role and root Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "architecture-skill-topology-r3 and plan-r7 in task_5"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2"
+        ],
+        "check": "Read-only Architect decision on the single canonical MCP support reference and bounded linter exception",
+        "command": "Custom Architect role inspected peer package, linter, and materializer contracts; root adopted ADR-ACN-003",
+        "environment": "Codex CLI 0.157.1; architect role installed under CODEX_HOME/agents; agentic-core source",
+        "id": "EVIDENCE-MCP-SHARED-REF-ARCH",
+        "producer": "agentic-core architect role and root Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "architecture-skill-topology-r2 and plan-r5 in task_5"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-3"
+        ],
+        "check": "Remove plugin-local generated route scratch and bytecode after confirming no runtime consumer",
+        "command": "source search for readers/generators followed by targeted removal; verify no .workflow-routes.tmp or agentic-core __pycache__ remains",
+        "environment": "agentic-core source tree",
+        "id": "EVIDENCE-PLUGIN-SCRATCH-CLEANUP",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "agentic-core plugin source during task_5"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Install and drift check for the nine canonical Codex custom-agent roles",
+        "command": "uv run --python .venv/bin/python scripts/install_codex_agents.py && uv run --python .venv/bin/python scripts/install_codex_agents.py --check",
+        "environment": "Codex CLI 0.157.1; uv 0.11.11; project Python 3.12 virtual environment",
+        "id": "EVIDENCE-CODEX-AGENT-INSTALL",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "Current uncommitted Codex renderer and installer in the task_5 worktree"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Compare Agent Plugins 1.0 skill discovery rules across Codex and Copilot and inspect the current source validators",
+        "command": "Context7 /openai/codex loader lookup; GitHub Docs Agent Plugins 1.0 plugin structure and CLI plugin reference; inspect tests/test_agentic_core_sources.py and skill_lint_core.py",
+        "environment": "Codex CLI 0.157.1; GitHub Copilot CLI 1.0.88; official product docs checked 2026-09-27",
+        "id": "EVIDENCE-ARCH-SKILL-TOPOLOGY",
+        "producer": "Architect role skill_topology and root Orchestrator using Context7",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "Current agentic-core 0.3.3 source and SPEC-AGENTIC-CORE-NORMALIZATION@1"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Start the installed quality-assurance role in a new Codex process",
+        "command": "codex exec --json ... spawn_agent(agent_name=qa_probe, agent_type=quality-assurance); child rollout 01a0e1f8-454f-7b20-8c19-00344ed4ef4d records agent_role=quality-assurance",
+        "environment": "Codex CLI 0.157.1; CODEX_HOME=/home/pm/.codex; read-only diagnostic session in /tmp",
+        "id": "EVIDENCE-CODEX-QA-ROLE-LOAD",
+        "producer": "root Orchestrator via Codex subagent runtime",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "/home/pm/.codex/agents/quality-assurance.toml and canonical agentic-core source"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Semgrep scan of Codex target renderer and agent installer",
+        "command": "mcp__semgrep__semgrep_scan on expertise/targets/codex.py and scripts/install_codex_agents.py",
+        "environment": "Semgrep MCP 1.177.0",
+        "id": "EVIDENCE-CODEX-SEM-GREP",
+        "producer": "agentic-core Semgrep MCP",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "Current uncommitted Codex renderer and installer in the task_5 worktree"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Initialize the plugin GitHub App MCP server",
+        "command": "Read-only environment-presence check and new Codex process startup; no credentials inspected",
+        "environment": "Codex CLI 0.157.1; Docker daemon ready; required app environment variables absent",
+        "id": "EVIDENCE-GITHUB-MCP-STARTUP",
+        "producer": "root Orchestrator",
+        "result": "blocked",
+        "spec_revision": 1,
+        "subject_revision": "agentic-core 0.3.3 mcp.json and runtime/mcp/github-app-stdio.sh"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Compare the latest user clarification with the canonical workflow template and workflow validator, then verify the source inventory after quarantining mistaken peer packages",
+        "command": "Read workflow-template.md and skill_lint_core.py; count direct-child domain SKILL.md files and nested workflow files",
+        "environment": "agentic-workflow workspace; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-TOPOLOGY-CORRECTION",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "architecture-skill-topology-r5 and workflow-subskill-inventory.md"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Run the canonical domain and nested workflow validator for every top-level domain package, then cross-check the 58-entry workflow inventory, source IDs, and absence of peer packages",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --script agentic-core/skills/plugin-engineering/references/create-skill/scripts/validate.py --skill-dir <each agentic-core/skills/<domain>>; inventory shell cross-check",
+        "environment": "agentic-workflow workspace; uv 0.11.11; 2026-09-27",
+        "id": "EVIDENCE-NESTED-WORKFLOW-VALIDATION",
+        "producer": "root Orchestrator using plugin quality-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "architecture-skill-topology-r5 and current nested workflow source tree"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-2",
+          "AC-4"
+        ],
+        "check": "Run the focused Agentic Core source tests after restoring the 11-domain topology and correcting stale assertions/references",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with pyyaml pytest tests/test_agentic_core_sources.py",
+        "environment": "agentic-workflow workspace; pytest 9.1.1; Python 3.12.13; uv tool environment",
+        "id": "EVIDENCE-AGENTIC-CORE-SOURCE-TESTS-R2",
+        "producer": "root Orchestrator using the plugin quality-engineering procedure",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "tests/test_agentic_core_sources.py verifies the 11-domain topology and excludes benchmark routing sentinels from live workflows"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Cross-check the live tree against the corrected nested subskill inventory, including the separately added ChatGPT handoff workflow",
+        "command": "Count 11 top-level SKILL.md files and 58 workflow files; compare inventory paths exactly with current sources; verify each domain entrypoint and workflow frontmatter ID",
+        "environment": "agentic-workflow workspace; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-INVENTORY-58",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "architecture-skill-topology-r5 and corrected workflow-subskill-inventory.md"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Run the canonical validator for each domain package and classify the remaining warnings after checking all 58 nested workflows",
+        "command": "For each agentic-core/skills/<domain>: PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with typer --with pyyaml python agentic-core/skills/plugin-engineering/references/create-skill/scripts/validate.py --skill-dir <domain>; count exit codes and warning/error diagnostics",
+        "environment": "agentic-workflow workspace; uvx Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-NESTED-WORKFLOW-VALIDATION-R2",
+        "producer": "root Orchestrator following the plugin quality-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "11 domain packages and 58 current nested workflows; all validators exit 0 with 71 warnings and no errors after removing six audited legacy source copies"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Search historical planning and handoff documents for peer-package instructions; label superseded artifacts and keep append-only event history unchanged",
+        "command": "rg -l -i 'peer method|peer skill|method skill|top-level skill package|separate skill package' docs/planner-history/task_5 docs/harness-history/task_5; inspect that only events.jsonl retains unannotated historical wording",
+        "environment": "agentic-workflow workspace; 2026-09-27",
+        "id": "EVIDENCE-STALE-PEER-TOPOLOGY-GUARD-R1",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "historical plan revisions and handoffs; current source of truth remains plan r9 and architecture r5"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Remove the benchmark-only missing routing sentinel from the live verification-loop subskill and guard against regression",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with pyyaml pytest tests/test_agentic_core_sources.py; search agentic-core/skills/*/workflows for __routing_probe__.md",
+        "environment": "agentic-workflow workspace; pytest 9.1.1; Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-ROUTING-SENTINEL-REMOVED-R1",
+        "producer": "root Orchestrator following the plugin skill-maintenance workflow",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "operations/workflows/verification-loop.md and tests/test_agentic_core_sources.py; 15 focused source tests pass"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Classify remaining unreferenced method-source and package-support warnings without deleting guidance before source-fidelity review",
+        "command": "Validate all 11 domain packages and count warnings by type; audit the original 43 method-source.md files against the 58 workflow inventory and identify non-1:1 source mappings",
+        "environment": "agentic-workflow workspace; uvx Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-LEGACY-METHOD-SOURCE-AUDIT-R1",
+        "producer": "root Orchestrator following plugin quality-engineering and skill-maintenance workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Six method-source.md copies removed after content reconciliation; 37 remain, 6 without same-named workflows, plus 23 other unreferenced support warnings; semantic review remains open"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Keep API design conventions as point-of-need knowledge and the complete contract/checklist method in the nested workflow, then validate the package",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with pyyaml pytest tests/test_agentic_core_sources.py; uvx --python 3.12 ruff check and ruff format --check tests/test_agentic_core_sources.py; validate.py --skill-dir agentic-core/skills/architecture",
+        "environment": "agentic-workflow workspace; pytest 9.1.1; Ruff; Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-API-DESIGN-WORKFLOW-REFERENCE-R1",
+        "producer": "root Orchestrator following the plugin skill-maintenance workflow",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "architecture/workflows/api-design.md and architecture/references/api-design/api-design-patterns.md; 16 focused source tests pass at this evidence point"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Restore the complete AIS challenge procedure while keeping seven lens descriptions and report presentation as point-of-need knowledge",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with pyyaml pytest tests/test_agentic_core_sources.py; uvx --python 3.12 ruff check and ruff format --check tests/test_agentic_core_sources.py; validate.py --skill-dir agentic-core/skills/architecture",
+        "environment": "agentic-workflow workspace; pytest 9.1.1; Ruff; Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-AIS-WORKFLOW-RECONCILIATION-R1",
+        "producer": "root Orchestrator following plugin skill-maintenance and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "architecture/workflows/architectural-immune-system.md and architecture/references/architectural-immune-system/lenses-and-report.md; legacy method source removed; 17 focused source tests pass"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Verify exactly 58 nested workflows have the required metadata, immediate placement, ordered procedure structure, and contained references under only 11 discoverable domain skill packages",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uvx --python 3.12 --with pyyaml pytest tests/test_agentic_core_sources.py; validate each agentic-core/skills/<domain> with the canonical validator; compare the sorted workflow inventory to source paths",
+        "environment": "agentic-workflow workspace; pytest 9.1.1; uvx Python 3.12.13; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-SUBSKILL-STRUCTURE-R1",
+        "producer": "root Orchestrator following plugin skill-maintenance and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "11 domain entrypoints, 58 nested workflows, 17 focused source tests; all validators exit 0 with 71 non-blocking warnings"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-2"
+        ],
+        "check": "Validate complementary nested MCP authoring procedures, one shared transport/security reference, Rust-specific rmcp guidance, and the real plugin workflow validator.",
+        "command": "18 focused source tests; canonical plugin-engineering package validator; validate_mcp.sh; Semgrep 1.177.0 on both changed shell launch/validation scripts; Context7 against official MCP 2025-11-25, GitHub MCP Server v1.12.2, and rmcp docs.",
+        "environment": "agentic-workflow source; agentic-core 0.3.3; Codex CLI 0.157.1",
+        "id": "EVIDENCE-MCP-COMPLEMENTARY-WORKFLOWS-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin workflows, Context7, and Semgrep MCP",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "plugin-engineering create-mcp/create-mcp-rust nested workflows and GitHub App stdio launcher"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5",
+          "AC-2"
+        ],
+        "check": "Start the pinned GitHub MCP App server in a fresh read-only process and verify MCP initialization and advertised tools.",
+        "command": "Launch runtime/mcp/github-app-stdio.sh with the user-provided app environment; exchange initialize, notifications/initialized, and tools/list; stop the process after the read-only listing. No PEM contents were read or emitted.",
+        "environment": "Docker 29.5.2; ghcr.io/github/github-mcp-server:v1.12.2; user-provided GitHub App runtime configuration",
+        "id": "EVIDENCE-GITHUB-MCP-READONLY-HANDSHAKE-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "agentic-core/mcp.json and runtime/mcp/github-app-stdio.sh; negotiated protocol 2025-11-25, listed 26 tools, no write-operation candidates"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-4"
+        ],
+        "check": "Document safe same-harness Codex session status and contact mechanics from current local CLI help and the supplied communication note.",
+        "command": "codex --version; codex queue --help; codex agents --help; 18 focused source tests; multi-harness package validator. No session was contacted or resumed.",
+        "environment": "Codex CLI 0.157.1; current agentic-core source",
+        "id": "EVIDENCE-SAME-HARNESS-SESSION-WORKFLOW-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "multi-harness/workflows/same-harness-session-coordination.md; user-source codex-session-communication.md"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Verify exact nested workflow inventory, metadata, ordered steps, contained references, and all domain package validators after adding same-harness coordination.",
+        "command": "18 focused source tests; compare 11 top-level SKILL.md files and 59 workflow paths with the canonical inventory; run all 11 package validators; Ruff check and format; git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12; uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-SUBSKILL-STRUCTURE-59-R1",
+        "producer": "root Orchestrator using agentic-core quality-engineering and skill-maintenance workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "11 domain entrypoints, 59 nested workflows; tests pass and all validators exit 0 with 70 warnings; source-fidelity audit remains open"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Reconcile the iterative retrieval, memory, and strategic compact method sources with their nested workflows while keeping persistence and host claims bounded.",
+        "command": "Compare three archived method sources with their workflow procedures; add source-preservation assertions; run 19 focused source tests, the context-management package validator, and all 11 domain validators.",
+        "environment": "agentic-workflow source; Python 3.12; uv; current agentic-core source",
+        "id": "EVIDENCE-CONTEXT-WORKFLOW-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using plugin skill-maintenance and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "context-management/workflows/{iterative-retrieval,memory,strategic-compact}.md; three archived method sources removed after reconciliation"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Revalidate the exact 11-domain/59-workflow topology and update warning counts after the context-management source audit.",
+        "command": "19 focused source tests; all 11 canonical domain validators; compare all workflow paths with workflow-subskill-inventory.md; Ruff check and format; git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12; uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-WORKFLOW-SUBSKILL-STRUCTURE-59-R2",
+        "producer": "root Orchestrator using agentic-core quality-engineering and skill-maintenance workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "11 domain entrypoints, 59 nested workflows; 19 focused tests pass, validators exit 0 with 64 warnings; 33 method-source and 20 support-file dispositions remain open"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Enforce the canonical skill body structure inside all nested workflow subskills while retaining only 11 domain entrypoints and the domain-to-selected-subskill disclosure path.",
+        "command": "uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (19 passed); canonical create-skill validate.py against all 11 domain packages (all exit 0, 64 non-blocking warnings); uv tool run --from ruff ruff check --ignore I001,UP037,TRY004,BLE001,PIE810 on changed Python files; Ruff format --check; git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-CANONICAL-SUBSKILL-BODY-STRUCTURE-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin skill-maintenance and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "workflow-template, skill-template, workflow-specific linter, source tests, architecture r6 and plan r10; 11 domain SKILL.md files and 59 nested subskills"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Reverify 11 discoverable domain skills, 59 nested subskills with canonical skill body structure, zero peer packages, and current authority over historical peer-package instructions.",
+        "command": "uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (22 passed); validate.py against all 11 domains (0 errors, 64 warnings); Ruff format --check; Ruff check ignoring five pre-existing baseline findings; git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-CURRENT-TOPOLOGY-REGRESSION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin engineering, orchestration, and quality engineering workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "plan r10 and architecture r6; 11 domain entrypoints, 59 nested subskills, zero peer SKILL.md packages; method-source-disposition-r1 maps 33 legacy sources and leaves semantic review open; eval-harness adds an enforceable pre-invocation model-call ceiling."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "For every one of the 11 domain skills, verify the router links to all and only immediate workflow subskills in its own workflows/ directory.",
+        "command": "uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (22 passed); router scan found exact linked/file equality for all 11 domains and all 59 workflows.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; 2026-09-27",
+        "id": "EVIDENCE-DOMAIN-ROUTER-COVERAGE-20260927-R1",
+        "producer": "root Orchestrator using agentic-core orchestration and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "11 parent domain routers link to exactly 59 owned nested workflow subskills; no peer workflow packages."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-4"
+        ],
+        "check": "Verify the local Codex CLI version and the non-contacting queue command contract for the same-harness session workflow.",
+        "command": "codex --version; codex queue --help. No codex queue invocation, session inspection, resume, or contact was performed.",
+        "environment": "Codex CLI 0.157.1; agentic-workflow source; 2026-09-27",
+        "id": "EVIDENCE-SAME-HARNESS-CLI-LOCAL-VERIFY-20260927-R1",
+        "producer": "root Orchestrator using agentic-core multi-harness and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "same-harness-session-coordination.md requires exact session identity, explicit user authorization, and does not treat queue acknowledgement as a reply."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Mark the stale TASK-5-03E peer-skill composition handoff as superseded by the current nested subskill contract and prevent it from becoming an active instruction.",
+        "command": "22 focused source tests; Ruff format/check; git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-HISTORICAL-PEER-HANDOFF-GUARD-20260927-R1",
+        "producer": "root Orchestrator using agentic-core orchestration and quality-engineering workflows",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "plan-r10 authority note, TASK-5-03E handoff banner, and source test guard; 11 domain entrypoints / 59 nested subskills / 0 peer packages."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Preserve the skill-shaped subskill definition while keeping discovery and routing at the 11 parent domain skills.",
+        "command": "uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (22 passed); plugin-engineering validate.py (passed with known warnings); Ruff check and format check; git diff --check; inventory 11 roots, 59 workflows, 0 nested SKILL.md files.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-SUBSKILL-STRUCTURE-CLARIFICATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "skill-maintenance now explicitly preserves immediate subskill metadata and canonical body structure without peer packages/global routes; independent QA and Reviewer remain open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Preserve the approved domain-modeling procedure while making SPEC.semantic_model canonical and keeping glossaries/ADRs as authorized supporting views.",
+        "command": "Reviewed the legacy domain-modeling source against semantic-modeling/SKILL.md, workflows/problem-space.md, and supporting references; uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (23 passed); semantic-modeling package validator passed with its execution-reference warning; Ruff check/format and git diff --check passed.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-DOMAIN-MODELING-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Restored all three domain ADR criteria in parent guidance and the authorized procedure; 1 of 33 source mappings reviewed, 32 remain; source disposition and independent QA remain open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Review the six legacy procedures that now map to multiple selected domain subskills and preserve their distinct ownership and method constraints.",
+        "command": "Reviewed all six one-to-many source mappings against their current parent and selected workflows; 23 focused source tests pass; relevant semantic-modeling and plugin-engineering package validators pass with known warnings; Ruff check/format and git diff --check pass.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-ONE-TO-MANY-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "6/6 one-to-many method-source mappings reviewed; domain-modeling ADR criteria restored; 27 one-to-one source reviews and independent QA/Reviewer remain open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Preserve the legacy static security checklist's CORS coverage while making wildcard and credential rules context-specific.",
+        "command": "Compared the security-review method source with the current workflow; consulted official MDN CORS guidance; ran 24 focused source tests, the security domain validator, Ruff check/format, and git diff --check.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; MDN CORS guide checked 2026-09-27",
+        "id": "EVIDENCE-SECURITY-REVIEW-CORS-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Restored an explicit CORS check for trusted origins, non-credentialed wildcard use, credentialed responses, cache variance, and authorization/CSRF boundaries; 1 of 27 one-to-one source mappings reviewed; independent QA remains open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Verify the spec-driven-development rewrite preserves its lifecycle/handoff contract while implementing the authorized risk-proportional required-gate behavior.",
+        "command": "Reviewed spec-driven-development method source, workflow, handoff-contract reference, convergence reference, and required_gates validator rules; existing 24 source tests pass and git diff --check passes.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; 2026-09-27",
+        "id": "EVIDENCE-SDD-RISK-PROPORTIONAL-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Risk-proportional required_gates is grounded in cost-eval-opt; selected Review requires QA, and current state/evidence/resume contracts remain in linked references. Two of 27 one-to-one mappings reviewed; 25 remain."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Reconcile the four Operations method-source removals with their current parent route and workflow procedures.",
+        "command": "Compared all four Git baseline method-source files with the current operations/SKILL.md and selected workflows; uv run --no-project --python 3.12 python tests/test_agentic_core_sources.py -v (25 passed); Operations package validator passed with known warnings; Ruff check/format and git diff --check passed.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-OPERATIONS-REMOVED-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Delivery, documentation sync, plugin installation, and verification-loop safety/evidence boundaries remain in the current subskills; all 10 removed wrappers now have disposition notes; all six one-to-many and three one-to-one source mappings are reviewed, with 24 current one-to-one reviews and independent QA still open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Verify the migrated hook-authoring method no longer treats one VS Code schema as universal and uses current host/version documentation.",
+        "command": "Compared create-hook method source and workflow; searched current official VS Code hook documentation; 25 focused source tests pass; plugin-engineering package validator, Ruff check/format, and git diff --check pass.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; VS Code official docs checked 2026-09-27",
+        "id": "EVIDENCE-CREATE-HOOK-CURRENT-DOCS-SOURCE-RECONCILIATION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering workflow",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Workflow requires host/version-specific event, input/output, command, and lifecycle validation; current VS Code docs distinguish Local, Copilot, and Codex hook implementations. Three of 27 one-to-one source mappings reviewed; 24 remain; independent QA is still open."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Verify the current domain-to-subskill topology and distinguish the stale Codex cache from discoverable skill packages.",
+        "command": "Source tests: 25 passed; source tree has 11 domain SKILL.md files, 59 immediate workflow subskills, and zero workflow SKILL.md files. Read-only cache inventory for agentic-core 0.3.3 has 11 domain SKILL.md files, 57 nested workflow files, and zero workflow SKILL.md files. Quality-engineering validator passes with known provenance/support warnings; Ruff check/format and git diff --check pass.",
+        "environment": "agentic-workflow source and /home/pm/.codex/plugins/cache/agentic-workflow-local/agentic-core/0.3.3; Python 3.12 via uv; 2026-09-27",
+        "id": "EVIDENCE-TOPOLOGY-SOURCE-CACHE-DISTINCTION-20260927-R1",
+        "producer": "root Orchestrator using agentic-core orchestration, plugin-engineering, and quality-engineering workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Snapshot before the authorized cache reinstall: nested subskills keep canonical skill body structure and workflow metadata, remain inside their domain package, and are selected through the domain router. The cache then had 11 domain packages and 57 nested workflows; two recent workflows were missing. The subsequent reinstall evidence records the refreshed 11+59 cache."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1"
+        ],
+        "check": "Compare every current legacy method source body with its current workflow counterpart or selected one-to-many subskills and record source disposition.",
+        "command": "Reviewed all six one-to-many and 27 one-to-one source mappings; all 11 domain package validators exited 0; focused source test suite passed (25); Ruff check/format and git diff --check passed.",
+        "environment": "agentic-workflow source; Python 3.12 via uv; Ruff; 2026-09-27",
+        "id": "EVIDENCE-ALL-33-SOURCE-COMPARISONS-20260927-R1",
+        "producer": "root Orchestrator using agentic-core plugin-engineering, orchestration, and quality-engineering workflows",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "Source semantic review is complete for all 33 retained method-source files; their provenance disposition is pending independent QA. Four removed Operations wrappers also have recorded evidence. Independent QA and Reviewer remain unrun because no custom-role dispatch tool is exposed here."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-6"
+        ],
+        "check": "Persist task_5 status and validation evidence under the canonical Orchestrator manifest schema.",
+        "command": "uv run --script agentic-core/skills/orchestration/references/orchestrate/scripts/orchestrator.py record-manifest --status in_progress --history-dir docs/harness-history --repo .; validate manifest-record schema.",
+        "environment": "agentic-workflow workspace; Python 3.12 via uv; 2026-09-27",
+        "id": "EVIDENCE-MANIFEST-SCHEMA-FIX-20260927-R1",
+        "producer": "root Orchestrator using agentic-core orchestration workflow",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "Moved the unsupported validation extension into validation_evidence, linked corrected r10 task IDs and states, and confirmed record-manifest accepts the persisted envelope."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-1",
+          "AC-5"
+        ],
+        "check": "Reinstall the user-approved local Agentic Core plugin and verify its nested subskills and Codex custom-agent projection.",
+        "command": "codex plugin remove --json agentic-core@agentic-workflow-local; codex plugin add --json agentic-core@agentic-workflow-local; codex plugin list --json; count cached SKILL.md/workflow files; uv run --no-project --python 3.12 python scripts/install_codex_agents.py --force; repeat with --check.",
+        "environment": "Codex CLI 0.157.1; local agentic-core source 0.3.3; Python 3.12 via uv; 2026-09-27",
+        "id": "EVIDENCE-CODEX-PLUGIN-REINSTALL-20260927-R1",
+        "producer": "root Orchestrator using agentic-core operations/install-agent-plugin and plugin-engineering agent-projection guidance",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "The enabled plugin cache now has 11 domain SKILL.md entrypoints, 59 workflow files, and zero peer workflow packages. The nine-file Codex agent projection is current; one stale orchestrator.toml was replaced after reviewing its sole difference. A fresh Codex process loaded the installed orchestration domain skill. The user confirms the separate workspace GitHub MCP in .vscode/mcp.json runs normally. Independent QA/Reviewer remain open because this host context exposes no custom-role dispatch."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Resolve the installed agentic-core orchestration skill in a fresh Codex process and identify its first routing step.",
+        "command": "Run a new Codex CLI process from /tmp with a prompt requesting the installed orchestration skill's first procedure; inspect the returned skill procedure.",
+        "environment": "Codex CLI 0.157.1; agentic-core@agentic-workflow-local 0.3.3; 2026-09-27",
+        "id": "EVIDENCE-CODEX-FRESH-SKILL-LOAD-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "A fresh Codex process loaded the installed agentic-core:orchestration domain skill and returned its Step 1 procedure. That process ran from /tmp, so it did not load the workspace MCP launcher in .vscode/mcp.json."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-5"
+        ],
+        "check": "Determine whether this active host can select an installed Codex custom role directly.",
+        "command": "Inspect available conversation tools and run codex exec --help; confirm the installed nine-agent projection with scripts/install_codex_agents.py --check.",
+        "environment": "Current Codex conversation; Codex CLI 0.157.1; CODEX_HOME=/home/pm/.codex; 2026-09-27",
+        "id": "EVIDENCE-CODEX-ROLE-DISPATCH-SURFACE-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "partial",
+        "spec_revision": 2,
+        "subject_revision": "All nine agent TOMLs are installed. A prior fresh Codex subagent process resolved quality-assurance (EVIDENCE-CODEX-QA-ROLE-LOAD), and the user reports VS Code selection works. This active conversation exposes no plugin-role dispatcher and codex exec --help has no --agent selector; QA and Reviewer could not be invoked here."
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6"
+        ],
+        "check": "Todo index and task ownership reconciliation",
+        "command": "Review todos/README.md, move the task_5 source brief and clarification to the dated done/source-inputs archive, retain partial QA/Reviewer work in backlog, and leave task_3 ownership unchanged.",
+        "environment": "Local repository worktree",
+        "id": "EVIDENCE-TASK-5-TODO-CONVERGENCE-20260927-R1",
+        "producer": "root Orchestrator",
+        "result": "pass",
+        "spec_revision": 2,
+        "subject_revision": "task_5 plan r10 and current workspace ownership checkpoint"
+      }
+    ]
+  },
+  "status": "partial",
+  "task_id": "task_5",
+  "updated_at": "2026-09-27T16:14:31Z"
+}
