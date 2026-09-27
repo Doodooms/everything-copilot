@@ -1,0 +1,1079 @@
+{
+  "manifest": {
+    "architecture": {
+      "decisions": [],
+      "status": "not_required"
+    },
+    "architecture_ref": null,
+    "base_revision": "5c6dcd401e9a0d115e79c19f02de96ffed694686",
+    "context_refs": [
+      {
+        "path": "todos/in_progress/2026-09-26/etat-et-plan-agentic-core.md",
+        "scope_note": "Current state note confirms the agentic-core backlog remains unfinished and identifies comparative flat/hierarchical evaluation as outstanding context. It contains historical repository revision details that differ from the live checkout; do not use it to override the observed task base or expand this phase.",
+        "sha256": "838be9d397bfae3f178bb356a6870e38481197e74863f9f51ccbdf29df6f53d9",
+        "status": "unfinished-context-current-revision"
+      },
+      {
+        "path": "todos/in_progress/2026-09-26/github-app-authorization-boundary.md",
+        "scope_note": "Separate authorization-boundary gap; no repository guessing or alternate tool path.",
+        "sha256": "09b8119330489f67bdaccfbf1dd056107ce27681e36b59660e9f1b478c79c1cf",
+        "status": "blocked-external-prerequisite"
+      },
+      {
+        "path": "todos/done/2026-09-26/github-mcp-read-access.md",
+        "scope_note": "Positive read only; does not prove the principal or denial boundary.",
+        "sha256": "b32359fb85583f14eebe6b42b35ab23d3fbed51afaa9766735e7c1a7edfe7751",
+        "status": "historical-positive-read-evidence"
+      },
+      {
+        "path": "todos/done/2026-09-26/harness-adapters-phase1.md",
+        "scope_note": "Reuse only after reconciling actual local files and validation evidence.",
+        "sha256": "82802ebdeb471bb39d8c585850fef131fc91b38cab2b94bbbdd07e18fc45d090",
+        "status": "historical-phase-1-report"
+      }
+    ],
+    "convergence": {
+      "status": "gaps_found"
+    },
+    "description": "Implement the cost-eval-opt phase: define harness-neutral behavioral suites, Codex-first budgeted execution, durable run artifacts, matched comparisons, and a bounded readiness report for later optimization.",
+    "handoffs": [
+      {
+        "agent_id": "planner",
+        "attempt_id": "planner-cost-1",
+        "changed_files": [],
+        "commit_shas": [],
+        "finished_at": "2026-09-26T21:52:04Z",
+        "host_status_evidence": {
+          "interrupt_agent_previous_status": "running",
+          "list_agents_after_interrupt": "interrupted"
+        },
+        "next_action": "Orchestrator will persist a minimal bounded plan under the parent instruction; do not infer plan completion from elapsed time.",
+        "objective_ref": "SPEC-COST-EVAL-OPT@1",
+        "plan_revision": 1,
+        "result": "No structured plan was returned before orchestration fallback.",
+        "scope": [
+          "phase sequencing",
+          "task DAG",
+          "validation and phase gates"
+        ],
+        "spec_revision": 1,
+        "started_at": "2026-09-26T21:44:56Z",
+        "status": "cancelled"
+      },
+      {
+        "agent_id": "implementer",
+        "attempt_id": "implementer-cost-1",
+        "budget": {
+          "copilot_max_model_calls": 0,
+          "max_failures_before_stop": 1,
+          "max_model_calls": 1,
+          "max_runs": 1,
+          "max_tokens_if_known": 25000
+        },
+        "changed_files": [
+          "harness_factory/suites.py",
+          "harness_factory/models.py"
+        ],
+        "commit_shas": [],
+        "constraint_update": {
+          "rule": "Do not add or run unit, regression, or validator tests. The only permitted run is the source-requested Codex smoke, maximum one run/call, 25000 known tokens, stop after one systemic failure, zero Copilot calls.",
+          "source": "orchestrator-parent",
+          "timestamp": "2026-09-26T22:20:58Z"
+        },
+        "constraints": [
+          "no transcripts",
+          "no recursive harness validation",
+          "no Copilot call without proven need and an explicit allowed reason",
+          "no branch/staging/commit/worktree/PR/cleanup",
+          "preserve the five input documents and dirty local work",
+          "Use the native Agent Plugin path; Codex marketplace registration/setup is parent-owned.",
+          "Do not edit Codex user configuration or run a full agentic-core smoke/model evaluation while its Context7 and Semgrep MCP servers cannot be disabled."
+        ],
+        "deviation_correction_at": "2026-09-26T22:21:57Z",
+        "finished_at": "2026-09-26T22:20:58Z",
+        "next_action": "Resume TASK-COST-01 under plan r2; complete bounded implementation and one eligible fixture-only smoke, then return exact evidence.",
+        "plan_revision": 1,
+        "progress": {
+          "baseline_inventory": {
+            "old_vs_risk_proportional_machine_readable": "not found; only prose in planner/manifest/architecture records",
+            "skillopt_artifacts": "present under outputs/ but not confirmed as matched flat-vs-hierarchical baselines"
+          },
+          "changed_files": [
+            "harness_factory/suites.py",
+            "harness_factory/models.py"
+          ],
+          "copilot_calls": 0,
+          "external_harness_runs": 0,
+          "model_calls": 0,
+          "next_action": "Implement TASK-COST-01 and avoid inventing historical comparisons.",
+          "other_files": "Implementer correction: models.py observation-list fields/validation were also added in attempt 1; adapters.py patch failed without edits.",
+          "resume_point": "Preserve suites.py; resume under approved plan r2 and continue sequentially through TASK-COST-05.",
+          "static_validation": "not completed",
+          "status": "partial",
+          "temporary_test_file": "tests/test_cost_eval.py was removed before execution; path verified absent."
+        },
+        "scope": [
+          "harness_factory/",
+          "tests/test_harness_factory.py",
+          "one new focused test file if needed",
+          "agentic-core/runtime/pluginctl/cli.py and tests only if wrapper is retained",
+          "experiments/harness-evals/",
+          "outputs/evals/"
+        ],
+        "spec_revision": 1,
+        "started_at": "2026-09-26T22:01:08Z",
+        "status": "partial",
+        "task_ids": [
+          "TASK-COST-01",
+          "TASK-COST-02",
+          "TASK-COST-03",
+          "TASK-COST-04",
+          "TASK-COST-05"
+        ]
+      },
+      {
+        "agent_id": "implementer",
+        "attempt_id": "implementer-cost-2",
+        "budget": {
+          "copilot_max_model_calls": 0,
+          "max_failures_before_stop": 1,
+          "max_model_calls": 1,
+          "max_runs": 1,
+          "max_tokens_if_known": 25000
+        },
+        "carried_forward_changes": [
+          "harness_factory/suites.py",
+          "harness_factory/models.py"
+        ],
+        "changed_files": [
+          "harness_factory/__init__.py",
+          "harness_factory/adapters.py",
+          "harness_factory/cli.py",
+          "harness_factory/evaluation.py",
+          "harness_factory/models.py",
+          "harness_factory/suites.py",
+          "experiments/harness-evals/README.md",
+          "experiments/harness-evals/agentic-core-v0.2.0/suite.json",
+          "experiments/harness-evals/agentic-core-v0.2.0/profile.json",
+          "outputs/evals/baseline-inventory-r7.json"
+        ],
+        "commit_shas": [],
+        "constraints": [
+          "no unit, regression, or validator test edits or executions",
+          "one Codex model invocation maximum only if a single provider-call limit is enforceable; otherwise keep the smoke blocked before invocation",
+          "use normally configured codex exec with no --ignore-user-config to load installed agentic-core@0.2.0 from shared cache",
+          "use the current multi-harness skill and Codex workflow; preserve the verified skill source/cache hashes",
+          "cache mcp.json declares Context7, github-mcp-server, and Semgrep; never invoke GitHub, Context7, Semgrep, or any other MCP/tool in this smoke",
+          "do not treat codex plugin list -c overrides or debug prompt-input absence of MCP tools as proof of effective plugin/MCP isolation",
+          "if plugin isolation and a one-provider-call bound cannot be enforced, record blocked before model invocation and do not retry",
+          "zero Copilot calls, no delegation, no transcripts, no recursive validation",
+          "preserve the five input documents and all existing user changes; do not attribute the untracked tests/test_harness_factory.py or other shared files without evidence",
+          "no delivery branch/worktree, manual Git lifecycle, staging, cherry-pick, commit, PR, merge, or manual cleanup; only HarnessRunManager may manage its exact marked smoke workspace"
+        ],
+        "dispatched_at": "2026-09-26T22:21:25Z",
+        "expected_return": [
+          "status and exact changed_files; distinguish task-owned changes from pre-existing/user-owned files",
+          "commit_shas: [] because commits are prohibited",
+          "static validation evidence only; no test commands",
+          "TASK-COST-04 suite/profile/baseline evidence including explicit AC-COST-3 gap if no matched pair exists",
+          "smoke remains blocked before model invocation unless isolation and one-provider-call bounds are enforceable; if reached, exact command, budget, run-manager workspace/marker/cleanup, and event call-count evidence",
+          "no Copilot or MCP tool invocation; user-reported MCP tester evidence remains attributed to the user",
+          "risks, deviations, and next action"
+        ],
+        "final_handoff": {
+          "artifact_sha256": {
+            "experiments/harness-evals/README.md": "e00bef128d84baaf0b1eacd7a0fe236f05a8ca8b391696a25dce33e5670a53e5",
+            "experiments/harness-evals/agentic-core-v0.2.0/profile.json": "abf25187be3fd990a9c3d606eb77cd88db7398c50636cb6284de15d51d97de01",
+            "experiments/harness-evals/agentic-core-v0.2.0/suite.json": "e2c4f64a5ba99ca90db55cd4a0db7727e3d35ede5e9c2fcf36157af0d4d0e9e9",
+            "outputs/evals/baseline-inventory-r7.json": "85a9b78c414fde0365975859e2dafdaad9047a298f893ce3bb374053119ecb0a"
+          },
+          "copilot_calls": 0,
+          "mcp_invocations": 0,
+          "model_calls": 0,
+          "runs": 0,
+          "scope_task_ids": [
+            "TASK-COST-02",
+            "TASK-COST-04"
+          ],
+          "source_mode_external": "Valid generic variant path according to Implementer; current materialization uses --ignore-user-config and is not evidence for the installed shared-cache smoke under r7.",
+          "status": "partial",
+          "task02": "Fail-closed patch statically reported; root closure/acceptance pending. Current adapters refuse pre-invoke because provider cap cannot be enforced; model_calls unknown after a future invocation unless reported. No claim AC-COST-4 complete.",
+          "task04": "Nine-category suite and external profile/inventory artifacts present; partial because no matched historical baseline pair and the external profile does not prove the r7 native-cache smoke path.",
+          "task05": "blocked before invocation; no run/model/MCP/Copilot calls.",
+          "tests_run": [],
+          "validation": {
+            "normal_ruff": "two inherited TRY004 findings in models.py:148,155",
+            "ruff_format": "passed __init__.py/evaluation.py/suites.py; inherited format diffs in adapters.py/cli.py/models.py left untouched",
+            "ruff_ignore_try004": "passed on six harness_factory modules",
+            "smoke_run": false,
+            "tests_added_or_run": false
+          }
+        },
+        "finished_at": "2026-09-26T23:46:22Z",
+        "forbidden_paths": [
+          "tests/",
+          "the five input documents",
+          "unrelated source/tests/backlog",
+          "transcripts or conversation dumps"
+        ],
+        "next_action": "Root to review the fail-closed budget correction and decide TASK-COST-02 closure; keep TASK-COST-04 partial with baseline/profile limitations and TASK-COST-05 blocked. Do not enter QA/reviewer/convergence until root reconciles scope.",
+        "plan_revision": 7,
+        "progress": {
+          "active_task": "root_review_pending_TASK-COST-02",
+          "baseline_inventory": {
+            "command": "rg -n -i -g '*.json' -g '*.jsonl' -g '*.yaml' -g '*.yml' '(flat|hierarch|risk.proportional|old.?routing|new.?routing|baseline)' outputs",
+            "result": "Implementer reports no matched flat/hierarchical pair; only unrelated SkillOpt summary baseline fields."
+          },
+          "budget_fix_progress": {
+            "changed_files_reported": [
+              "harness_factory/models.py",
+              "harness_factory/adapters.py",
+              "harness_factory/cli.py",
+              "harness_factory/evaluation.py",
+              "experiments/harness-evals/README.md"
+            ],
+            "decision": "Current adapters do not enforce/measure the provider model-call cap. run_suite will fail before invoke with `provider model-call limit cannot be enforced by the selected harness`, recording zero invocations/calls. After any future allowed invocation, actual provider model_calls remain unknown unless usage is explicitly reported; harness_invocations is separate.",
+            "smoke_run": false,
+            "status": "in_progress",
+            "tests_run": false,
+            "validation": "static inspection/Ruff pending"
+          },
+          "changed_files": [
+            "harness_factory/suites.py",
+            "harness_factory/models.py",
+            "harness_factory/adapters.py",
+            "harness_factory/evaluation.py",
+            "harness_factory/cli.py",
+            "harness_factory/__init__.py"
+          ],
+          "command_frozen": false,
+          "completed_task_ids": [
+            "TASK-COST-01",
+            "TASK-COST-03"
+          ],
+          "fixtures_or_outputs_written": false,
+          "mcp_call_scope": "No MCP invocation. Smoke blocked before model invocation because codex exec exposes neither a tool allowlist nor a provider-call/turn cap.",
+          "mcp_inventory": {
+            "base_revision": [
+              "context7",
+              "semgrep"
+            ],
+            "dirty_worktree": [
+              "context7",
+              "github-mcp-server",
+              "semgrep"
+            ],
+            "github_invoked": false
+          },
+          "plan_revision": 7,
+          "plugin_cache": {
+            "cache_path": "/home/pm/.codex/plugins/cache/agentic-workflow-local/agentic-core/0.2.0",
+            "mcp_servers_declared": [
+              "context7",
+              "github-mcp-server",
+              "semgrep"
+            ],
+            "multi_harness_skill_sha256": {
+              "skills/multi-harness/SKILL.md": "72330f25c58e6a99f235a3ad459c3caac4e8ab9fd297884f01bdf73042d2ba46",
+              "skills/multi-harness/workflows/codex.md": "2c204f19efbc4d249e4beac175c4c3e591a7faca0e5363ea1e2688972a8aca29",
+              "skills/multi-harness/workflows/copilot.md": "2dc39d384848e99ba067d2e13bdab43b2e5ca114000bfa85f5d96adbe65da028"
+            },
+            "plugin_id": "agentic-core@agentic-workflow-local",
+            "version": "0.2.0"
+          },
+          "plugin_isolation_preflight": {
+            "codex_debug_prompt_input": "Parent reports the new process discovers agentic-core:multi-harness from cache but does not list MCP tools; absence is not proof of isolation.",
+            "codex_exec_help": "Parent reports no tool allowlist or provider-call/turn cap.",
+            "process_override_probe": "Read-only codex plugin list with -c overrides still reports other installed plugins enabled; does not prove effective session isolation.",
+            "result": "blocked before model invocation unless enforceable isolation and one-call bound can be established"
+          },
+          "remaining_task_ids": [
+            "TASK-COST-02",
+            "TASK-COST-04",
+            "TASK-COST-05"
+          ],
+          "reported_dependency_gate": "TASK-COST-01 static exit not yet established; reconcile before advancing task ledger to TASK-COST-02.",
+          "review_findings_open": [
+            {
+              "acceptance_criteria": [
+                "AC-COST-4"
+              ],
+              "finding": "usage.model_calls counts adapter invocations in run_suite, not provider calls; model_turns becomes observable only after codex exec and cannot enforce max_model_calls before launch.",
+              "id": "FIND-COST-BUDGET-01",
+              "owner": "implementer-cost-2",
+              "requested_resolution": "Fail closed before launch when the provider-call cap cannot be guaranteed, or preserve an explicit unknown provider-call measurement and report AC-COST-4 unmet; do not claim the configured budget is enforced.",
+              "resolution_reported": "run_suite checks model_call_limit_enforced before invoke; current adapters false and fail closed; provider model_calls unknown after any future invocation unless exact usage is reported; harness_invocations tracked separately.",
+              "status": "corrected_pending_root_review"
+            }
+          ],
+          "ruff_static": {
+            "format": "inherited formatting differences in adapters.py, cli.py, models.py; no full formatter run",
+            "targeted": "only two carried-forward TRY004 findings in models.py:148,155 remain"
+          },
+          "smoke": {
+            "copilot_calls": 0,
+            "mcp_invocations": 0,
+            "model_calls": 0,
+            "runs": 0,
+            "status": "blocked_before_model_invocation"
+          },
+          "smoke_packet": "blocked before invocation: Codex lacks a tool allowlist and provider-call/turn cap; preserve the one-call hard budget.",
+          "source_pin_static": {
+            "containment": "adapter source containment prevents fallback to dirty worktree",
+            "mcp_base": "base 5c6dcd... mcp.json inspected; Context7 + Semgrep only",
+            "profile_source_mode": "base_revision resolves agentic-core under record.workspace",
+            "run_manager": "resolves explicit suite SHA, then creates detached worktree at that SHA"
+          },
+          "status": "partial_pending_root_review",
+          "suite_fixture_artifacts_written": false,
+          "task02_static": {
+            "Codex_target": "explicit on suite-run",
+            "Copilot_reason": "restricted to exactly four allowed values and validated before harness detection/invocation",
+            "RunBudget": "positive run/model/failure limits; optional positive known-token cap",
+            "cross_harness": "distinct read-only target, requester/validator identity, depth=1, no recursion/ownership/mutation",
+            "fail_fast": "systemic failures, configured failure threshold, known token overage, unknown usage before another call",
+            "ruff": "ignore TRY004 check passed; unignored check has only two inherited models.py findings; formatting passes suite/evaluation/__init__, inherited diffs remain in adapters/cli/models",
+            "source_pin": "base-revision containment statically confirmed"
+          },
+          "task04_profile_scope": {
+            "generic_variant_evaluation": "Implementer reports the generic external profile is valid and materializable by the existing CLI path.",
+            "installed_cache_smoke": "Does not prove r7 cache loading: that materialization path invokes codex with --ignore-user-config, so it cannot stand in for the normal-config installed plugin smoke.",
+            "profile_path": "experiments/harness-evals/agentic-core-v0.2.0/profile.json",
+            "smoke_status": "blocked_before_model_invocation under independent call-budget/isolation gate",
+            "source_mode": "external"
+          },
+          "task04_status": "paused_pending_TASK-COST-02_budget_fix",
+          "test_commands_run": [],
+          "test_files_touched": false,
+          "validation": "Ruff/format being rerun after latest task-03 edits"
+        },
+        "scope": [
+          "harness_factory/",
+          "agentic-core/runtime/pluginctl/cli.py only if the evaluation wrapper is retained",
+          "experiments/harness-evals/",
+          "outputs/evals/"
+        ],
+        "spec_revision": 1,
+        "started_at": "2026-09-26T22:20:58Z",
+        "status": "partial",
+        "task_ids": [
+          "TASK-COST-01",
+          "TASK-COST-02",
+          "TASK-COST-03",
+          "TASK-COST-04",
+          "TASK-COST-05"
+        ]
+      },
+      {
+        "agent_id": "task_3-session",
+        "attempt_id": "task3-release-20260927",
+        "changed_files": [
+          "harness_factory/",
+          "tests/test_harness_factory.py",
+          "experiments/harness-evals/",
+          "experiments/routing/",
+          "outputs/evals/baseline-inventory-r7.json",
+          "docs/harness-history/task_3/manifest.json",
+          "docs/harness-history/task_3/events.jsonl",
+          "docs/tasks-history/task_3.jsonl",
+          "todos/README.md",
+          "todos/backlog/2026-09-27/cost-eval-opt-followups.md"
+        ],
+        "commit_shas": [
+          "12ae228f490ec1d90edb5725eca80d3648625e80",
+          "783316b21457c90024df3f77e00f5b42a349fb5b"
+        ],
+        "finished_at": "2026-09-27T19:13:00+02:00",
+        "next_action": "Ownership released. Remaining work is unassigned; resume only from the documented follow-up after its evidence gates become feasible or the user changes the acceptance policy.",
+        "plan_revision": 7,
+        "result": "PARTIAL_WITH_DOCUMENTED_GATES; useful task-owned code and fixtures are committed; AC-COST-3 remains blocked, provider-call enforcement remains unavailable, and smoke/QA/Reviewer gates remain blocked.",
+        "scope": [
+          "harness_factory/",
+          "tests/test_harness_factory.py",
+          "experiments/harness-evals/",
+          "experiments/routing/",
+          "outputs/evals/baseline-inventory-r7.json",
+          "task_3 state and follow-up documentation"
+        ],
+        "spec_revision": 1,
+        "status": "partial"
+      }
+    ],
+    "id": "task_3",
+    "implementation": {
+      "current_tasks": [],
+      "evidence": [
+        {
+          "acceptance_criteria": [
+            "AC-COST-1"
+          ],
+          "implementation_revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-COST-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-COST-SUITE-VALIDATE-20260927",
+            "EVIDENCE-COST-TESTS-20260927"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-COST-2",
+            "AC-COST-4"
+          ],
+          "implementation_revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "partial",
+          "task_id": "TASK-COST-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-COST-TESTS-20260927"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-COST-5",
+            "AC-COST-6",
+            "AC-COST-8"
+          ],
+          "implementation_revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "partial",
+          "task_id": "TASK-COST-03",
+          "validation_evidence_refs": [
+            "EVIDENCE-COST-TESTS-20260927"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-COST-3",
+            "AC-COST-7"
+          ],
+          "implementation_revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "partial",
+          "task_id": "TASK-COST-04",
+          "validation_evidence_refs": [
+            "EVIDENCE-COST-BASELINE-GAP-20260927",
+            "EVIDENCE-ROUTING-RENDER-20260927"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-COST-4",
+            "AC-COST-5"
+          ],
+          "implementation_revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "blocked",
+          "task_id": "TASK-COST-05",
+          "validation_evidence_refs": [
+            "EVIDENCE-COST-SMOKE-BLOCKED-20260927"
+          ]
+        }
+      ],
+      "revision": "783316b21457c90024df3f77e00f5b42a349fb5b",
+      "status": "complete"
+    },
+    "lifecycle": {
+      "branch": "main",
+      "cleanup": "not_requested",
+      "commit_shas": [
+        "12ae228f490ec1d90edb5725eca80d3648625e80",
+        "783316b21457c90024df3f77e00f5b42a349fb5b"
+      ],
+      "commit_status": "created",
+      "pull_request": null,
+      "workspace_note": "Task-owned harness code, tests, cost-evaluation fixtures, baseline inventory, and routing fixtures are committed locally. Ownership is released with documented open gates. Shared root README.md and unrelated task files remain untouched and uncommitted; no remote refs changed.",
+      "worktree": null
+    },
+    "open_blockers": [
+      {
+        "evidence": "todos/in_progress/2026-09-26/github-app-authorization-boundary.md@sha256:09b8119330489f67bdaccfbf1dd056107ce27681e36b59660e9f1b478c79c1cf",
+        "id": "GAP-GITHUB-AUTH-01",
+        "next_action": "Request or obtain an authoritative known-existing denied repository name before the separately scoped MCP boundary check; do not guess.",
+        "reason": "The prior denial used a placeholder repository name; no real existing Doodooms repository known to be outside the grant was provided.",
+        "scope": "External GitHub App authorization-boundary proof only; does not block local cost-eval implementation or static evaluation work.",
+        "status": "blocked"
+      },
+      {
+        "evidence": "Prior r7 preflight events; no Codex, Copilot, or MCP invocation was made in this checkpoint.",
+        "id": "GAP-COST-SMOKE-ISOLATION-01",
+        "next_action": "Keep TASK-COST-05 blocked before invocation; resume only when both controls are evidenced or the user changes the approved budget/safety policy.",
+        "owner": "unassigned",
+        "reason": "Current Codex does not prove an enforceable one-provider-call ceiling or non-persistent isolation of enabled plugins and MCP servers.",
+        "scope": "The single Codex smoke in TASK-COST-05; implementation and static validation continue.",
+        "status": "blocked"
+      },
+      {
+        "evidence": "tests/test_harness_factory.py verifies zero invocations and a durable blocked artifact; see EVIDENCE-COST-TESTS-20260927.",
+        "id": "GAP-COST-MODEL-CALL-BUDGET-01",
+        "next_action": "Keep AC-COST-4 partial until a trusted provider-call limit can be enforced before invocation.",
+        "owner": "unassigned",
+        "reason": "The runner refuses before any harness call when provider-call limits cannot be enforced. The required provider-level cap remains unavailable, so AC-COST-4 does not establish usable bounded execution.",
+        "scope": "AC-COST-4 and downstream runner/evaluation evidence; TASK-COST-02 is reopened, TASK-COST-04 remains running pending correction/reconciliation.",
+        "status": "open"
+      },
+      {
+        "evidence": "outputs/evals/baseline-inventory-r7.json is committed and records the search and exclusions.",
+        "id": "GAP-COST-BASELINE-PAIR-01",
+        "next_action": "Resume only if provenance-backed matched baseline artifacts are found or the user changes AC-COST-3.",
+        "owner": "unassigned",
+        "reason": "No matched flat/hierarchical or old/new risk-proportional pair was found.",
+        "scope": "AC-COST-3; TASK-COST-04 baseline inventory.",
+        "status": "open"
+      },
+      {
+        "evidence": "Prior task_3 and task_5 host-dispatch records; no QA or Reviewer handoff was produced in this checkpoint.",
+        "id": "GAP-COST-QA-REVIEW-DISPATCH-01",
+        "next_action": "Dispatch the installed QA and Reviewer roles from a host surface that exposes them, then record their actual reports.",
+        "owner": "unassigned",
+        "reason": "Independent QA and Reviewer handoffs were not available from the active host surface; focused local tests do not replace those roles.",
+        "scope": "TASK-COST-06 and TASK-COST-07",
+        "status": "blocked"
+      }
+    ],
+    "open_findings": [],
+    "plan": {
+      "approval": "Approved plan r7; user later authorized focused tests, task-owned commits, and a partial durability checkpoint while retaining the smoke safety budget.",
+      "revision": 7,
+      "sha256": "492dab500c6760be101edf5cf0001c48e361e5ed3a4252fa483b27c00c9081c7",
+      "spec_revision": 1,
+      "status": "ready",
+      "supersedes": "docs/planner-history/task_3/plan-r6.md@revision-6"
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/task_3/plan-r7.md",
+      "revision": 7,
+      "spec_revision": 1,
+      "status": "approved"
+    },
+    "qa": {
+      "acceptance_criteria": [
+        "AC-COST-1",
+        "AC-COST-2",
+        "AC-COST-3",
+        "AC-COST-4",
+        "AC-COST-5",
+        "AC-COST-6",
+        "AC-COST-7",
+        "AC-COST-8"
+      ],
+      "status": "blocked",
+      "validation_evidence_refs": []
+    },
+    "required_gates": [
+      "plan",
+      "implementation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-COST-1",
+        "AC-COST-2",
+        "AC-COST-3",
+        "AC-COST-4",
+        "AC-COST-5",
+        "AC-COST-6",
+        "AC-COST-7",
+        "AC-COST-8"
+      ],
+      "security_review_reason": "Independent review of the Codex smoke MCP refusal boundary and the evaluation runner trust boundaries remains unexecuted.",
+      "security_review_required": true,
+      "status": "blocked",
+      "validation_evidence_refs": []
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "specification",
+      "planning",
+      "implementation",
+      "qa",
+      "review",
+      "sdd-convergence"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "architecture",
+        "rationale": "No new architectural decision is assigned in this setup; plan against the existing harness_factory seam and revisit only if repository evidence shows it cannot satisfy SPEC-COST-EVAL-OPT@1."
+      },
+      {
+        "phase": "challenge",
+        "rationale": "No breaking, irreversible, or high-impact architecture proposal is being committed in this setup."
+      },
+      {
+        "phase": "github-authorization-boundary-test",
+        "rationale": "This is an external predecessor gap kept separate from local evaluation delivery and requires a known existing denied repository name."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-COST-1",
+          "requirements": [
+            "REQ-COST-1"
+          ],
+          "statement": "A deterministic local validator accepts a conforming scenario and rejects missing or malformed required scenario fields without launching a model."
+        },
+        {
+          "id": "AC-COST-2",
+          "requirements": [
+            "REQ-COST-2"
+          ],
+          "statement": "A suite can be invoked explicitly on Codex only, and a Copilot run without one of the four allowed reasons is rejected before harness invocation."
+        },
+        {
+          "id": "AC-COST-3",
+          "requirements": [
+            "REQ-COST-3"
+          ],
+          "statement": "At least one durable flat/hierarchical baseline pair uses identical fixture, prompt, and expected behavior; old/new risk-proportional routing is compared when its historical artifacts exist, and unavailable metrics serialize as unknown rather than zero."
+        },
+        {
+          "id": "AC-COST-4",
+          "requirements": [
+            "REQ-COST-4"
+          ],
+          "statement": "The runner refuses or stops before exceeding each configured limit and stops additional model calls after a configured failure threshold or a systemic materialization, plugin-load, schema, or routing failure."
+        },
+        {
+          "id": "AC-COST-5",
+          "requirements": [
+            "REQ-COST-5"
+          ],
+          "statement": "A completed or failed run leaves a parseable durable machine-readable record with all required identity, result, metric, failure, usage, latency, and raw-artifact fields; missing measurements remain explicitly unknown."
+        },
+        {
+          "id": "AC-COST-6",
+          "requirements": [
+            "REQ-COST-6"
+          ],
+          "statement": "The evaluator scores a supplied profile/plugin variant through the same interface regardless of its origin, and no candidate optimizer or optimization loop is added."
+        },
+        {
+          "id": "AC-COST-7",
+          "requirements": [
+            "REQ-COST-7"
+          ],
+          "statement": "The final report names actual suites and available baselines, gives Codex-first commands and allowed Copilot reasons, describes budget/fail-fast rules, records only bounded smoke/evaluation evidence, states limitations and self-improvement readiness, and confirms no massive optimization corpus was run."
+        },
+        {
+          "id": "AC-COST-8",
+          "requirements": [
+            "REQ-COST-8"
+          ],
+          "statement": "A cross-harness validation request is isolated, read-only, has a different target from its origin, and is rejected if the validator attempts recursive delegation or takes development ownership."
+        }
+      ],
+      "assumptions": [
+        {
+          "source": "todos/done/2026-09-26/harness-adapters-phase1.md@sha256:82802ebdeb471bb39d8c585850fef131fc91b38cab2b94bbbdd07e18fc45d090",
+          "statement": "Harness adapter phase 1 is documented as completed, but its local untracked implementation and test evidence must be independently reconciled before reuse."
+        },
+        {
+          "source": "Observed `git rev-parse HEAD` and `git branch -vv` during orchestration.",
+          "statement": "The current repository base is 5c6dcd401e9a0d115e79c19f02de96ffed694686; the older branch/HEAD statement in the agentic-core status note is historical and stale for this checkout."
+        },
+        {
+          "source": "todos/done/2026-09-26/github-mcp-read-access.md and todos/in_progress/2026-09-26/github-app-authorization-boundary.md",
+          "statement": "The active GitHub MCP target known to allow read access is not evidence of a target known to deny access."
+        }
+      ],
+      "constraints": [
+        "Default policy: static checks are deterministic/local; heavy behavioral benchmarks, optimization experiments, and large repeated corpora target Codex; Copilot is used only for its specific behavior, a minimal portability sample, regression confirmation, or host-specific agent behavior.",
+        "Do not run the same large corpus on Copilot by default and do not use Copilot only because tests already exist.",
+        "Do not launch a massive optimization run in this phase.",
+        "Preserve all existing local user changes and do not attribute untracked work to this task without evidence.",
+        "Keep the GitHub authorization-boundary test separate; do not guess a repository name or use an alternate access path.",
+        "Do not modify the five supplied task documents or unrelated unfinished backlog items during the coordination setup."
+      ],
+      "id": "SPEC-COST-EVAL-OPT",
+      "intent": "Measure behavior, portability, routing differences, and context cost across harnesses without selecting a best model or spending Copilot quota on large repeated corpora.",
+      "non_goals": [
+        "Choosing a best model or ranking models as the product objective.",
+        "Implementing SkillOpt, GEPA, a custom optimizer, candidate generation, or a self-evolving harness.",
+        "Running a massive repeated benchmark or optimization corpus during this phase.",
+        "Completing unrelated tasks in todos/in_progress, migrating unrelated packs, or treating those notes as completed work.",
+        "Proving the GitHub App authorization boundary without a known existing repository target."
+      ],
+      "normalization_notes": [
+        "Before approval, mapped the source document's mandatory flat-versus-hierarchical baseline and read-only non-recursive cross-harness validation clauses to REQ/AC-COST-3 and REQ/AC-COST-8. This corrects the initial normalization omission; user intent and SPEC revision remain unchanged."
+      ],
+      "objective": "Add a harness-neutral behavioral evaluation layer that uses Codex by default for costly benchmarks, enforces explicit budgets and justified Copilot usage, persists machine-readable results, and supports matched baseline comparisons for future profile optimizers.",
+      "open_decisions": [],
+      "requirements": [
+        {
+          "id": "REQ-COST-1",
+          "priority": "must",
+          "rationale": "Keep scenario intent reusable across harnesses and make routing and conformance observations explicit.",
+          "statement": "The evaluation system accepts harness-neutral behavioral scenarios with stable IDs, category, fixture and base revision, prompt, expected behavior, required, forbidden, optional, and metrics fields."
+        },
+        {
+          "id": "REQ-COST-2",
+          "priority": "must",
+          "rationale": "Codex has the larger available evaluation budget, while Copilot usage is scarce.",
+          "statement": "Costly benchmarks and optimization experiments use Codex by default; Copilot runs require an explicit allowed reason: copilot_specific_behavior, portability_sample, regression_confirmation, or host_specific_agent_behavior."
+        },
+        {
+          "id": "REQ-COST-3",
+          "priority": "must",
+          "rationale": "Make baseline comparisons interpretable without inventing evidence or conflating unknown with zero.",
+          "statement": "The system creates matched baselines for flat versus hierarchical skills and supports old versus risk-proportional routing comparisons when the historical artifacts exist; comparisons use the same fixture, prompt, and expected behavior, and unavailable metrics remain unknown."
+        },
+        {
+          "id": "REQ-COST-4",
+          "priority": "must",
+          "rationale": "Bound cost and stop doomed runs before they consume model quota.",
+          "statement": "Evaluation runs support explicit maximum runs, model calls, known tokens, and failures before stop, and fail fast on broken materialization, plugin loading, schemas, or systematic routing failures."
+        },
+        {
+          "id": "REQ-COST-5",
+          "priority": "must",
+          "rationale": "Keep evaluation evidence usable by later analysis and candidate optimizers.",
+          "statement": "Every evaluation run produces a durable machine-readable artifact containing suite, harness, model, base revision, plugin profile, results, metrics, failures, token usage, latency, and raw artifact references."
+        },
+        {
+          "id": "REQ-COST-6",
+          "priority": "must",
+          "rationale": "Separate candidate generation from scoring so future optimizers can reuse the evaluator.",
+          "statement": "Evaluation accepts a plugin/profile variant independently of how that variant was generated, without implementing SkillOpt, GEPA, or another optimizer in this phase."
+        },
+        {
+          "id": "REQ-COST-7",
+          "priority": "must",
+          "rationale": "Make the phase boundary and evidence available for the next decision.",
+          "statement": "The phase report identifies implemented suites, available baselines, Codex-first commands, justified Copilot use, budget rules, bounded smoke/evaluation results, limitations, and what is ready for self-improvement."
+        },
+        {
+          "id": "REQ-COST-8",
+          "priority": "must",
+          "rationale": "Detect harness-specific assumptions while preserving ownership and bounding validation depth.",
+          "statement": "When a harness-specific change needs validation on another harness, the system supports isolated read-only cross-harness validation; the validator is not the development owner and cannot recursively delegate."
+        }
+      ],
+      "revision": 1,
+      "source_request": "todos/harness/cost-eval-opt.md@sha256:317fd88fac013288784b354070c28dbf5c62b6dfe8e0eccaebb6d360f7a3246e",
+      "status": "ready"
+    },
+    "stale_artifacts": [],
+    "status": "partial",
+    "task_events_ref": "docs/tasks-history/task_3.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-COST-1"
+        ],
+        "id": "TASK-COST-01",
+        "requirements": [
+          "REQ-COST-1"
+        ],
+        "status": "complete"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-2",
+          "AC-COST-4"
+        ],
+        "depends_on": [
+          "TASK-COST-01"
+        ],
+        "id": "TASK-COST-02",
+        "requirements": [
+          "REQ-COST-2",
+          "REQ-COST-4"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-5",
+          "AC-COST-6",
+          "AC-COST-8"
+        ],
+        "depends_on": [
+          "TASK-COST-02"
+        ],
+        "id": "TASK-COST-03",
+        "requirements": [
+          "REQ-COST-5",
+          "REQ-COST-6",
+          "REQ-COST-8"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-3",
+          "AC-COST-7"
+        ],
+        "depends_on": [
+          "TASK-COST-03"
+        ],
+        "id": "TASK-COST-04",
+        "requirements": [
+          "REQ-COST-3",
+          "REQ-COST-7"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-2",
+          "AC-COST-4",
+          "AC-COST-5"
+        ],
+        "depends_on": [
+          "TASK-COST-04"
+        ],
+        "id": "TASK-COST-05",
+        "requirements": [
+          "REQ-COST-2",
+          "REQ-COST-4",
+          "REQ-COST-5"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-1",
+          "AC-COST-2",
+          "AC-COST-3",
+          "AC-COST-4",
+          "AC-COST-5",
+          "AC-COST-6",
+          "AC-COST-7",
+          "AC-COST-8"
+        ],
+        "depends_on": [
+          "TASK-COST-05"
+        ],
+        "id": "TASK-COST-06",
+        "requirements": [
+          "REQ-COST-1",
+          "REQ-COST-2",
+          "REQ-COST-3",
+          "REQ-COST-4",
+          "REQ-COST-5",
+          "REQ-COST-6",
+          "REQ-COST-7",
+          "REQ-COST-8"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-1",
+          "AC-COST-2",
+          "AC-COST-3",
+          "AC-COST-4",
+          "AC-COST-5",
+          "AC-COST-6",
+          "AC-COST-7",
+          "AC-COST-8"
+        ],
+        "depends_on": [
+          "TASK-COST-06"
+        ],
+        "id": "TASK-COST-07",
+        "requirements": [
+          "REQ-COST-1",
+          "REQ-COST-2",
+          "REQ-COST-3",
+          "REQ-COST-4",
+          "REQ-COST-5",
+          "REQ-COST-6",
+          "REQ-COST-7",
+          "REQ-COST-8"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-1",
+          "AC-COST-2",
+          "AC-COST-3",
+          "AC-COST-4",
+          "AC-COST-5",
+          "AC-COST-6",
+          "AC-COST-7",
+          "AC-COST-8"
+        ],
+        "depends_on": [
+          "TASK-COST-07"
+        ],
+        "id": "TASK-COST-08",
+        "requirements": [
+          "REQ-COST-1",
+          "REQ-COST-2",
+          "REQ-COST-3",
+          "REQ-COST-4",
+          "REQ-COST-5",
+          "REQ-COST-6",
+          "REQ-COST-7",
+          "REQ-COST-8"
+        ],
+        "status": "blocked"
+      }
+    ],
+    "title": "Deliver Codex-first harness evaluation",
+    "unrequested_material_changes": [],
+    "updated_at": "2026-09-27T17:30:22Z",
+    "user_steering": [
+      {
+        "completion_evidence": "Parent verified codex plugin list reports agentic-core@agentic-workflow-local installed/enabled=true with local source/cache.",
+        "constraint": "Do not run a full agentic-core model smoke while Context7 and Semgrep MCP are declared and cannot be disabled per plugin.",
+        "evidence": "No standalone adaptation script; root is registering agentic-core with the Codex plugin CLI.",
+        "owner": "orchestrator-parent",
+        "request": "Use the native Agent Plugin and make the Codex adaptation/setup available.",
+        "status": "completed",
+        "timestamp": "2026-09-26T22:07:53Z"
+      },
+      {
+        "constraint": "No unit, regression, or validator test additions/execution in this session; the source-requested bounded smoke remains explicitly allowed, with zero Copilot and at most one Codex run/model call.",
+        "evidence": "Parent reconciliation of cost-eval-opt source item 11.6 and session validation rule.",
+        "owner": "orchestrator-parent",
+        "request": "Continue the scoped cost-eval-opt implementation and bounded smoke only.",
+        "status": "recorded",
+        "timestamp": "2026-09-26T22:20:58Z"
+      },
+      {
+        "constraint": "Native Agent Plugin readiness is confirmed; only the isolated harness_factory fixture without MCP may be used for the single smoke after static validation. Full agentic-core profile remains excluded because its MCP configuration declares Context7 and Semgrep.",
+        "evidence": "Parent checked `codex plugin list --json`: agentic-core@agentic-workflow-local is installed/enabled, local source/cache available; full plugin mcp.json declares Context7/Semgrep.",
+        "owner": "orchestrator-parent",
+        "request": "Proceed with one bounded fixture-only Codex smoke after static validation.",
+        "status": "superseded",
+        "superseded_at": "2026-09-26T22:41:17Z",
+        "timestamp": "2026-09-26T22:28:57Z"
+      },
+      {
+        "constraint": "Run the one bounded Codex smoke against the complete native agentic-core plugin in the isolated harness workspace, with its declared Context7 and Semgrep MCP servers enabled. Use the pertinent agentic-core quality-engineering/eval-harness skill/workflow in the Codex subprocess. Keep zero Copilot calls and the fixed run/model/token/failure limits.",
+        "evidence": "User reports a separate tester verified the plugin works with Context7 and Semgrep, but no separate command/run ID/result artifact was found in this repository; this is recorded as user-reported context only. Parent confirms native plugin is installed/enabled.",
+        "owner": "user",
+        "refined_at": "2026-09-26T23:04:58Z",
+        "request": "Use agentic-core correctly in the single full-plugin smoke, including its declared MCP servers, in an isolated workspace.",
+        "status": "refined-by-budget-safety-constraint",
+        "timestamp": "2026-09-26T22:41:17Z"
+      },
+      {
+        "constraint": "Pin full-plugin smoke to clean base revision 5c6dcd401e9a0d115e79c19f02de96ffed694686 (Context7 + Semgrep only); preserve user-owned worktree mcp.json with the extra GitHub server and never invoke GitHub.",
+        "evidence": "Parent verified `git show HEAD:agentic-core/mcp.json` contains Context7 and Semgrep only; current dirty worktree mcp.json has a user-owned third GitHub server.",
+        "owner": "orchestrator-parent",
+        "request": "Use full plugin snapshot pinned to the base revision in isolated workspace; do not touch the current dirty GitHub MCP config.",
+        "status": "approved",
+        "timestamp": "2026-09-26T22:48:09Z"
+      },
+      {
+        "constraint": "No MCP tool invocation or model-agent delegation in the single smoke because codex exec has no max-turn/provider-call cap; load the full base-pinned plugin and verify skill/plugin/MCP declaration in one response. If actual call count is unknown or >1, stop without retry.",
+        "evidence": "Parent verified local `codex exec --help` exposes no max-turns/provider-call cap. User reports a separate tester verified Context7/Semgrep execution; no test record is present locally.",
+        "owner": "orchestrator-parent",
+        "request": "Keep max_model_calls=1 as invocation budget; do not risk tool-follow-up turns.",
+        "status": "superseded",
+        "superseded_at": "2026-09-26T23:18:10Z",
+        "timestamp": "2026-09-26T23:04:58Z"
+      },
+      {
+        "constraint": "Use the installed shared-cache agentic-core@0.2.0 plugin and hash-matched multi-harness skill in a new codex exec without --ignore-user-config. The cache includes GitHub MCP; do not invoke it. codex debug prompt-input confirms skill discovery but not MCP isolation, and codex exec cannot enforce one provider call. Block before model invocation unless both isolation and the max_model_calls=1 budget can be enforced without persistent config changes.",
+        "evidence": "Parent checked current Codex CLI/docs; read-only local checks confirm plugin v0.2.0 installed/enabled, cache lists Context7/GitHub/Semgrep, all three multi-harness SHA256s match source, and process -c probe does not show effective plugin disable. No smoke invocation has occurred.",
+        "owner": "orchestrator-parent",
+        "request": "Use the current plugin cache/skill for the bounded smoke, with a verified GitHub-MCP safety boundary and strict one-call budget.",
+        "status": "approved_with_smoke_blocked_pending_enforceable_gate",
+        "timestamp": "2026-09-26T23:18:10Z"
+      },
+      {
+        "constraint": "Prioritize durability. Focused validation, task-owned test edits, and local Conventional Commits are authorized; the phase may be released partial with unresolved external and experimental gates. Do not fabricate evidence.",
+        "evidence": "Direct user instruction dated 2026-09-27 explicitly superseded r7 restrictions on tests and Git commits; it retained the Codex/provider safety budget and required explicit partial/blocked gate reporting.",
+        "owner": "user",
+        "request": "Commit useful task_3 work, update the manifest/task history/todo, and release ownership after recording real validation results.",
+        "status": "approved",
+        "timestamp": "2026-09-27T19:13:00+02:00"
+      }
+    ],
+    "validation_evidence": [
+      {
+        "acceptance_criteria": [
+          "AC-COST-1",
+          "AC-COST-2",
+          "AC-COST-4",
+          "AC-COST-5",
+          "AC-COST-8"
+        ],
+        "check": "Harness factory unit tests",
+        "command": "uvx --with pyyaml --with jsonschema --with typer pytest -q tests/test_harness_factory.py",
+        "environment": "Linux x86_64; uvx pytest with pyyaml, jsonschema, and typer",
+        "id": "EVIDENCE-COST-TESTS-20260927",
+        "producer": "task_3 session",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      },
+      {
+        "check": "Ruff check and format",
+        "command": "uvx ruff check --output-format concise harness_factory tests/test_harness_factory.py && uvx ruff format --check harness_factory tests/test_harness_factory.py",
+        "environment": "Linux x86_64; uvx ruff",
+        "id": "EVIDENCE-COST-RUFF-20260927",
+        "producer": "task_3 session",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-1"
+        ],
+        "check": "Nine-scenario suite schema validation",
+        "command": "uv run --no-project python -m harness_factory suite-validate --suite experiments/harness-evals/agentic-core-v0.2.0/suite.json",
+        "environment": "Linux x86_64; uv 0.11.11",
+        "id": "EVIDENCE-COST-SUITE-VALIDATE-20260927",
+        "producer": "task_3 session",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      },
+      {
+        "check": "Render all six routing architecture fixtures locally",
+        "command": "uv run --no-project python -m skill_harness render-routing for each experiments/routing/architectures/*.json with experiments/routing/specs/tdd.json",
+        "environment": "Linux x86_64; uv; temporary outputs under /tmp",
+        "id": "EVIDENCE-ROUTING-RENDER-20260927",
+        "producer": "task_3 session",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-3"
+        ],
+        "check": "Matched evaluation baseline inventory",
+        "command": "Read outputs/evals/baseline-inventory-r7.json",
+        "environment": "Local repository inventory",
+        "id": "EVIDENCE-COST-BASELINE-GAP-20260927",
+        "producer": "task_3 session",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-COST-4",
+          "AC-COST-5"
+        ],
+        "check": "Codex behavioral smoke readiness",
+        "command": "No smoke command executed; provider-call cap and effective plugin/MCP isolation remain unenforceable or unverified",
+        "environment": "Current Codex CLI and active plugin configuration",
+        "id": "EVIDENCE-COST-SMOKE-BLOCKED-20260927",
+        "producer": "task_3 session",
+        "result": "blocked",
+        "spec_revision": 1,
+        "subject_revision": "783316b21457c90024df3f77e00f5b42a349fb5b"
+      }
+    ]
+  },
+  "status": "partial",
+  "task_id": "task_3",
+  "updated_at": "2026-09-27T17:30:22Z"
+}

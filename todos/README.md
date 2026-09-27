@@ -4,9 +4,8 @@ Use this index to find raw ideas, active work, completed reports, and deferred f
 
 ## Active work
 
-| Work | Canonical record | State |
-|---|---|---|
-| Harness evaluation (`task_3`, other session) | [plan r7](../docs/planner-history/task_3/plan-r7.md), [task ledger](../docs/tasks-history/task_3.jsonl) | Active in the other session. Preserve its files and let that session update its own state. |
+`task_3` no longer has an active implementation owner. Its partial checkpoint
+and unassigned follow-up gates are recorded below.
 
 ## Completed work
 
@@ -17,13 +16,14 @@ Use this index to find raw ideas, active work, completed reports, and deferred f
 
 ## Backlog
 
+- [`backlog/2026-09-27/cost-eval-opt-followups.md`](./backlog/2026-09-27/cost-eval-opt-followups.md) — released partial `task_3` checkpoint; remaining budget, baseline, smoke, QA, and Reviewer gates.
 - [`backlog/2026-09-27/agentic-core-enhancements-followups.md`](./backlog/2026-09-27/agentic-core-enhancements-followups.md) — blocked host checks and evidence-triggered future work from task_4.
 - [`backlog/2026-09-27/agentic-core-normalization-review-gates.md`](./backlog/2026-09-27/agentic-core-normalization-review-gates.md) — independent task_5 QA and Reviewer handoffs unavailable in this host.
 - [`backlog/2026-09-26/`](./backlog/2026-09-26/) — earlier unassigned work records, preserved without claiming completion.
 
 ## Idea intake
 
-- [`harness/`](./harness/) — harness routing, cost, session communication, and safety inputs. `cost-eval-opt.md` remains separate under `task_3`; [`codex-session-communication.md`](./harness/codex-session-communication.md) is a research input for `task_5` and does not authorize contacting another session.
+- [`harness/`](./harness/) — harness routing, cost, session communication, and safety inputs. [`cost-eval-opt.md`](./harness/cost-eval-opt.md) is the source brief for the released partial task_3 checkpoint; [`codex-session-communication.md`](./harness/codex-session-communication.md) is a research input for `task_5` and does not authorize contacting another session.
 - [`plugins/`](./plugins/) — plugin proposals.
 - [`skills/`](./skills/) — skill ideas and optimization.
 - [`mcp/`](./mcp/) — MCP authoring and server ideas.
