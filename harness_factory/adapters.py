@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Iterator, Mapping
@@ -16,6 +17,16 @@ from typing import Any
 from expertise.validator import load_json_no_duplicate_keys
 
 from .errors import CapabilityUnavailableError, HarnessFactoryError
+from .execution import (
+    EXECUTION_CAPABILITY_NAMES,
+    BackendCapabilities,
+    ExecutionFailure,
+    ExecutionOutcome,
+    ExecutionRequest,
+    ExecutionResult,
+    FailureCause,
+    RetryDecision,
+)
 from .models import (
     CAPABILITY_NAMES,
     COPILOT_MIN_AI_CREDITS,
@@ -563,14 +574,10 @@ class CodexHarnessAdapter(CliHarnessAdapter):
         started = time.perf_counter()
         with _codex_project_plugin(run, plugin_path):
             try:
-                completed = subprocess.run(
+                completed = _run_codex_exec(
                     command,
                     cwd=run.workspace,
-                    capture_output=True,
-                    check=False,
-                    encoding="utf-8",
-                    errors="replace",
-                    env=environment,
+                    environment=environment,
                     timeout=scenario.timeout_seconds,
                 )
             except subprocess.TimeoutExpired:
@@ -615,6 +622,342 @@ class CodexHarnessAdapter(CliHarnessAdapter):
                 mcp_tool_calls,
             ),
         )
+
+
+_CODEX_EXEC_CAPABILITY_EVIDENCE = {
+    "stateless_execution": "capability campaign: stateless execution observed",
+    "headless": "capability campaign: headless execution observed",
+    "structured_output": "capability campaign: structured output observed",
+    "read_only": "capability campaign: read-only execution observed",
+    "workspace_write": "documented, but not revalidated in the latest campaign",
+    "parallel": "capability campaign: parallel execution observed",
+    "process_supervision": "capability campaign: process supervision observed",
+}
+
+
+def _codex_exec_capabilities() -> BackendCapabilities:
+    observations = {
+        name: CapabilityObservation(
+            CapabilityState.UNKNOWN
+            if name == "workspace_write"
+            else CapabilityState.SUPPORTED,
+            (_CODEX_EXEC_CAPABILITY_EVIDENCE[name],),
+        )
+        for name in EXECUTION_CAPABILITY_NAMES
+    }
+    return BackendCapabilities("codex_exec", observations)
+
+
+class CodexExecBackend:
+    """Run one structured, stateless Codex CLI attempt without owning its task."""
+
+    backend_id = "codex_exec"
+    harness_id = "codex"
+    _required_capabilities = (
+        "stateless_execution",
+        "headless",
+        "structured_output",
+        "process_supervision",
+    )
+    _required_cli_options = (
+        "--cd",
+        "--ignore-user-config",
+        "--sandbox",
+        "--ephemeral",
+        "--json",
+        "--output-schema",
+    )
+
+    def __init__(self, adapter: CodexHarnessAdapter | None = None):
+        self._adapter = adapter or CodexHarnessAdapter()
+        self.capabilities = _codex_exec_capabilities()
+
+    def execute(self, request: ExecutionRequest) -> ExecutionResult:
+        if not isinstance(request, ExecutionRequest):
+            raise TypeError("request must be an ExecutionRequest")
+
+        required = tuple(
+            dict.fromkeys(
+                (*self._required_capabilities, *request.capability_requirements)
+            )
+        )
+        unsupported = tuple(
+            name
+            for name in required
+            if self.capabilities.capabilities[name].state is CapabilityState.UNSUPPORTED
+        )
+        if unsupported:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.BLOCKED,
+                cause=FailureCause.UNSUPPORTED_CAPABILITY,
+                retry=RetryDecision.DO_NOT_RETRY,
+                message="backend does not support required capabilities: "
+                + ", ".join(unsupported),
+            )
+        unverified = tuple(
+            name
+            for name in required
+            if self.capabilities.capabilities[name].state
+            is not CapabilityState.SUPPORTED
+        )
+        if unverified:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.BLOCKED,
+                cause=FailureCause.CAPABILITY_UNVERIFIED,
+                retry=RetryDecision.UNKNOWN,
+                message="backend capability evidence is insufficient for: "
+                + ", ".join(unverified),
+            )
+
+        harness_capabilities = self._adapter.detect()
+        if (
+            not harness_capabilities.cli_installed
+            or harness_capabilities.executable is None
+        ):
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.HARNESS_UNAVAILABLE,
+                retry=RetryDecision.UNKNOWN,
+                message="Codex CLI is not installed or could not be resolved",
+            )
+
+        missing_options = tuple(
+            option
+            for option in self._required_cli_options
+            if option not in harness_capabilities.observed_options
+        )
+        if missing_options:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.BLOCKED,
+                cause=FailureCause.UNSUPPORTED_CAPABILITY,
+                retry=RetryDecision.DO_NOT_RETRY,
+                message="Codex CLI help does not expose required options: "
+                + ", ".join(missing_options),
+            )
+        if "read-only" not in harness_capabilities.capabilities["sandboxing"].evidence:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.BLOCKED,
+                cause=FailureCause.CAPABILITY_UNVERIFIED,
+                retry=RetryDecision.UNKNOWN,
+                message="Codex CLI help does not confirm the read-only sandbox mode",
+            )
+
+        schema = {
+            "type": "object",
+            "properties": {
+                "task_id": {
+                    "type": "string",
+                    "enum": [request.task_id],
+                },
+                "attempt_id": {
+                    "type": "string",
+                    "enum": [request.attempt_id],
+                },
+                "result_json": {
+                    "type": "string",
+                    "description": "The execution result encoded as valid JSON.",
+                },
+            },
+            "required": ["task_id", "attempt_id", "result_json"],
+            "additionalProperties": False,
+        }
+        command = [
+            harness_capabilities.executable,
+            "exec",
+            "--cd",
+            str(request.working_directory),
+            "--ignore-user-config",
+            "--sandbox",
+            "read-only",
+            "--ephemeral",
+            "--json",
+            "--output-schema",
+        ]
+
+        try:
+            with tempfile.TemporaryDirectory(prefix="agentic-codex-exec-") as temp_dir:
+                schema_path = Path(temp_dir) / "output-schema.json"
+                schema_path.write_text(
+                    json.dumps(schema, ensure_ascii=False), encoding="utf-8"
+                )
+                completed = _run_codex_exec(
+                    [*command, str(schema_path), "-"],
+                    cwd=request.working_directory,
+                    environment=_harness_environment(),
+                    input_text=request.input,
+                    timeout=request.constraints.timeout_seconds,
+                )
+        except subprocess.TimeoutExpired:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.TIMEOUT,
+                retry=RetryDecision.RETRY,
+                message="Codex exec exceeded the attempt timeout",
+            )
+        except OSError as exc:
+            cause = (
+                FailureCause.HARNESS_UNAVAILABLE
+                if isinstance(exc, FileNotFoundError)
+                else FailureCause.PROCESS_FAILURE
+            )
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=cause,
+                retry=RetryDecision.UNKNOWN,
+                message=f"Codex exec could not run ({type(exc).__name__})",
+            )
+
+        if completed.returncode != 0:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.PROCESS_FAILURE,
+                retry=RetryDecision.UNKNOWN,
+                message=f"Codex exec exited with code {completed.returncode}",
+            )
+
+        payload, protocol_error = _parse_codex_execution_output(completed.stdout)
+        if protocol_error or payload is None:
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.PROTOCOL_FAILURE,
+                retry=RetryDecision.RETRY,
+                message=protocol_error or "Codex output did not contain a result",
+            )
+        if (
+            payload["task_id"] != request.task_id
+            or payload["attempt_id"] != request.attempt_id
+        ):
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.SEMANTIC_FAILURE,
+                retry=RetryDecision.DO_NOT_RETRY,
+                message="Codex result identity does not match the request",
+            )
+        if not isinstance(payload["result_json"], str):
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.PROTOCOL_FAILURE,
+                retry=RetryDecision.RETRY,
+                message="Codex result_json field is not a string",
+            )
+        try:
+            normalized_result = load_json_no_duplicate_keys(payload["result_json"])
+        except (json.JSONDecodeError, ValueError, UnicodeDecodeError):
+            return self._failure(
+                request,
+                outcome=ExecutionOutcome.FAILED,
+                cause=FailureCause.PROTOCOL_FAILURE,
+                retry=RetryDecision.RETRY,
+                message="Codex result_json field is not valid JSON",
+            )
+        return ExecutionResult(
+            outcome=ExecutionOutcome.SUCCEEDED,
+            task_id=request.task_id,
+            attempt_id=request.attempt_id,
+            harness_id=self.harness_id,
+            backend_id=self.backend_id,
+            result=normalized_result,
+        )
+
+    def _failure(
+        self,
+        request: ExecutionRequest,
+        *,
+        outcome: ExecutionOutcome,
+        cause: FailureCause,
+        retry: RetryDecision,
+        message: str,
+    ) -> ExecutionResult:
+        return ExecutionResult(
+            outcome=outcome,
+            task_id=request.task_id,
+            attempt_id=request.attempt_id,
+            harness_id=self.harness_id,
+            backend_id=self.backend_id,
+            failure=ExecutionFailure(cause=cause, retry=retry, message=message),
+        )
+
+
+def _run_codex_exec(
+    command: list[str],
+    *,
+    cwd: Path,
+    environment: dict[str, str],
+    timeout: int,
+    input_text: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        command,
+        cwd=cwd,
+        input=input_text,
+        capture_output=True,
+        check=False,
+        encoding="utf-8",
+        errors="replace",
+        env=environment,
+        timeout=timeout,
+    )
+
+
+def _parse_codex_execution_output(
+    output: str,
+) -> tuple[dict[str, Any] | None, str | None]:
+    final_message: str | None = None
+    saw_turn_completed = False
+    saw_turn_failed = False
+    for line_number, line in enumerate(output.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = load_json_no_duplicate_keys(line)
+        except (json.JSONDecodeError, ValueError, UnicodeDecodeError):
+            return (
+                None,
+                f"Codex JSONL output contains invalid JSON at line {line_number}",
+            )
+        if not isinstance(event, dict) or not isinstance(event.get("type"), str):
+            return (
+                None,
+                f"Codex JSONL event at line {line_number} is not an event object",
+            )
+        if event["type"] == "item.completed":
+            item = event.get("item")
+            if (
+                isinstance(item, dict)
+                and item.get("type") == "agent_message"
+                and isinstance(item.get("text"), str)
+            ):
+                final_message = item["text"]
+        elif event["type"] == "turn.completed":
+            saw_turn_completed = True
+        elif event["type"] == "turn.failed":
+            saw_turn_failed = True
+    if saw_turn_failed or not saw_turn_completed:
+        return None, "Codex JSONL output did not complete a successful turn"
+    if final_message is None:
+        return None, "Codex JSONL output did not contain a final agent message"
+    try:
+        payload = load_json_no_duplicate_keys(final_message)
+    except (json.JSONDecodeError, ValueError, UnicodeDecodeError):
+        return None, "Codex final agent message is not valid JSON"
+    if not isinstance(payload, dict) or set(payload) != {
+        "task_id",
+        "attempt_id",
+        "result_json",
+    }:
+        return None, "Codex final agent message does not match the output contract"
+    return payload, None
 
 
 def _require_read_only_validation_run(run: HarnessRun, harness: str) -> None:

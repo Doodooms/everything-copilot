@@ -1,6 +1,11 @@
 """Harness integration layer for the Agent Plugin Factory."""
 
-from .adapters import CodexHarnessAdapter, CopilotHarnessAdapter, HarnessAdapter
+from .adapters import (
+    CodexExecBackend,
+    CodexHarnessAdapter,
+    CopilotHarnessAdapter,
+    HarnessAdapter,
+)
 from .evaluation import (
     ALLOWED_COPILOT_REASONS,
     CrossHarnessValidationContext,
@@ -11,6 +16,18 @@ from .evaluation import (
     load_run_artifact,
     run_suite,
     validate_run_target,
+)
+from .execution import (
+    EXECUTION_CAPABILITY_NAMES,
+    BackendCapabilities,
+    ExecutionBackend,
+    ExecutionConstraints,
+    ExecutionFailure,
+    ExecutionOutcome,
+    ExecutionRequest,
+    ExecutionResult,
+    FailureCause,
+    RetryDecision,
 )
 from .models import (
     CAPABILITY_NAMES,
@@ -40,14 +57,24 @@ __all__ = [
     "ALLOWED_COPILOT_REASONS",
     "CAPABILITY_NAMES",
     "COPILOT_MIN_AI_CREDITS",
+    "EXECUTION_CAPABILITY_NAMES",
     "SCENARIO_CATEGORIES",
+    "BackendCapabilities",
     "CapabilityObservation",
     "CapabilityState",
+    "CodexExecBackend",
     "CodexHarnessAdapter",
     "CopilotHarnessAdapter",
     "CrossHarnessRequest",
     "CrossHarnessValidationContext",
     "EvaluationProfile",
+    "ExecutionBackend",
+    "ExecutionConstraints",
+    "ExecutionFailure",
+    "ExecutionOutcome",
+    "ExecutionRequest",
+    "ExecutionResult",
+    "FailureCause",
     "HarnessAdapter",
     "HarnessCapabilities",
     "HarnessResult",
@@ -56,6 +83,7 @@ __all__ = [
     "HarnessScenario",
     "Purpose",
     "ResultStatus",
+    "RetryDecision",
     "RunBudget",
     "RunMode",
     "RunStatus",
