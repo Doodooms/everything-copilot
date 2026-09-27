@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import typer
 import yaml
 
 
@@ -110,13 +109,13 @@ class LintResult:
 
 def _print_result(result: LintResult) -> None:
     if result.errors:
-        typer.echo("ERRORS:")
+        print("ERRORS:")
         for error in result.errors:
-            typer.echo(f"  - {error}")
+            print(f"  - {error}")
     if result.warnings:
-        typer.echo("WARNINGS:")
+        print("WARNINGS:")
         for warning in result.warnings:
-            typer.echo(f"  - {warning}")
+            print(f"  - {warning}")
 
 
 def split_frontmatter(text: str) -> tuple[dict[str, Any], str]:

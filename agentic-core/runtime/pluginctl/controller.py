@@ -55,6 +55,16 @@ _INSTALL_RECORD_FIELDS = {
 _PROFILE_FIELDS = {"schema_version", "active_packs", "capabilities"}
 
 
+def _core_package_root() -> Path:
+    """Find the packaged Agentic Core root relative to this runtime module."""
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "plugin.json").is_file() and (parent / "skills").is_dir():
+            return parent
+    raise PluginControlError(
+        "agentic-core package root is unavailable relative to pluginctl"
+    )
+
+
 def _digest_is_valid(value: Any) -> bool:
     return (
         isinstance(value, str)
@@ -179,9 +189,8 @@ class PluginController:
             raise PluginControlError("host_capabilities must be non-empty strings")
         self.host_capabilities = tuple(sorted(set(supplied_host_capabilities)))
 
-        self.repository_root = Path(__file__).resolve().parents[3]
-        self.core_root = self.repository_root / "agentic-core"
-        self.core_agent_ids = core_agent_ids(self.repository_root)
+        self.core_root = _core_package_root()
+        self.core_agent_ids = core_agent_ids(self.core_root)
 
     @property
     def workspace_state_dir(self) -> Path:
@@ -1087,7 +1096,7 @@ class PluginController:
             if path.is_symlink():
                 raise PluginControlError(f"agentic-core agent is a symlink: {path}")
             content = _read_regular_file(path, self.core_root, "agentic-core agent")
-            _validate_agent(content, path, self.repository_root)
+            _validate_agent(content, path, self.core_root)
             agent_ids.add(path.name.removesuffix(".agent.md"))
             files[f"com.github.copilot/agents/{path.name}"] = content
         if agent_ids != set(self.core_agent_ids):
