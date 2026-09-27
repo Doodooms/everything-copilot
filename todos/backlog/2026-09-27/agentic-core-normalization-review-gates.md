@@ -6,6 +6,7 @@
 
 ## Remaining work
 
+- Reconcile `docs/harness-history/task_5/manifest.json` with `validate_sdd_state.py`'s embedded lifecycle model. The canonical `manifest-record` validator passes, while the SDD validator reports stale spec-revision-1 evidence, missing embedded architecture/plan objects, stale ADR references, and the legacy `validation` gate name. Preserve historical evidence in the append-only ledgers; only update current state from evidence that still applies.
 - Run the installed Quality Assurance role against the r10 acceptance criteria, workflow topology and routes, MCP authoring guidance and launcher evidence, session coordination safety, Codex host claims, and source-provenance disposition.
 - Run the installed Reviewer role after QA and reconcile its findings against AC-1 through AC-6.
 - Update the `task_5` manifest and this backlog only from actual handoffs. Keep QA and Reviewer marked blocked/not executed until then.
