@@ -26,13 +26,17 @@
       "status": "in_progress"
     },
     "lifecycle": {
-      "branch": null,
+      "branch": "main",
       "cleanup": "not_requested",
-      "commit_reason": "No commit was authorized; preserve the shared worktree state.",
-      "commit_shas": [],
-      "commit_status": "not_created",
+      "commit_shas": [
+        "71ea1f3",
+        "53d2aa8",
+        "4849fc6"
+      ],
+      "commit_status": "created",
       "pull_request": null,
-      "worktree": null
+      "worktree": null,
+      "workspace_note": "Local-only checkpoint commits were created under the user authorization. Task 3 and uncertain workspace files remain uncommitted; no remote refs or tags changed."
     },
     "open_blockers": [
       {
@@ -439,7 +443,7 @@
       }
     ],
     "title": "Agentic Core normalization and complete Codex installation",
-    "updated_at": "2026-09-27T16:14:30Z",
+    "updated_at": "2026-09-27T16:20:00Z",
     "validation_evidence": [
       {
         "acceptance_criteria": [
