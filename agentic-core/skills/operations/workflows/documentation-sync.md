@@ -9,10 +9,30 @@ avoid_for:
   or speculative documentation cleanup
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish source of truth and assigned scope.
 
-1. Read the current specification, assigned plan slice, implementation evidence, and changed-file list; stop with a precise blocker if any required input is missing or stale.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Read the current specification, assigned plan slice, implementation evidence, and changed-file list; stop with a precise blocker if any required input is missing or stale.
 2. Use #tool:search and #tool:read to locate the existing authoritative docs, their owners, and the smallest affected sections.
 3. When authoring or materially repairing this package, consult the [original specification](../references/documentation-sync/references/original-spec.md) as provenance only; it does not override the live task.
 
@@ -27,3 +47,4 @@ references: []
 
 1. Use #tool:execute only for existing, relevant documentation checks or examples that can be run safely; report the exact command and result.
 2. Return status, changed documentation paths, source behavior/spec revision, checks performed, unresolved gaps, and the next owner. If no documentation change is warranted, explain why and leave files unchanged.
+</workflow>

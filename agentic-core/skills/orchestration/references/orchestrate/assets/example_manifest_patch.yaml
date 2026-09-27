@@ -2,18 +2,20 @@ id: task_1
 title: Ensure data module uses approved external splits
 description: Read approved splits from the repository's configured annotation path.
 status: planned
-base_revision: "abc123"
+base_revision: null
 specification:
   id: SPEC-1
   revision: 1
   status: ready
   requirements: [REQ-1]
   acceptance_criteria: [AC-1]
+  path: todos/in_progress/2026-09-23/spec.md
 architecture_ref: null
 plan_ref:
   path: docs/planner-history/task_1/plan-r1.md
   revision: 1
   spec_revision: 1
+  status: approved
 task_events_ref: docs/tasks-history/task_1.jsonl
 selected_phases: [implementation, qa, review]
 skipped_phases: []
@@ -24,4 +26,6 @@ lifecycle:
   commit_shas: []
   pull_request: null
   cleanup: not_requested
+  commit_status: not_applicable
+  commit_reason: No repository commit is part of this example task.
 updated_at: "2026-09-23T00:00:00Z"

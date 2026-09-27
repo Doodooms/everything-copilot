@@ -14,10 +14,30 @@ references:
   - ../references/testing/references/test-levels.md
   - ../references/testing/references/test-doubles.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Define the contract and oracle.
 
-1. Identify the observable behavior, input/output or state transition, and a plausible defect; consult [test oracles](../references/testing/references/test-oracles.md) when the expected result is not obvious.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Identify the observable behavior, input/output or state transition, and a plausible defect; consult [test oracles](../references/testing/references/test-oracles.md) when the expected result is not obvious.
 2. Partition meaningful inputs and failure modes with [boundary guidance](../references/testing/references/equivalence-boundaries.md); avoid enumerating cases that cannot distinguish behavior.
 
 ## Step 2 - Choose the smallest faithful test.
@@ -33,3 +53,4 @@ references:
 1. Verify assertions distinguish the intended result from the plausible defect and that the test is deterministic in the repository's established pattern.
 2. When used inside TDD, return the designed test target to `tdd`; that skill owns the RED/GREEN sequence.
 3. Consult the [original specification](../references/testing/references/original-spec.md) only when maintaining this package's scope or provenance.
+</workflow>

@@ -19,6 +19,8 @@ license: MIT
 
 - SHOULD model only distinctions whose loss could affect behavior, validation, architecture, testing, or future change.
 - MAY propose durable glossary or ADR updates when the approved task assigns them.
+- MUST propose an ADR only when changing the choice later would be materially costly, future readers would not infer the decision, and a real alternative was selected for a reason; an ADR remains a supporting view of the approved specification.
+- Create context/ADR directories only for an approved entry that is ready to record, and follow the repository's established naming and document structure.
 
 </general_rules>
 

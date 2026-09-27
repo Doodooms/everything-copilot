@@ -242,7 +242,10 @@ def extract_tool_refs(text: str) -> list[str]:
 
 
 def extract_capability_refs(text: str) -> list[str]:
-    return [match.group(1).rstrip(".,;:") for match in re.finditer(r"capability:([^\s`]+)", text)]
+    return [
+        match.group(1).rstrip(".,;:")
+        for match in re.finditer(r"capability:([^\s`]+)", text)
+    ]
 
 
 def extract_support_doc_reads(text: str) -> list[str]:
@@ -394,7 +397,9 @@ def validate_skill_workflows(skill_dir: Path) -> LintResult:
     if not workflows_dir.exists():
         return result
     if workflows_dir.is_symlink() or not workflows_dir.is_dir():
-        result.errors.append("`workflows/` must be a regular directory inside the skill package.")
+        result.errors.append(
+            "`workflows/` must be a regular directory inside the skill package."
+        )
         return result
     references_dir = skill_dir / "references"
     if references_dir.exists():
@@ -442,7 +447,9 @@ def validate_skill_workflows(skill_dir: Path) -> LintResult:
             )
 
         workflow_id = metadata.get("id")
-        if not isinstance(workflow_id, str) or not WORKFLOW_ID_PATTERN.fullmatch(workflow_id):
+        if not isinstance(workflow_id, str) or not WORKFLOW_ID_PATTERN.fullmatch(
+            workflow_id
+        ):
             result.errors.append(
                 f"./{relative_workflow}: `id` must be a lowercase hyphenated workflow identifier."
             )
@@ -468,7 +475,9 @@ def validate_skill_workflows(skill_dir: Path) -> LintResult:
             if (
                 not isinstance(values, list)
                 or (required and not values)
-                or any(not isinstance(value, str) or not value.strip() for value in values)
+                or any(
+                    not isinstance(value, str) or not value.strip() for value in values
+                )
             ):
                 expectation = "a non-empty" if required else "an"
                 result.errors.append(
@@ -511,7 +520,16 @@ def validate_skill_workflows(skill_dir: Path) -> LintResult:
             references.add(relative)
 
         if not body.strip():
-            result.errors.append(f"./{relative_workflow}: workflow body must not be empty.")
+            result.errors.append(
+                f"./{relative_workflow}: workflow body must not be empty."
+            )
+        structural_text = "\n".join(
+            iter_code_fence_filtered_lines(text, strip_inline_code=False)
+        )
+        for error in validate_subskill_body_structure(body):
+            result.errors.append(f"./{relative_workflow}: {error}")
+        for error in validate_skill_step_structure(structural_text):
+            result.errors.append(f"./{relative_workflow}: {error}")
 
         linked_paths: set[str] = set()
         markdown_linked_paths: set[str] = set()
@@ -567,6 +585,101 @@ def validate_skill_workflows(skill_dir: Path) -> LintResult:
 
     result.data["workflows"] = workflows
     return result
+
+
+def validate_subskill_body_structure(body: str) -> list[str]:
+    """Validate a nested subskill's skill-shaped body without package identity."""
+    sections = (
+        "critical_rules",
+        "general_rules",
+        "risk_assessment",
+        "rules",
+        "workflow",
+    )
+    lines = [
+        line.strip()
+        for line in iter_code_fence_filtered_lines(body, strip_inline_code=False)
+    ]
+    positions: list[int] = []
+    content_by_section: dict[str, str] = {}
+    errors: list[str] = []
+
+    for section in sections:
+        opening = f"<{section}>"
+        closing = f"</{section}>"
+        opening_positions = [
+            index for index, line in enumerate(lines) if line == opening
+        ]
+        closing_positions = [
+            index for index, line in enumerate(lines) if line == closing
+        ]
+        if len(opening_positions) != 1 or len(closing_positions) != 1:
+            errors.append(
+                "must contain each canonical subskill body section exactly once: "
+                "<critical_rules>, <general_rules>, <risk_assessment>, <rules>, and <workflow>."
+            )
+            return errors
+        start = opening_positions[0]
+        end = closing_positions[0]
+        if end <= start:
+            errors.append(f"<{section}> must close after its opening tag.")
+            return errors
+        positions.extend((start, end))
+        content_by_section[section] = "\n".join(lines[start + 1 : end])
+
+    if positions != sorted(positions):
+        errors.append(
+            "canonical subskill body sections must appear in this order: "
+            "<critical_rules>, <general_rules>, <risk_assessment>, <rules>, <workflow>."
+        )
+
+    if "<admission>" in lines or "</admission>" in lines:
+        errors.append(
+            "nested subskills must leave domain admission and global routing to the parent skill."
+        )
+
+    critical = content_by_section["critical_rules"]
+    if not re.search(r"(?m)^-\s+.*\bMUST(?:\s+NOT)?\b", critical):
+        errors.append(
+            "<critical_rules> must contain a bulleted MUST/MUST NOT invariant."
+        )
+
+    general = content_by_section["general_rules"]
+    if not re.search(r"(?m)^-\s+.*\b(?:SHOULD(?:\s+NOT)?|MAY)\b", general):
+        errors.append(
+            "<general_rules> must contain a bulleted SHOULD/SHOULD NOT/MAY rule."
+        )
+
+    risk = content_by_section["risk_assessment"].lower()
+    if "risk_level" not in risk or "downgrade" not in risk or "escalat" not in risk:
+        errors.append(
+            "<risk_assessment> must inherit risk_level, forbid downgrading, and allow evidence-based escalation."
+        )
+
+    if not re.search(r"(?m)^-\s+\S", content_by_section["rules"]):
+        errors.append("<rules> must contain at least one bulleted subskill contract.")
+
+    workflow = content_by_section["workflow"]
+    steps = list(iter_workflow_steps(f"<workflow>\n{workflow}\n</workflow>"))
+    if not steps:
+        errors.append("<workflow> must contain the complete stepwise procedure.")
+    else:
+        numbers = [number for number, _, _ in steps]
+        if numbers[0] not in {0, 1} or numbers != list(
+            range(numbers[0], numbers[0] + len(numbers))
+        ):
+            errors.append(
+                "<workflow> steps must be continuous, starting at Step 0 or Step 1."
+            )
+        first_step_text = steps[0][2]
+        if not re.search(
+            r"\brisk(?:[_ -](?:assessment|level))?\b", first_step_text, re.IGNORECASE
+        ):
+            errors.append(
+                "the first <workflow> step must consume the inherited risk level."
+            )
+
+    return errors
 
 
 def normalize_relative_path(path_str: str) -> str:
@@ -755,7 +868,9 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
     if definitions_open:
         definitions_start = definitions_open[0]
         definitions_end = definitions_close[0]
-        definitions_text = "\n".join(stripped_lines[definitions_start + 1 : definitions_end])
+        definitions_text = "\n".join(
+            stripped_lines[definitions_start + 1 : definitions_end]
+        )
         if (
             definitions_start >= definitions_end
             or definitions_end >= tag_positions["<routing>"]
@@ -832,7 +947,9 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
         return errors
     workflow_lines = stripped_lines[workflow_start + 1 : workflow_end]
     step_positions = [
-        index for index, line in enumerate(workflow_lines) if STEP_HEADING_PATTERN.match(line)
+        index
+        for index, line in enumerate(workflow_lines)
+        if STEP_HEADING_PATTERN.match(line)
     ]
     if len(step_positions) >= 2 and not re.search(
         r"\b(?:risk(?:[_ -](?:assessment|level))?|assurance)\b",
@@ -867,9 +984,7 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
         errors.append("canonical <routing> ## ACCEPT must contain a non-empty list")
         return errors
     reject_items = [
-        line
-        for line in routing_lines[reject_start + 1 :]
-        if re.match(r"^-\s+\S", line)
+        line for line in routing_lines[reject_start + 1 :] if re.match(r"^-\s+\S", line)
     ]
     if not reject_items:
         errors.append("canonical <routing> ## REJECT must contain a non-empty list")
@@ -924,9 +1039,13 @@ def validate_agent_template_markdown_block(content: str) -> list[str]:
         r"^##\s+Step\s+2\s+-\s+.+$",
         r"^##\s+Step\s+3\s+-\s+.+$",
     )
-    if len(all_steps) != 3 or all_steps != workflow_steps or any(
-        not re.fullmatch(pattern, line)
-        for pattern, line in zip(step_patterns, workflow_steps)
+    if (
+        len(all_steps) != 3
+        or all_steps != workflow_steps
+        or any(
+            not re.fullmatch(pattern, line)
+            for pattern, line in zip(step_patterns, workflow_steps)
+        )
     ):
         errors.append(
             "must keep exactly ## Step 1 - ..., ## Step 2 - ..., and ## Step 3 - ... inside <workflow>"
@@ -1201,7 +1320,11 @@ def validate_skill_step_structure(text: str) -> list[str]:
 
     for _, heading, step_text in iter_workflow_steps(text) or []:
         non_empty_lines = [
-            line.rstrip() for line in step_text.splitlines() if line.strip()
+            line.rstrip()
+            for line in iter_code_fence_filtered_lines(
+                step_text, strip_inline_code=False
+            )
+            if line.strip()
         ]
         content_lines = []
         inside_rules = False
@@ -1267,7 +1390,9 @@ def validate_skill_contract_sections(text: str) -> list[str]:
         open_tag = f"<{tag_name}>"
         close_tag = f"</{tag_name}>"
         open_positions = [index for index, line in enumerate(lines) if line == open_tag]
-        close_positions = [index for index, line in enumerate(lines) if line == close_tag]
+        close_positions = [
+            index for index, line in enumerate(lines) if line == close_tag
+        ]
         if len(open_positions) != 1 or len(close_positions) != 1:
             errors.append(
                 f"Canonical skills must contain exactly one `{open_tag}` and `{close_tag}` block."
@@ -1323,7 +1448,9 @@ def validate_skill_contract_sections(text: str) -> list[str]:
     workflow_start, workflow_end = positions["workflow"]
     workflow_lines = lines[workflow_start + 1 : workflow_end]
     step_positions = [
-        index for index, line in enumerate(workflow_lines) if STEP_HEADING_PATTERN.match(line)
+        index
+        for index, line in enumerate(workflow_lines)
+        if STEP_HEADING_PATTERN.match(line)
     ]
     if len(step_positions) >= 2 and not re.search(
         r"\b(?:risk(?:[_ -](?:assessment|level))?|assurance)\b",
@@ -1364,7 +1491,9 @@ def collect_transitive_workflow_support(
         visited.add(relative_source)
         source_path = skill_dir / relative_source
         if source_path.is_symlink():
-            errors.append(f"Workflow support path must not be a symlink: ./{relative_source}")
+            errors.append(
+                f"Workflow support path must not be a symlink: ./{relative_source}"
+            )
             continue
         try:
             resolved_source = source_path.resolve(strict=True)
@@ -1373,7 +1502,9 @@ def collect_transitive_workflow_support(
             ).as_posix()
             source_text = resolved_source.read_text(encoding="utf-8")
         except (OSError, UnicodeError, RuntimeError, ValueError) as exc:
-            errors.append(f"Could not read workflow support file ./{relative_source}: {exc}")
+            errors.append(
+                f"Could not read workflow support file ./{relative_source}: {exc}"
+            )
             continue
 
         frontmatter, body = read_frontmatter(resolved_source)

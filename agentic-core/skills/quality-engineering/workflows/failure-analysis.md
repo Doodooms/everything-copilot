@@ -10,10 +10,30 @@ avoid_for:
 - implementing a fix, speculative optimization, general review, or feature work
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish the failure signal.
 
-1. Use #tool:read to inspect the reported symptom, exact failing command or input, environment, recent relevant changes, logs, and reproduction evidence before theorizing.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read to inspect the reported symptom, exact failing command or input, environment, recent relevant changes, logs, and reproduction evidence before theorizing.
 2. Use #tool:execute to run the narrowest existing test, command, or harness that reaches the reported behavior; confirm its failure is the one described.
 3. If no useful signal exists, use #tool:edit only for a minimal, authorized test-surface probe. Read the [failure-analysis guide](../references/failure-analysis/references/guide.md) when help choosing a loop or reducing a reproduction is needed.
 
@@ -28,3 +48,4 @@ references: []
 
 1. Return `status: success | partial | blocked`, the reported and observed behavior, reproduction command/environment, minimal inputs, failure chain, root-cause evidence, alternative hypotheses, affected requirements when known, likely owner, and exact next action.
 2. State whether a reliable signal was established, which checks were not possible, and any remaining uncertainty. Do not implement or claim that a repair is validated.
+</workflow>

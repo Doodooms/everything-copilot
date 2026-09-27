@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/manifest-record.schema.json",
+  "title": "Persisted orchestration manifest record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "manifest", "status", "updated_at"],
+  "properties": {
+    "task_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" },
+    "manifest": { "type": "object" },
+    "status": { "enum": ["planned", "in_progress", "success", "partial", "failed", "blocked"] },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

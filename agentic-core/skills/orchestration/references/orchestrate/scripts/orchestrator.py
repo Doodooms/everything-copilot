@@ -1,4 +1,10 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["jsonschema>=4.21,<5"]
+# ///
 """Validate and persist the Orchestrator's manifest and task event ledgers."""
+
+from __future__ import annotations
 
 import argparse
 import json
@@ -7,8 +13,10 @@ import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+from uuid import uuid4
 
+from validate_exchange import validate_document
 
 TASK_STATUSES = {
     "planned",
@@ -44,11 +52,15 @@ TASK_TRANSITIONS = {
 
 
 def _timestamp() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    return (
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    )
 
 
 def _validate_id(value: str, field: str) -> str:
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", value):
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", value
+    ):
         raise ValueError(f"{field} must be a 1-64 character path-safe identifier")
     return value
 
@@ -68,21 +80,16 @@ def _append_jsonl(path: Path, record: dict[str, Any]) -> None:
         stream.write(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
 
 
-def validate_manifest(manifest: Dict[str, Any]) -> Dict[str, Any]:
-    required = ["id", "title", "description"]
-    missing = [k for k in required if k not in manifest]
-    if missing:
-        return {"error": "MALFORMED_MANIFEST", "missing": missing}
-    if any(not isinstance(manifest[key], str) or not manifest[key].strip() for key in required):
-        return {"error": "MALFORMED_MANIFEST", "reason": "id, title, and description must be non-empty strings"}
-    try:
-        _validate_id(manifest["id"], "id")
-    except ValueError as exc:
-        return {"error": "MALFORMED_MANIFEST", "reason": str(exc)}
+def validate_manifest(
+    manifest: dict[str, Any], repo: str | Path | None = None
+) -> dict[str, Any]:
+    errors = validate_document("manifest", manifest, repo=repo)
+    if errors:
+        return {"error": "MALFORMED_MANIFEST", "details": errors}
     return {"ok": True}
 
 
-def extract_manifest_info(manifest: Dict[str, Any]) -> Dict[str, Any]:
+def extract_manifest_info(manifest: dict[str, Any]) -> dict[str, Any]:
     branch_name = manifest.get("branch_name", manifest.get("branch"))
     return {
         "worktree_path": manifest.get("worktree_path"),
@@ -94,7 +101,7 @@ def extract_manifest_info(manifest: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def validate_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
     missing = []
     if not isinstance(payload, dict):
         return {"error": "MISSING_PAYLOAD", "missing": ["manifest"]}
@@ -139,7 +146,7 @@ def create_manifest_if_missing(
     history_dir: str = "docs/harness-history",
     default_title: str | None = None,
     default_description: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """If `manifest` is not a dict, generate a minimal manifest object.
 
     The generated manifest is intentionally minimal and must be reviewed by
@@ -161,32 +168,50 @@ def create_manifest_if_missing(
         "id": task_id,
         "title": title,
         "description": description,
-        "change_type": "patch",
-        "test_commands": [],
-        "apply_policy": "require_manual",
         "status": "planned",
+        "updated_at": _timestamp(),
+        "lifecycle": {
+            "branch": None,
+            "worktree": None,
+            "commit_shas": [],
+            "pull_request": None,
+            "cleanup": "not_requested",
+            "commit_status": "not_applicable",
+            "commit_reason": "No repository commit is associated with this generated manifest.",
+        },
     }
     return generated
 
 
 def write_orchestration_record(
     task_id: str,
-    manifest: Dict[str, Any],
-    plans: List[Any],
-    responses: List[Any],
+    manifest: dict[str, Any],
+    plans: list[Any],
+    responses: list[Any],
     status: str,
     history_dir: str = "docs/harness-history",
+    repo: str | Path | None = None,
 ) -> str:
     task_id = _validate_id(task_id, "task_id")
     if not isinstance(manifest, dict):
-        raise ValueError("manifest must be an object")
-    if status not in {"planned", "in_progress", "success", "partial", "failed", "blocked"}:
+        raise TypeError("manifest must be an object")
+    if status not in {
+        "planned",
+        "in_progress",
+        "success",
+        "partial",
+        "failed",
+        "blocked",
+    }:
         raise ValueError(f"unsupported orchestration status: {status}")
-    validation = validate_manifest(manifest)
-    if validation.get("error"):
-        raise ValueError(f"invalid orchestration manifest: {validation}")
     if manifest["id"] != task_id:
         raise ValueError("task_id must match manifest.id")
+    manifest = {**manifest, "status": status, "updated_at": _timestamp()}
+    validation_errors = validate_document("manifest", manifest, repo=repo)
+    if validation_errors:
+        raise ValueError(
+            "invalid orchestration manifest: " + "; ".join(validation_errors)
+        )
 
     root = Path(history_dir)
     task_dir = root / task_id
@@ -199,6 +224,20 @@ def write_orchestration_record(
         "status": status,
         "updated_at": _timestamp(),
     }
+    record_errors = validate_document("manifest-record", record, repo=repo)
+    if record_errors:
+        raise ValueError("invalid orchestration record: " + "; ".join(record_errors))
+
+    event_record = _prepare_harness_event(
+        task_id,
+        {
+            "type": "orchestration_result",
+            "status": status,
+            "plan_refs": _artifact_refs(plans),
+            "specialist_returns": responses,
+        },
+        repo=repo,
+    )
 
     temporary_path = None
     try:
@@ -218,16 +257,7 @@ def write_orchestration_record(
         if temporary_path is not None:
             temporary_path.unlink(missing_ok=True)
 
-    append_harness_event(
-        task_id,
-        {
-            "type": "orchestration_result",
-            "status": status,
-            "plan_refs": _artifact_refs(plans),
-            "specialist_returns": responses,
-        },
-        history_dir=history_dir,
-    )
+    _append_jsonl(task_dir / "events.jsonl", event_record)
     return str(manifest_path)
 
 
@@ -251,14 +281,58 @@ def append_harness_event(
     task_id: str,
     event: dict[str, Any],
     history_dir: str = "docs/harness-history",
+    repo: str | Path | None = None,
 ) -> str:
-    task_id = _validate_id(task_id, "task_id")
-    if not isinstance(event, dict) or not isinstance(event.get("type"), str) or not event["type"]:
-        raise ValueError("event must be an object with a non-empty type")
-    record = {**event, "task_id": task_id, "timestamp": _timestamp()}
+    record = _prepare_harness_event(task_id, event, repo=repo)
     path = Path(history_dir) / task_id / "events.jsonl"
     _append_jsonl(path, record)
     return str(path)
+
+
+def _prepare_harness_event(
+    task_id: str,
+    event: dict[str, Any],
+    *,
+    repo: str | Path | None = None,
+) -> dict[str, Any]:
+    task_id = _validate_id(task_id, "task_id")
+    if (
+        not isinstance(event, dict)
+        or not isinstance(event.get("type"), str)
+        or not event["type"]
+    ):
+        raise ValueError("event must be an object with a non-empty type")
+    if event.get("schema_version") == "1.0.0":
+        record = {**event, "task_id": task_id, "timestamp": _timestamp()}
+    else:
+        status = event.get("status")
+        if not isinstance(status, str) or not status:
+            raise ValueError("event must include a non-empty status")
+        record = {
+            "schema_version": "1.0.0",
+            "event_id": str(uuid4()),
+            "task_id": task_id,
+            "timestamp": _timestamp(),
+            "type": event["type"],
+            "status": status,
+            "data": {
+                key: value
+                for key, value in event.items()
+                if key
+                not in {
+                    "schema_version",
+                    "event_id",
+                    "task_id",
+                    "timestamp",
+                    "type",
+                    "status",
+                }
+            },
+        }
+    validation_errors = validate_document("event", record, repo=repo)
+    if validation_errors:
+        raise ValueError("invalid orchestration event: " + "; ".join(validation_errors))
+    return record
 
 
 def _read_task_status(path: Path, task_id: str) -> str | None:
@@ -272,13 +346,26 @@ def _read_task_status(path: Path, task_id: str) -> str | None:
             try:
                 event = json.loads(line)
             except json.JSONDecodeError as exc:
-                raise ValueError(f"invalid task event at {path}:{line_number}: {exc}") from exc
+                raise ValueError(
+                    f"invalid task event at {path}:{line_number}: {exc}"
+                ) from exc
             if not isinstance(event, dict):
-                raise ValueError(f"invalid task event at {path}:{line_number}: expected an object")
+                raise TypeError(
+                    f"invalid task event at {path}:{line_number}: expected an object"
+                )
+            if event.get("schema_version") == "1.0.0":
+                validation_errors = validate_document("transition", event)
+                if validation_errors:
+                    raise ValueError(
+                        f"invalid task event at {path}:{line_number}: "
+                        + "; ".join(validation_errors)
+                    )
             if event.get("task_id") == task_id:
                 latest = event.get("status")
                 if latest not in TASK_STATUSES:
-                    raise ValueError(f"invalid task status at {path}:{line_number}: {latest!r}")
+                    raise ValueError(
+                        f"invalid task status at {path}:{line_number}: {latest!r}"
+                    )
     return latest
 
 
@@ -304,17 +391,26 @@ def append_task_event(
     path = Path(history_dir) / f"{history_id}.jsonl"
     previous = _read_task_status(path, task_id)
     if status not in TASK_TRANSITIONS[previous]:
-        raise ValueError(f"invalid task transition for {task_id}: {previous!r} -> {status!r}")
+        raise ValueError(
+            f"invalid task transition for {task_id}: {previous!r} -> {status!r}"
+        )
 
     event = {
+        "schema_version": "1.0.0",
+        "event_id": str(uuid4()),
         "parent_task_id": history_id,
         "task_id": task_id,
         "attempt_id": attempt_id,
         "agent_id": agent_id,
         "status": status,
         "timestamp": _timestamp(),
-        "evidence": evidence,
+        "evidence": [] if evidence is None else evidence,
     }
+    validation_errors = validate_document("transition", event)
+    if validation_errors:
+        raise ValueError(
+            "invalid task transition event: " + "; ".join(validation_errors)
+        )
     _append_jsonl(path, event)
     return str(path)
 
@@ -331,7 +427,9 @@ def main(argv: list[str] | None = None) -> int:
         help="absolute path to the target workspace's harness-history directory",
     )
 
-    write_manifest = commands.add_parser("record-manifest", help="validate and persist a manifest")
+    write_manifest = commands.add_parser(
+        "record-manifest", help="validate and persist a manifest"
+    )
     write_manifest.add_argument(
         "--manifest",
         required=True,
@@ -340,6 +438,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     write_manifest.add_argument("--status", required=True)
     write_manifest.add_argument(
+        "--repo",
+        type=_absolute_path_argument,
+        help="absolute repository path for base/commit reference verification",
+    )
+    write_manifest.add_argument(
         "--history-dir",
         required=True,
         type=_absolute_path_argument,
@@ -347,10 +450,16 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     harness_event = commands.add_parser(
-        "append-harness-event", help="append a structured orchestration or handoff event"
+        "append-harness-event",
+        help="append a structured orchestration or handoff event",
     )
     harness_event.add_argument("task_id")
     harness_event.add_argument("--event", required=True, help="event JSON object")
+    harness_event.add_argument(
+        "--repo",
+        type=_absolute_path_argument,
+        help="absolute repository path for Git/artifact reference verification",
+    )
     harness_event.add_argument(
         "--history-dir",
         required=True,
@@ -358,7 +467,9 @@ def main(argv: list[str] | None = None) -> int:
         help="absolute path to the target workspace's harness-history directory",
     )
 
-    task_event = commands.add_parser("append-task-event", help="append a task status transition")
+    task_event = commands.add_parser(
+        "append-task-event", help="append a task status transition"
+    )
     task_event.add_argument("history_id")
     task_event.add_argument("task_id")
     task_event.add_argument("status", choices=sorted(TASK_STATUSES))
@@ -376,9 +487,27 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "next-task-id":
         print(generate_next_task_id(str(args.history_dir)))
     elif args.command == "record-manifest":
-        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-        if not isinstance(manifest, dict):
+        payload = json.loads(args.manifest.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
             raise ValueError("manifest file must contain a JSON object")
+        if "manifest" in payload:
+            manifest = payload["manifest"]
+            if not isinstance(manifest, dict):
+                raise ValueError("manifest envelope field 'manifest' must be an object")
+            envelope_errors = validate_document(
+                "manifest-record", payload, repo=args.repo
+            )
+            if envelope_errors:
+                raise ValueError(
+                    "invalid manifest envelope: " + "; ".join(envelope_errors)
+                )
+            if payload.get("task_id") is not None and payload.get(
+                "task_id"
+            ) != manifest.get("id"):
+                raise ValueError("manifest envelope task_id must match manifest.id")
+        else:
+            manifest = payload
+        manifest = {**manifest, "status": args.status}
         path = write_orchestration_record(
             manifest.get("id"),
             manifest,
@@ -386,6 +515,7 @@ def main(argv: list[str] | None = None) -> int:
             responses=[],
             status=args.status,
             history_dir=str(args.history_dir),
+            repo=args.repo,
         )
         print(path)
     elif args.command == "append-harness-event":
@@ -393,7 +523,10 @@ def main(argv: list[str] | None = None) -> int:
         if not isinstance(event, dict):
             raise ValueError("event must be a JSON object")
         path = append_harness_event(
-            args.task_id, event, history_dir=str(args.history_dir)
+            args.task_id,
+            event,
+            history_dir=str(args.history_dir),
+            repo=args.repo,
         )
         print(path)
     elif args.command == "append-task-event":

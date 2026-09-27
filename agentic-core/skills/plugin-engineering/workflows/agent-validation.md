@@ -10,7 +10,27 @@ references:
   - ../references/create-agent/references/validation.md
   - ../references/create-agent/references/final-checklist.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Inspect the exact agent.
 
 1. Read the `.agent.md` and compare its description, routing, critical/general rules, risk assessment, tool allowlist, invocation fields, delegation, skill policy, workflow, and output contract.
@@ -25,3 +45,4 @@ references:
 ## Step 3 - Report the result.
 
 1. Complete the [final checklist](../references/create-agent/references/final-checklist.md) and return the exact path, validator result, findings, and residual risks.
+</workflow>

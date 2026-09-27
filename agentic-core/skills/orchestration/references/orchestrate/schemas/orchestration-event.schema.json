@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/orchestration-event.schema.json",
+  "title": "Append-only orchestration event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "task_id", "timestamp", "type", "status", "data"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "event_id": { "type": "string", "format": "uuid" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "type": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$" },
+    "status": { "enum": ["planned", "in_progress", "success", "partial", "failed", "blocked", "queued", "running", "completed", "unknown"] },
+    "data": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+        "changed_files": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/relativePath" } },
+        "commit_shas": { "type": "array", "items": { "$ref": "#/$defs/gitSha" }, "uniqueItems": true },
+        "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "next_action": { "type": "string", "minLength": 1 },
+        "next_owner": { "type": "string", "minLength": 1 },
+        "agent_id": { "type": "string", "minLength": 1 },
+        "attempt_id": { "type": "string", "minLength": 1 },
+        "plan_refs": { "type": "array", "items": { "$ref": "#/$defs/artifactRef" } },
+        "specialist_returns": { "type": "array", "items": { "$ref": "#/$defs/specialistReturn" } },
+        "commit_status": { "enum": ["created", "not_created", "not_applicable", "unknown"] },
+        "commit_reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "commit_status": { "const": "created" } }, "required": ["commit_status"] },
+          "then": { "required": ["commit_shas"], "properties": { "commit_shas": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "commit_status": { "enum": ["not_created", "not_applicable", "unknown"] } }, "required": ["commit_status"] },
+          "then": { "required": ["commit_reason"], "properties": { "commit_shas": { "maxItems": 0 } } }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" },
+    "gitSha": { "type": "string", "pattern": "^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$" },
+    "relativePath": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*\\\\).+$" },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "reference"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["source", "artifact", "command", "observation", "decision"] },
+        "reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "artifactRef": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "revision": { "type": "integer", "minimum": 1 },
+            "path": { "$ref": "#/$defs/relativePath" },
+            "status": { "type": "string", "minLength": 1 }
+          },
+          "anyOf": [{ "required": ["id"] }, { "required": ["path"] }]
+        }
+      ]
+    },
+    "specialistReturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_id", "attempt_id", "status", "handoff_ref"],
+      "properties": {
+        "agent_id": { "$ref": "#/$defs/identifier" },
+        "attempt_id": { "$ref": "#/$defs/identifier" },
+        "status": { "enum": ["completed", "partial", "failed", "blocked", "unknown"] },
+        "handoff_ref": { "$ref": "#/$defs/relativePath" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?/)(?!.*\\\\).+$" },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }
+      }
+    }
+  }
+}

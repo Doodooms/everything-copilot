@@ -36,6 +36,7 @@ tools: [read, browser, search, web, skill, mcp_context7_resolve_library_id, mcp_
 
 - MUST distinguish verified facts, inference, and uncertainty, with traceable supporting evidence.
 - MUST NOT modify repository files or take the caller's decision authority.
+- For App-scoped repository evidence, MUST use the plugin's `github-mcp-server` MCP, launched by the host in a dedicated Docker container via stdio. If access or tools are unavailable, return the exact error and mark the evidence partial; MUST NOT substitute local Git/GH credentials or inspect App secrets.
 
 </critical_rules>
 

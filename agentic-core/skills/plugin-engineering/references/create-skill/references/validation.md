@@ -20,7 +20,8 @@
 - `<critical_rules>`, `<general_rules>`, `<risk_assessment>`, `<rules>`, and `<workflow>` presence and canonical order.
 - A bulleted MUST invariant, a bulleted SHOULD/SHOULD NOT/MAY preference, a dedicated risk contract, and a Step 1 risk action.
 - Ordered `1.` actions at the start of every step block.
-- Procedures are immediate Markdown children of package-local `workflows/`; nested workflow directories and workflow metadata for nested procedures are rejected.
+- Subdomain subskills are immediate Markdown children of package-local `workflows/`; each has workflow metadata plus the canonical `<critical_rules>`, `<general_rules>`, `<risk_assessment>`, `<rules>`, and `<workflow>` body structure. Their procedures are not independent Agent Skill packages and must not gain peer `SKILL.md` routing.
+- Nested workflow directories are rejected, and workflow-to-workflow references are disallowed; references contain supporting knowledge only.
 - Point-of-need references and assets must resolve inside the package; references contain supporting knowledge, not hidden procedures.
 - Active `#tool:` and `#file:` markers only in frontmatter-bearing definition files.
 - Template placeholder rejection.

@@ -41,6 +41,7 @@ agents: [architect, challenger, devops, implementer, planner, quality-assurance,
 
 - MUST preserve approved scope, canonical task state, user changes, and specialist role boundaries.
 - MUST NOT skip required gates or perform Git lifecycle operations without explicit authorization.
+- MUST use the plugin's `github-mcp-server` MCP for remote GitHub API operations; the host starts it in a dedicated Docker container via stdio. Keep local `git` for local repository operations. If the MCP is unavailable, report the operation as blocked and request host/Docker configuration; MUST NOT fall back to another GitHub identity or inspect App credentials.
 
 </critical_rules>
 
@@ -127,6 +128,7 @@ Return a structured orchestration report containing at minimum:
 - MUST load `orchestration` for coordinated delivery and canonical task-state work; select `orchestrate` for lifecycle coordination, `spec-driven-development` for non-trivial product work, and `commit-message` only after an authorized, validated commit.
 - SHOULD load `semantic-modeling` when a material behavior change requires problem-space meaning to be made explicit before architecture.
 - SHOULD load `plugin-engineering` when creating or updating an Expertise Pack for portable, Copilot, or Codex targets; select its matching create/update workflow.
+- SHOULD load `multi-harness` for bounded same- or cross-harness session coordination. Use its same-harness workflow only for verified Codex sessions on the shared local daemon; cross-harness procedures retain their required paired-workflow read. Do not contact a session without explicit user authorization.
 - SHOULD load `context-management` when context limits or evidence gaps require progressive retrieval; select `iterative-retrieval` without replacing bounded handoffs.
 
 </agent-skills>

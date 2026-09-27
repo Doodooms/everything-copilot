@@ -11,10 +11,30 @@ references:
   - ../references/create-plugin/references/plugin-contract.md
   - ../references/create-plugin/references/skill-composition.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Define and scaffold the pack.
 
-1. Read the [pack contract](../references/create-plugin/references/plugin-contract.md) and [pack options template](../references/create-plugin/assets/pack-options-template.md); confirm the unique ID, capability boundary, type, publisher/source, first skill, target set, and required projections.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Read the [pack contract](../references/create-plugin/references/plugin-contract.md) and [pack options template](../references/create-plugin/assets/pack-options-template.md); confirm the unique ID, capability boundary, type, publisher/source, first skill, target set, and required projections.
    - Only when maintaining `create-plugin` itself, consult its [original specification](../references/create-plugin/references/original-spec.md) and [scaffold configuration](../references/create-plugin/assets/scaffold-config.json).
 2. From the repository root, run `PYTHONDONTWRITEBYTECODE=1 ./.venv/bin/python -m expertise scaffold [pack-id]` with explicit `--type`, `--name`, `--description`, `--capability`, `--skill-id`, `--skill-description`, `--publisher`, `--source`, `--target`, and only required `--project-to` options.
    - The canonical CLI creates the source manifest and starter skill. If it is unavailable or rejects the input, stop and report the exact diagnostic; MUST NOT hand-write a substitute.
@@ -25,3 +45,10 @@ references:
 2. Add an agent contribution only when the capability needs a durable persona; compose the `agent-authoring` procedure with its exact pack path and only cataloged, projected MCP tool names.
 3. Add an MCP declaration only for a required deterministic tool capability; route new server code to Implementer using `create-mcp`, or project an existing server from its authoritative tool catalog. Route host configuration, installation, and deployment to DevOps.
 4. Integrate successful returns in `pack.yaml`; preserve the [composition DAGs](../references/create-plugin/references/skill-composition.md), validate each child result, and MUST NOT create workspace duplicates.
+
+## Step 3 - Validate, build, and return.
+
+1. From the repository root, use #tool:execute with `uv run --project <repository-root> python -m expertise validate [pack-id]` and `uv run --project <repository-root> python -m expertise test [pack-id]`.
+2. Run `uv run --project <repository-root> python -m expertise build [pack-id] --target [target]` for every declared target; inspect diagnostics and the exact output paths.
+3. Return the pack ID/version, source files, declared targets, validation and build results, changed paths, unresolved risks, and next action. MUST NOT install, activate, stage, commit, or open a PR unless the handoff separately authorizes it.
+</workflow>

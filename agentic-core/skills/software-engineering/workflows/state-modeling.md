@@ -12,10 +12,30 @@ avoid_for:
 references:
   - ../references/implementation-design/references/state-machines.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Enumerate the state contract.
 
-1. Identify externally relevant states, events, allowed transitions, terminal states, and invariants; return ambiguous product meaning to the specification owner.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Identify externally relevant states, events, allowed transitions, terminal states, and invariants; return ambiguous product meaning to the specification owner.
 
 ## Step 2 - Choose a representation.
 
@@ -25,3 +45,4 @@ references:
 ## Step 3 - Explain the model.
 
 1. Report valid transitions, preserved invariants, rejected states, and the smallest test surface needed to distinguish an invalid transition.
+</workflow>

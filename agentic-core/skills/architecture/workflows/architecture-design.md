@@ -12,10 +12,30 @@ avoid_for:
 references:
   - ../references/architecture-design/references/ADR-FORMAT.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish structural evidence.
 
-1. Read the approved objective, current architecture notes, relevant domain terms, owning interfaces, data models, integration points, tests, and affected paths.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Read the approved objective, current architecture notes, relevant domain terms, owning interfaces, data models, integration points, tests, and affected paths.
 2. Use #tool:search to trace the current execution or dependency path; inspect repository history only when repeated changes or churn help prioritize an architecture-improvement request.
 3. Read the [architecture guide](../references/architecture-design/references/guide.md) only when its focused decision checklist is needed.
 
@@ -31,3 +51,4 @@ references:
 1. If the handoff authorizes recording an approved architecture choice that is costly to reverse, surprising without context, and selected over a material alternative, use the [ADR format](../references/architecture-design/references/ADR-FORMAT.md); otherwise return the decision in the brief without creating an ADR.
 2. Return the selected structure, responsibilities, interfaces, dependencies, affected files or modules, implementation constraints, tradeoffs, risks, assumptions, non-goals, and open decisions.
 3. For architecture-improvement work, rank only evidenced candidates and identify the strongest next decision; do not turn the scan into implementation or a delivery plan.
+</workflow>

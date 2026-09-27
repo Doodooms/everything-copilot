@@ -11,23 +11,33 @@ avoid_for:
   work
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
-## Step 0 - **CONFIRMATION**
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
 
-1. USE #tool:read **IMMEDIATELY** on #file:../references/database-audit/references/USEFOR.md ([when to use](../references/database-audit/references/USEFOR.md)) and **IMMEDIATELY** on #file:../references/database-audit/references/DONOTUSEFOR.md ([when not to use](../references/database-audit/references/DONOTUSEFOR.md)) to confirm with certainty if this skill should be used.
-2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
 
 <rules>
-
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
 - Review integrity, security, performance, and operational safety together.
 - Prefer real access patterns over abstract schema opinions.
 - Reference support files only at the point of need.
-
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
 </rules>
 
+<workflow>
 ## Step 1 - Inspect the database-facing change surface.
 
-1. Use #tool:read on the queries, schema definitions, migrations, and data-access code under review.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read on the queries, schema definitions, migrations, and data-access code under review.
 2. Use #tool:search to locate related indexes, constraints, transaction boundaries, and multi-tenant access points.
 3. Use #tool:read on #file:../references/database-audit/references/guide.md ([database audit guide](../references/database-audit/references/guide.md)) only if the audit checklist is still needed.
 
@@ -41,3 +51,4 @@ references: []
 
 1. Use #tool:read to verify any referenced schema or query location before finalizing the audit.
 2. Return severity, location, impact, and remediation direction for each material finding.
+</workflow>

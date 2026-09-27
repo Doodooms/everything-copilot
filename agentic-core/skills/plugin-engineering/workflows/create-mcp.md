@@ -7,38 +7,65 @@ invoke_for:
 - Validate tool names against actual registrations or tools/list
 avoid_for:
 - Install or deploy an MCP server, manage host configuration, or implement unrelated product features
-references: []
+references:
+- ../references/create-mcp/assets/language-selection-checklist.md
+- ../references/create-mcp/common-transport-security.md
+- ../references/create-mcp/scripts/validate_mcp.sh
+- ../references/create-mcp/references/URIs.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
-## Step 1 - Inspect MCP entrypoints
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
 
-1. Use #tool:search to locate MCP server entrypoints and stale server-code references when the repository already contains MCP code or was recently renamed.
-2. If the relevant files are already known, inspect those files directly.
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
 
-## Step 2 - Inspect the current MCP state
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
 
-1. If the repository already contains MCP code or was recently renamed, use #tool:search to locate current server entrypoints and stale references.
-2. If the exact files are already known, use #tool:read on those files directly.
+<workflow>
+## Step 1 - Inspect MCP entrypoints and repository state
 
-## Step 3 - Clarify constraints
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:search to locate MCP server entrypoints and stale server-code references when the repository already contains MCP code or was recently renamed.
+2. Read the relevant server entrypoints, dependency lockfile, registered names, host requirements, and existing tests directly.
 
-1. If the language, runtime compatibility, or transport is not clear from the request and repository state, use #tool:vscode/askQuestions before choosing an implementation path.
+## Step 2 - Confirm the required contract
 
-## Step 4 - Choose the language
+1. Confirm the requested tools, resources, prompts, input/output contracts, authority, runtime constraints, host, and transport from the request and repository evidence.
+2. Ask the user or Orchestrator only for an unresolved decision that materially changes the implementation; do not start dependent code until it is resolved.
 
-1. Use #tool:read on #file:../references/create-mcp/assets/language-selection-checklist.md to apply the [language selection checklist](../references/create-mcp/assets/language-selection-checklist.md).
+## Step 3 - Choose the language and SDK
 
-## Step 5 - Choose the transport
+1. Apply the [language selection checklist](../references/create-mcp/assets/language-selection-checklist.md); consult [official SDK references](../references/create-mcp/references/URIs.md) and verify the exact pinned SDK version.
+2. If Rust is selected after this workflow was loaded, stop before writing Rust code and route to the sibling workflow at `workflows/create-mcp-rust.md` for its version-specific `rmcp` procedure.
 
-1. Use #tool:read on #file:../references/create-mcp/references/manage_mcp.md to apply the transport guidance for [MCP servers in VS Code](../references/create-mcp/references/manage_mcp.md).
+## Step 4 - Choose one transport
 
-## Step 6 - Implement the smallest working server
+1. Apply [the shared transport and security rules](../references/create-mcp/common-transport-security.md) and select the transport required by the client and deployment boundary.
 
-1. Use #tool:read on #file:../references/create-mcp/references/URIs.md ([official SDK references](../references/create-mcp/references/URIs.md)) when selecting SDK APIs or package paths.
-2. Register a single tool first, validate it over `stdio`, then expand to resources, prompts, and HTTP transport.
+## Step 5 - Implement the approved server surface
 
-## Step 7 - Validate
+1. Use the selected SDK's official documentation and examples for the pinned version; do not copy an API from a different version.
+2. Implement only the requested tools, resources, prompts, and one transport. Derive published tool names from registrations or `tools/list`; do not invent aliases or expand the protocol surface without approval.
+3. Keep capability logic separate from transport-specific wiring where the SDK permits; start with the smallest implementation that proves the required behavior, then add only the remaining approved capabilities.
 
-1. Use #tool:execute to run the narrowest build, install, or smoke-test command for the touched implementation.
-2. If host integration is required, return the server's exact transport, command, arguments, and published tool names to DevOps; do not edit host configuration.
-3. Check this method's scaffold using `bash agentic-core/skills/plugin-engineering/references/create-mcp/scripts/validate_mcp.sh` and the [validator script](../references/create-mcp/scripts/validate_mcp.sh); this scaffold check does not replace testing the generated server.
+## Step 6 - Validate protocol behavior
+
+1. Build and lint with the repository's pinned toolchain; verify initialization, `tools/list`, valid and invalid calls, serialization, expected failures, and clean shutdown over the selected transport.
+2. Validate the parent package's workflow metadata and contained references with `references/create-skill/scripts/validate.py`; run the [MCP-specific scaffold check](../references/create-mcp/scripts/validate_mcp.sh) with `bash agentic-core/skills/plugin-engineering/references/create-mcp/scripts/validate_mcp.sh`. Neither check replaces tests of the generated server.
+3. If host integration is required, return the exact transport, command, arguments, environment needs, and published tool names to `operations`; do not edit host configuration.
+
+## Step 7 - Return the implementation handoff
+
+1. Report the SDK version, transport, registered names, commands, test evidence, changed files, security boundary, and any unverified runtime behavior.
+</workflow>

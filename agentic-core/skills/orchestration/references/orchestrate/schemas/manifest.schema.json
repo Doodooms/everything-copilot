@@ -1,0 +1,288 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/manifest.schema.json",
+  "title": "Orchestration task manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "description", "status", "updated_at", "lifecycle"],
+  "properties": {
+    "id": { "$ref": "#/$defs/identifier" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["planned", "in_progress", "success", "partial", "failed", "blocked"] },
+    "base_revision": { "anyOf": [{ "$ref": "#/$defs/gitSha" }, { "type": "null" }] },
+    "risk_level": { "enum": ["L0", "L1", "L2", "L3"] },
+    "required_gates": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "specification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "status", "requirements", "acceptance_criteria"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "minLength": 1 },
+        "objective": { "type": "string", "minLength": 1 },
+        "requirements": { "type": "array", "items": { "oneOf": [{ "type": "string", "minLength": 1 }, { "$ref": "#/$defs/requirement" }] } },
+        "acceptance_criteria": { "type": "array", "items": { "oneOf": [{ "type": "string", "minLength": 1 }, { "$ref": "#/$defs/acceptanceCriterion" }] } },
+        "assumptions": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "required": ["source", "statement"], "properties": { "source": { "type": "string", "minLength": 1 }, "statement": { "type": "string", "minLength": 1 } }, "additionalProperties": true }] } },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "non_goals": { "type": "array", "items": { "type": "string" } },
+        "open_decisions": { "type": "array", "items": { "type": "object" } },
+        "semantic_model": { "type": "object" },
+        "intent": { "type": "string" },
+        "normalization_notes": { "type": "array", "items": { "type": "string" } },
+        "source_request": { "type": "string" },
+        "path": { "$ref": "#/$defs/relativePath" }
+      }
+    },
+    "architecture_ref": {
+      "anyOf": [
+        { "$ref": "#/$defs/relativePath" },
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "revision"],
+          "properties": {
+            "path": { "$ref": "#/$defs/relativePath" },
+            "revision": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "plan_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "revision", "spec_revision"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "minLength": 1 }
+      }
+    },
+    "task_events_ref": { "$ref": "#/$defs/relativePath" },
+    "selected_phases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "skipped_phases": {
+      "type": "array",
+      "items": { "oneOf": [{ "type": "string", "minLength": 1 }, {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase"],
+        "anyOf": [{ "required": ["reason"] }, { "required": ["rationale"] }],
+        "properties": {
+          "phase": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }] }
+    },
+    "open_blockers": {
+      "type": "array",
+      "items": { "oneOf": [{ "type": "string", "minLength": 1 }, {
+        "type": "object",
+        "required": ["id", "status", "reason"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "owner": { "type": "string", "minLength": 1 },
+          "scope": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "string", "minLength": 1 },
+          "next_action": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }] }
+    },
+    "architecture": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["not_required", "pending", "ready", "stale", "blocked"] },
+        "revision": { "type": ["integer", "null"], "minimum": 1 },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "decisions": { "type": "array", "items": { "$ref": "#/$defs/architectureDecision" } }
+      },
+      "additionalProperties": false
+    },
+    "plan": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["not_required", "pending", "ready", "stale", "blocked", "approved"] },
+        "revision": { "type": ["integer", "null"], "minimum": 1 },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "approval": { "type": ["string", "object", "null"] },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "supersedes": { "type": ["integer", "string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "tasks": { "type": "array", "items": { "$ref": "#/$defs/sddTask" } },
+    "implementation": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["pending", "in_progress", "complete", "blocked", "stale"] },
+        "revision": { "type": "string", "minLength": 1 },
+        "current_tasks": { "type": "array", "items": { "$ref": "#/$defs/taskId" } },
+        "evidence": { "type": "array", "items": { "oneOf": [{ "type": "string", "minLength": 1 }, { "$ref": "#/$defs/implementationEvidence" }] } }
+      },
+      "additionalProperties": false
+    },
+    "qa": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["not_required", "pending", "pass", "fail", "blocked", "stale"] },
+        "qa_run_id": { "type": "string", "pattern": "^QA-RUN-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "implementation_revision": { "type": "string", "minLength": 1 },
+        "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/acceptanceCriterionId" } },
+        "validation_evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceId" } }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["not_required", "pending", "approve", "reject", "blocked", "stale"] },
+        "review_id": { "type": "string", "pattern": "^REVIEW-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "implementation_revision": { "type": "string", "minLength": 1 },
+        "qa_run_id": { "type": "string", "pattern": "^QA-RUN-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/acceptanceCriterionId" } },
+        "validation_evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceId" } },
+        "security_review_reason": { "type": "string" },
+        "security_review_required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "convergence": {
+      "type": "object",
+      "required": ["status"],
+      "properties": { "status": { "enum": ["pending", "gaps_found", "converged"] } },
+      "additionalProperties": false
+    },
+    "validation_evidence": { "type": "array", "items": { "$ref": "#/$defs/validationEvidence" } },
+    "open_findings": { "type": "array", "items": { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "pattern": "^DEFECT-[A-Z0-9]+(?:-[A-Z0-9]+)*$" } }, "additionalProperties": true } },
+    "stale_artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "unrequested_material_changes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "context_refs": { "type": "array", "items": { "type": "object" } },
+    "handoffs": { "type": "array", "items": { "type": "object" } },
+    "user_steering": { "type": "array", "items": { "type": "object" } },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "worktree", "commit_shas", "pull_request", "cleanup"],
+      "properties": {
+        "branch": { "type": ["string", "null"] },
+        "worktree": { "type": ["string", "null"] },
+        "commit_shas": { "type": "array", "items": { "$ref": "#/$defs/gitSha" }, "uniqueItems": true },
+        "pull_request": { "type": ["string", "integer", "null"] },
+        "cleanup": { "enum": ["not_requested", "pending", "completed", "preserved"] },
+        "commit_status": { "enum": ["created", "not_created", "not_applicable", "unknown"] },
+        "commit_reason": { "type": "string", "minLength": 1 },
+        "workspace_note": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "commit_status": { "const": "created" } }, "required": ["commit_status"] },
+          "then": { "properties": { "commit_shas": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "commit_status": { "enum": ["not_created", "not_applicable", "unknown"] } }, "required": ["commit_status"] },
+          "then": { "required": ["commit_reason"], "properties": { "commit_shas": { "maxItems": 0 } } }
+        }
+      ]
+    },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" },
+    "gitSha": { "type": "string", "pattern": "^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$" },
+    "relativePath": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*\\\\).+$" },
+    "requirement": {
+      "type": "object",
+      "required": ["id", "statement"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "statement": { "type": "string", "minLength": 1 },
+        "priority": { "type": "string" },
+        "rationale": { "type": "string" },
+        "semantic_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "acceptanceCriterion": {
+      "type": "object",
+      "required": ["id", "statement", "requirements"],
+      "properties": {
+        "id": { "$ref": "#/$defs/acceptanceCriterionId" },
+        "statement": { "type": "string", "minLength": 1 },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*$" }, "minItems": 1 },
+        "semantic_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "existing_behavior": { "type": "boolean" },
+        "existing_evidence": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "architectureDecision": {
+      "type": "object",
+      "required": ["id", "statement"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ADR-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+        "statement": { "type": "string", "minLength": 1 },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*$" } }
+      },
+      "additionalProperties": false
+    },
+    "taskId": { "type": "string", "pattern": "^TASK-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+    "acceptanceCriterionId": { "type": "string", "pattern": "^AC-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+    "evidenceId": { "type": "string", "pattern": "^EVIDENCE-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+    "sddTask": {
+      "type": "object",
+      "required": ["id", "status", "requirements", "acceptance_criteria"],
+      "properties": {
+        "id": { "$ref": "#/$defs/taskId" },
+        "status": { "enum": ["planned", "in_progress", "complete", "completed", "done", "blocked", "stale"] },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*$" } },
+        "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/acceptanceCriterionId" } },
+        "architecture_decisions": { "type": "array", "items": { "type": "string", "pattern": "^ADR-[A-Z0-9]+(?:-[A-Z0-9]+)*$" } },
+        "depends_on": { "type": "array", "items": { "$ref": "#/$defs/taskId" } }
+      },
+      "additionalProperties": false
+    },
+    "implementationEvidence": {
+      "type": "object",
+      "required": ["spec_revision", "implementation_revision", "status", "acceptance_criteria"],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/taskId" },
+        "source": { "enum": ["existing", "direct"] },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "implementation_revision": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["pass", "partial", "fail", "blocked"] },
+        "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/acceptanceCriterionId" } },
+        "validation_evidence_refs": { "type": "array", "items": { "$ref": "#/$defs/evidenceId" } }
+      },
+      "additionalProperties": false
+    },
+    "validationEvidence": {
+      "type": "object",
+      "required": ["id", "check", "subject_revision", "environment", "producer", "result"],
+      "properties": {
+        "id": { "$ref": "#/$defs/evidenceId" },
+        "check": { "type": "string", "minLength": 1 },
+        "subject_revision": { "type": "string", "minLength": 1 },
+        "environment": { "type": "string", "minLength": 1 },
+        "producer": { "type": "string", "minLength": 1 },
+        "result": { "enum": ["pass", "fail", "partial", "blocked"] },
+        "command": { "type": "string", "minLength": 1 },
+        "spec_revision": { "type": "integer", "minimum": 1 },
+        "acceptance_criteria": { "type": "array", "items": { "$ref": "#/$defs/acceptanceCriterionId" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

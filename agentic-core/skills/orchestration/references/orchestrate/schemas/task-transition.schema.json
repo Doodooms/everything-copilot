@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/task-transition.schema.json",
+  "title": "Task status transition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "parent_task_id", "task_id", "attempt_id", "agent_id", "status", "timestamp", "evidence"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "event_id": { "type": "string", "format": "uuid" },
+    "parent_task_id": { "$ref": "#/$defs/identifier" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "attempt_id": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+    "agent_id": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+    "status": { "enum": ["planned", "queued", "running", "completed", "partial", "failed", "blocked", "unknown", "cancelled"] },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "reference"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["source", "artifact", "command", "observation", "decision"] },
+        "reference": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

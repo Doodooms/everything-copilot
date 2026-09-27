@@ -10,10 +10,30 @@ avoid_for:
   acceptance
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish planning inputs.
 
-1. Use #tool:read to inspect the approved specification, architecture decisions, repository constraints, existing plan, and requested delivery scope.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read to inspect the approved specification, architecture decisions, repository constraints, existing plan, and requested delivery scope.
 2. Use #tool:todo to create or update native todos for the three major planning steps; do not dispatch implementation or invent missing acceptance criteria.
 3. Stop and return a blocker if required approval, specification revision, or architecture decisions are missing or stale.
 
@@ -29,3 +49,4 @@ references: []
 1. Return specification/architecture revisions, task graph, phases, dependency edges, file ownership, validation commands, risks, assumptions, skipped work with rationale, and the next owner.
 2. Confirm all acceptance criteria have an owning task or are explicitly marked existing behavior/not applicable with evidence.
 3. Use #tool:todo to update planning todos from the returned evidence; leave implementation state to the Orchestrator and task ledger.
+</workflow>

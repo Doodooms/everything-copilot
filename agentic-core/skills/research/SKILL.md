@@ -42,6 +42,7 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
    - [code-exploration](./workflows/code-exploration.md) to trace local entry points, execution paths, or dependencies.
    - [deep-research](./workflows/deep-research.md) for bounded multi-source synthesis.
    - [github-evidence-research](./workflows/github-evidence-research.md) for repository, commit, release, issue, or PR evidence.
+   - [existing-solution-research](./workflows/existing-solution-research.md) before a substantial new abstraction when an existing project, standard, or library may fit.
    - [paper-research](./workflows/paper-research.md) for scholarly evidence and study limitations.
    - [versioned-documentation-research](./workflows/versioned-documentation-research.md) for version-specific documentation and compatibility.
 

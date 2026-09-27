@@ -13,7 +13,27 @@ references:
   - ../references/spec-driven-development/references/convergence.md
   - ../references/spec-driven-development/assets/specification-template.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish or revise the canonical problem definition.
 
 1. Read the Orchestrator composition packet, current manifest/state, explicit `mode` (`specify`, `revise`, or `converge`), assigned `risk_level`, and exact parent `resume_point`; return `blocked` if required inputs are missing.
@@ -48,3 +68,4 @@ references:
    `PYTHONDONTWRITEBYTECODE=1 python ../references/spec-driven-development/scripts/validate_sdd_state.py <absolute-task-state-path>`
    Use `--coverage` for the traceability matrix and `--invalidate <source>` only when a material upstream revision changed.
 3. If gaps remain, return their categories, evidence, owner, and smallest next gate; do not claim convergence. On convergence, return the structured handoff to `orchestrate` at the supplied `resume_point`, leaving branch, worktree, PR, merge, and cleanup lifecycle with the parent.
+</workflow>

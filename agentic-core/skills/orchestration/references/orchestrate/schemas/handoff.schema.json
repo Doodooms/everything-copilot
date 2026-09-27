@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/handoff.schema.json",
+  "title": "Cross-agent handoff envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "handoff_id", "task_id", "attempt_id", "created_at", "producer", "recipient", "outcome", "objective", "requested_response", "constraints", "evidence", "changed_paths", "validation", "commit_status", "git_commits", "artifacts"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "kind": { "const": "agent_handoff" },
+    "handoff_id": { "type": "string", "format": "uuid" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "attempt_id": { "$ref": "#/$defs/identifier" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "producer": { "$ref": "#/$defs/endpoint" },
+    "recipient": { "$ref": "#/$defs/endpoint" },
+    "outcome": { "enum": ["ready", "completed", "partial", "blocked", "unknown"] },
+    "objective": { "type": "string", "minLength": 1 },
+    "requested_response": { "type": "string", "minLength": 1 },
+    "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+    "changed_paths": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/relativePath" } },
+    "validation": { "type": "array", "items": { "$ref": "#/$defs/validation" } },
+    "commit_status": { "enum": ["created", "not_created", "not_applicable", "unknown"] },
+    "commit_reason": { "type": "string", "minLength": 1 },
+    "git_commits": { "type": "array", "items": { "$ref": "#/$defs/gitCommit" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "commit_status": { "const": "created" } }, "required": ["commit_status"] },
+      "then": { "properties": { "git_commits": { "minItems": 1 } } }
+    },
+    {
+      "if": { "properties": { "commit_status": { "enum": ["not_created", "not_applicable", "unknown"] } }, "required": ["commit_status"] },
+      "then": { "required": ["commit_reason"], "properties": { "git_commits": { "maxItems": 0 } } }
+    }
+  ],
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["harness", "agent_id"],
+      "properties": {
+        "harness": { "type": "string", "minLength": 1 },
+        "agent_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": ["string", "null"] }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "reference"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["source", "artifact", "command", "observation", "decision"] },
+        "reference": { "type": "string", "minLength": 1 }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check", "result", "observed_at", "subject"],
+      "properties": {
+        "check": { "type": "string", "minLength": 1 },
+        "result": { "enum": ["passed", "failed", "skipped", "unknown"] },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "subject": { "type": "string", "minLength": 1 },
+        "command": { "type": "string", "minLength": 1 },
+        "evidence_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "gitCommit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "changed_paths"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "commit_sha": { "$ref": "#/$defs/gitSha" },
+        "changed_paths": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/relativePath" } }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }
+      }
+    },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" },
+    "gitSha": { "type": "string", "pattern": "^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$" },
+    "relativePath": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*\\\\).+$" }
+  }
+}

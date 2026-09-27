@@ -9,23 +9,33 @@ avoid_for:
 - feature delivery, speculative rewrites, or optimization without evidence
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
-## Step 0 - **CONFIRMATION**
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
 
-1. USE #tool:read **IMMEDIATELY** on #file:../references/refactor-cleanup/references/USEFOR.md ([when to use](../references/refactor-cleanup/references/USEFOR.md)) and **IMMEDIATELY** on #file:../references/refactor-cleanup/references/DONOTUSEFOR.md ([when not to use](../references/refactor-cleanup/references/DONOTUSEFOR.md)) to confirm with certainty if this skill should be used.
-2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
 
 <rules>
-
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
 - Preserve intended behavior while cleaning structure.
 - Prefer small, reviewable cleanup slices over broad rewrites.
 - Reference support files only at the point of need.
-
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
 </rules>
 
+<workflow>
 ## Step 1 - Identify the cleanup candidate and its current behavior.
 
-1. Use #tool:read on the target files, nearby tests, and existing behavior anchor.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read on the target files, nearby tests, and existing behavior anchor.
 2. Use #tool:search to locate duplicate logic, dead branches, unused helpers, or repeated patterns.
 3. Use #tool:read on #file:../references/refactor-cleanup/references/guide.md ([cleanup guide](../references/refactor-cleanup/references/guide.md)) only if the cleanup checklist is still needed.
 
@@ -39,3 +49,4 @@ references: []
 
 1. Use #tool:execute on the narrowest test or build check that proves the behavior is unchanged.
 2. Return the cleanup scope, preserved behavior, and any follow-up slices that should stay separate.
+</workflow>

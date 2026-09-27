@@ -11,27 +11,26 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 ID_PATTERNS = {
-    "specification": re.compile(r"^SPEC-[A-Z0-9]+$"),
-    "requirement": re.compile(r"^REQ-[A-Z0-9]+$"),
-    "acceptance criterion": re.compile(r"^AC-[A-Z0-9]+$"),
-    "architecture decision": re.compile(r"^ADR-[A-Z0-9]+$"),
-    "task": re.compile(r"^TASK-[A-Z0-9]+$"),
-    "defect": re.compile(r"^DEFECT-[A-Z0-9]+$"),
-    "QA run": re.compile(r"^QA-RUN-[A-Z0-9]+$"),
-    "review": re.compile(r"^REVIEW-[A-Z0-9]+$"),
-    "semantic concept": re.compile(r"^CONCEPT-[A-Z0-9]+$"),
-    "semantic relation": re.compile(r"^REL-[A-Z0-9]+$"),
-    "semantic state": re.compile(r"^STATE-[A-Z0-9]+$"),
-    "semantic event": re.compile(r"^EVENT-[A-Z0-9]+$"),
-    "semantic transition": re.compile(r"^TRANSITION-[A-Z0-9]+$"),
-    "semantic invariant": re.compile(r"^INV-[A-Z0-9]+$"),
-    "semantic contract": re.compile(r"^CONTRACT-[A-Z0-9]+$"),
-    "semantic assumption": re.compile(r"^ASSUMPTION-[A-Z0-9]+$"),
-    "semantic hypothesis": re.compile(r"^HYPOTHESIS-[A-Z0-9]+$"),
-    "semantic unknown": re.compile(r"^UNKNOWN-[A-Z0-9]+$"),
-    "validation evidence": re.compile(r"^EVIDENCE-[A-Z0-9]+$"),
+    "specification": re.compile(r"^SPEC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "requirement": re.compile(r"^REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "acceptance criterion": re.compile(r"^AC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "architecture decision": re.compile(r"^ADR-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "task": re.compile(r"^TASK-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "defect": re.compile(r"^DEFECT-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "QA run": re.compile(r"^QA-RUN-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "review": re.compile(r"^REVIEW-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic concept": re.compile(r"^CONCEPT-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic relation": re.compile(r"^REL-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic state": re.compile(r"^STATE-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic event": re.compile(r"^EVENT-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic transition": re.compile(r"^TRANSITION-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic invariant": re.compile(r"^INV-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic contract": re.compile(r"^CONTRACT-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic assumption": re.compile(r"^ASSUMPTION-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic hypothesis": re.compile(r"^HYPOTHESIS-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "semantic unknown": re.compile(r"^UNKNOWN-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
+    "validation evidence": re.compile(r"^EVIDENCE-[A-Z0-9]+(?:-[A-Z0-9]+)*$"),
 }
 
 SEMANTIC_COLLECTIONS = {
@@ -52,7 +51,14 @@ REQUIRED_GATES = {"architecture", "plan", "implementation", "qa", "review"}
 LEGACY_REQUIRED_GATES = {"plan", "implementation", "qa", "review"}
 
 INVALIDATION_GRAPH = {
-    "specification": ("architecture", "plan", "tasks", "implementation", "qa", "review"),
+    "specification": (
+        "architecture",
+        "plan",
+        "tasks",
+        "implementation",
+        "qa",
+        "review",
+    ),
     "architecture": ("plan", "tasks", "implementation", "qa", "review"),
     "plan": ("tasks", "implementation", "qa", "review"),
     "tasks": ("implementation", "qa", "review"),
@@ -102,7 +108,9 @@ def _string_ids(
     value = item.get(field)
     if value is None and not required:
         return []
-    if not isinstance(value, list) or any(not isinstance(entry, str) for entry in value):
+    if not isinstance(value, list) or any(
+        not isinstance(entry, str) for entry in value
+    ):
         errors.append(f"{location}.{field} must be a list of IDs")
         return []
     if required and not value:
@@ -128,7 +136,9 @@ def _check_id(
     return value
 
 
-def _status(item: Any, field: str, location: str, allowed: set[str], errors: list[str]) -> str | None:
+def _status(
+    item: Any, field: str, location: str, allowed: set[str], errors: list[str]
+) -> str | None:
     if not isinstance(item, dict):
         errors.append(f"{location} must be an object")
         return None
@@ -201,14 +211,18 @@ def _validate_semantic_model(
                     errors.append(f"{item_location}.meaning must be non-empty text")
                 normalized_term = term.casefold().strip()
                 if normalized_term in canonical_terms:
-                    errors.append(f"{item_location}.term duplicates canonical terminology")
+                    errors.append(
+                        f"{item_location}.term duplicates canonical terminology"
+                    )
                 canonical_terms[normalized_term] = term
                 raw_aliases = item.get("aliases", [])
                 if not isinstance(raw_aliases, list) or any(
                     not isinstance(alias, str) or not alias.strip()
                     for alias in raw_aliases
                 ):
-                    errors.append(f"{item_location}.aliases must be a list of non-empty strings")
+                    errors.append(
+                        f"{item_location}.aliases must be a list of non-empty strings"
+                    )
                     continue
                 for alias in raw_aliases:
                     normalized_alias = alias.casefold().strip()
@@ -225,7 +239,7 @@ def _validate_semantic_model(
         id_kind, required_text_field, secondary_text_field = schema
         for index, item in enumerate(items):
             item_location = f"{location}.semantic_model.{collection}[{index}]"
-            identifier = _check_id(
+            _check_id(
                 item.get("id"),
                 id_kind,
                 f"{item_location}.id",
@@ -258,11 +272,17 @@ def _validate_semantic_model(
             if collection == "assumptions" and (
                 not isinstance(item.get("source"), str) or not item["source"].strip()
             ):
-                errors.append(f"{item_location}.source must be non-empty provenance text")
-            if collection == "unknowns" and "owner" in item and (
-                not isinstance(item["owner"], str) or not item["owner"].strip()
+                errors.append(
+                    f"{item_location}.source must be non-empty provenance text"
+                )
+            if (
+                collection == "unknowns"
+                and "owner" in item
+                and (not isinstance(item["owner"], str) or not item["owner"].strip())
             ):
-                errors.append(f"{item_location}.owner must be non-empty text when present")
+                errors.append(
+                    f"{item_location}.owner must be non-empty text when present"
+                )
 
     def check_ref(value: Any, valid: set[str], where: str, expected: str) -> None:
         if isinstance(value, str) and value not in valid:
@@ -324,9 +344,7 @@ def _validate_semantic_model(
                 and isinstance(item.get("concept_id"), str)
                 and state.get("concept_id") != item.get("concept_id")
             ):
-                errors.append(
-                    f"{item_location}.{field} belongs to a different concept"
-                )
+                errors.append(f"{item_location}.{field} belongs to a different concept")
 
     for alias, canonical in aliases.items():
         if alias in canonical_terms and alias != canonical:
@@ -367,7 +385,9 @@ def _validate_validation_evidence(
         if "command" in record and (
             not isinstance(record["command"], str) or not record["command"].strip()
         ):
-            errors.append(f"{record_location}.command must be non-empty text when present")
+            errors.append(
+                f"{record_location}.command must be non-empty text when present"
+            )
         if "spec_revision" in record and record["spec_revision"] != revision:
             errors.append(f"{record_location} records a stale specification revision")
         if identifier is not None:
@@ -380,36 +400,73 @@ def _validate_evidence_references(
     location: str,
     evidence_ids: set[str],
     evidence_by_id: dict[str, dict[str, Any]],
+    specification_revision: Any,
     implementation_revision: Any,
+    claimed_criteria: set[str],
+    require_passing_claim: bool,
     errors: list[str],
 ) -> None:
-    for evidence_id in _string_ids(
-        item, "validation_evidence_refs", location, errors
-    ):
+    references = _string_ids(item, "validation_evidence_refs", location, errors)
+    if require_passing_claim and not references:
+        errors.append(f"{location} makes a passing claim without validation evidence")
+    implementation_revision_known = isinstance(implementation_revision, str) and bool(
+        implementation_revision.strip()
+    )
+    if require_passing_claim and not implementation_revision_known:
+        errors.append(
+            f"{location} makes a passing claim without a current implementation revision"
+        )
+
+    covered_criteria: set[str] = set()
+    for evidence_id in references:
         record = evidence_by_id.get(evidence_id)
         if evidence_id not in evidence_ids:
             errors.append(
                 f"{location}.validation_evidence_refs references missing evidence {evidence_id}"
             )
-        elif (
-            record is not None
-            and implementation_revision
-            and record.get("subject_revision") != implementation_revision
+            continue
+        if record is None:
+            continue
+        if require_passing_claim and (
+            not implementation_revision_known
+            or record.get("subject_revision") != implementation_revision
         ):
             errors.append(
                 f"{location}.validation_evidence_refs references evidence for a stale implementation revision"
             )
+            continue
+        if (
+            require_passing_claim
+            and record.get("spec_revision") != specification_revision
+        ):
+            errors.append(
+                f"{location}.validation_evidence_refs references evidence for a stale specification revision"
+            )
+            continue
+        if require_passing_claim and record.get("result") != "pass":
+            errors.append(
+                f"{location}.validation_evidence_refs must reference passing evidence for a passing claim"
+            )
+            continue
+        if require_passing_claim:
+            record_criteria = record.get("acceptance_criteria", [])
+            if isinstance(record_criteria, list):
+                covered_criteria.update(record_criteria)
+
+    if require_passing_claim:
+        uncovered = claimed_criteria - covered_criteria
+        if uncovered:
+            errors.append(
+                f"{location}.validation_evidence_refs do not cover passing criteria: "
+                + ", ".join(sorted(uncovered))
+            )
 
 
-def _required_gates(
-    state: dict[str, Any], prefix: str, errors: list[str]
-) -> set[str]:
+def _required_gates(state: dict[str, Any], prefix: str, errors: list[str]) -> set[str]:
     if "required_gates" not in state:
         return set(LEGACY_REQUIRED_GATES)
     gates = state.get("required_gates")
-    if not isinstance(gates, list) or any(
-        not isinstance(gate, str) for gate in gates
-    ):
+    if not isinstance(gates, list) or any(not isinstance(gate, str) for gate in gates):
         errors.append(f"{_path(prefix, 'required_gates')} must be a list of gate names")
         return set(LEGACY_REQUIRED_GATES)
     selected = set(gates)
@@ -456,19 +513,21 @@ def _validate_task_dependency_cycles(
         if not isinstance(task_id, str):
             continue
         location = f"{prefix}.tasks[{index}]"
-        dependencies[task_id] = _string_ids(
-            task, "depends_on", location, errors
-        )
+        dependencies[task_id] = _string_ids(task, "depends_on", location, errors)
         for dependency in dependencies[task_id]:
             if dependency not in task_ids:
-                errors.append(f"{location}.depends_on references missing task {dependency}")
+                errors.append(
+                    f"{location}.depends_on references missing task {dependency}"
+                )
 
     visiting: set[str] = set()
     visited: set[str] = set()
 
     def visit(task_id: str) -> None:
         if task_id in visiting:
-            errors.append(f"{prefix}.tasks dependency graph contains a cycle at {task_id}")
+            errors.append(
+                f"{prefix}.tasks dependency graph contains a cycle at {task_id}"
+            )
             return
         if task_id in visited:
             return
@@ -538,13 +597,18 @@ def validate_state(payload: Any) -> list[str]:
     for index, requirement in enumerate(requirements):
         location = f"{spec_location}.requirements[{index}]"
         identifier = _check_id(
-            requirement.get("id"), "requirement", f"{location}.id", errors, requirement_ids
+            requirement.get("id"),
+            "requirement",
+            f"{location}.id",
+            errors,
+            requirement_ids,
         )
-        if not isinstance(requirement.get("statement"), str) or not requirement["statement"].strip():
-            errors.append(f"{location}.statement must be non-empty text")
-        for semantic_id in _string_ids(
-            requirement, "semantic_refs", location, errors
+        if (
+            not isinstance(requirement.get("statement"), str)
+            or not requirement["statement"].strip()
         ):
+            errors.append(f"{location}.statement must be non-empty text")
+        for semantic_id in _string_ids(requirement, "semantic_refs", location, errors):
             if semantic_id not in semantic_ids:
                 errors.append(
                     f"{location}.semantic_refs references missing semantic item {semantic_id}"
@@ -558,7 +622,9 @@ def validate_state(payload: Any) -> list[str]:
         errors,
     )
     if spec_status == "ready" and not criteria:
-        errors.append(f"{spec_location}.acceptance_criteria must not be empty when ready")
+        errors.append(
+            f"{spec_location}.acceptance_criteria must not be empty when ready"
+        )
     criterion_ids: set[str] = set()
     criterion_requirements: dict[str, list[str]] = {}
     for index, criterion in enumerate(criteria):
@@ -570,9 +636,14 @@ def validate_state(payload: Any) -> list[str]:
             errors,
             criterion_ids,
         )
-        if not isinstance(criterion.get("statement"), str) or not criterion["statement"].strip():
+        if (
+            not isinstance(criterion.get("statement"), str)
+            or not criterion["statement"].strip()
+        ):
             errors.append(f"{location}.statement must be non-empty text")
-        references = _string_ids(criterion, "requirements", location, errors, required=True)
+        references = _string_ids(
+            criterion, "requirements", location, errors, required=True
+        )
         semantic_refs = _string_ids(criterion, "semantic_refs", location, errors)
         if identifier is not None:
             criterion_requirements[identifier] = references
@@ -602,13 +673,15 @@ def validate_state(payload: Any) -> list[str]:
                     f"{location}.acceptance_criteria references missing criterion {criterion_id}"
                 )
 
-    open_decisions = _list_of_dicts(
+    _list_of_dicts(
         specification.get("open_decisions", []),
         f"{spec_location}.open_decisions",
         errors,
     )
     if spec_status == "ready" and _has_required_open_decision(specification):
-        errors.append(f"{spec_location} is ready with unresolved required open decisions")
+        errors.append(
+            f"{spec_location} is ready with unresolved required open decisions"
+        )
     if spec_status == "ready":
         covered_by_criteria = {
             requirement_id
@@ -646,18 +719,27 @@ def validate_state(payload: Any) -> list[str]:
             )
             if identifier is None:
                 continue
-            for requirement_id in _string_ids(decision, "requirements", location, errors):
+            for requirement_id in _string_ids(
+                decision, "requirements", location, errors
+            ):
                 if requirement_id not in requirement_ids:
                     errors.append(
                         f"{location}.requirements references missing requirement {requirement_id}"
                     )
-        if architecture_status == "ready" and architecture.get("spec_revision") != revision:
-            errors.append(f"{_path(prefix, 'architecture')} consumes a stale specification revision")
+        if (
+            architecture_status == "ready"
+            and architecture.get("spec_revision") != revision
+        ):
+            errors.append(
+                f"{_path(prefix, 'architecture')} consumes a stale specification revision"
+            )
         architecture_revision = architecture.get("revision")
         if architecture_status == "ready" and (
             type(architecture_revision) is not int or architecture_revision < 1
         ):
-            errors.append(f"{_path(prefix, 'architecture')}.revision must be a positive integer")
+            errors.append(
+                f"{_path(prefix, 'architecture')}.revision must be a positive integer"
+            )
 
     plan = state.get("plan")
     plan_status = _status(
@@ -667,10 +749,18 @@ def validate_state(payload: Any) -> list[str]:
         {"not_required", "pending", "ready", "stale", "blocked"},
         errors,
     )
-    if isinstance(plan, dict) and plan_status == "ready" and plan.get("spec_revision") != revision:
-        errors.append(f"{_path(prefix, 'plan')} consumes a stale specification revision")
-    if isinstance(plan, dict) and plan_status == "ready" and (
-        type(plan.get("revision")) is not int or plan["revision"] < 1
+    if (
+        isinstance(plan, dict)
+        and plan_status == "ready"
+        and plan.get("spec_revision") != revision
+    ):
+        errors.append(
+            f"{_path(prefix, 'plan')} consumes a stale specification revision"
+        )
+    if (
+        isinstance(plan, dict)
+        and plan_status == "ready"
+        and (type(plan.get("revision")) is not int or plan["revision"] < 1)
     ):
         errors.append(f"{_path(prefix, 'plan')}.revision must be a positive integer")
 
@@ -702,13 +792,19 @@ def validate_state(payload: Any) -> list[str]:
         )
         for requirement_id in requirements_for_task:
             if requirement_id not in requirement_ids:
-                errors.append(f"{location} references missing requirement {requirement_id}")
+                errors.append(
+                    f"{location} references missing requirement {requirement_id}"
+                )
         for criterion_id in criteria_for_task:
             if criterion_id not in criterion_ids:
-                errors.append(f"{location} references missing acceptance criterion {criterion_id}")
+                errors.append(
+                    f"{location} references missing acceptance criterion {criterion_id}"
+                )
         for decision_id in decisions_for_task:
             if decision_id not in architecture_ids:
-                errors.append(f"{location} references missing architecture decision {decision_id}")
+                errors.append(
+                    f"{location} references missing architecture decision {decision_id}"
+                )
     _validate_task_dependency_cycles(tasks, task_ids, prefix, errors)
 
     implementation = state.get("implementation")
@@ -723,7 +819,8 @@ def validate_state(payload: Any) -> list[str]:
         implementation.get("revision") if isinstance(implementation, dict) else None
     )
     if implementation_status == "complete" and (
-        not isinstance(implementation_revision, str) or not implementation_revision.strip()
+        not isinstance(implementation_revision, str)
+        or not implementation_revision.strip()
     ):
         errors.append(
             f"{_path(prefix, 'implementation')}.revision must be non-empty text when complete"
@@ -741,27 +838,45 @@ def validate_state(payload: Any) -> list[str]:
         if task_id is not None and task_id not in task_ids:
             errors.append(f"{location}.task_id references missing task {task_id}")
         elif task_id is None and evidence.get("source") not in {"existing", "direct"}:
-            errors.append(f"{location} without task_id must identify source: existing or direct")
+            errors.append(
+                f"{location} without task_id must identify source: existing or direct"
+            )
         if task_id is not None:
             evidence_by_task.setdefault(str(task_id), []).append(evidence)
         if evidence.get("spec_revision") != revision:
             errors.append(f"{location} records a stale specification revision")
-        if implementation_revision and evidence.get("implementation_revision") != implementation_revision:
+        if (
+            implementation_revision
+            and evidence.get("implementation_revision") != implementation_revision
+        ):
             errors.append(f"{location} records a stale implementation revision")
         evidence_status = evidence.get("status")
         if evidence_status not in {"pass", "partial", "fail", "blocked"}:
             errors.append(f"{location}.status must be pass, partial, fail, or blocked")
         refs = _string_ids(evidence, "acceptance_criteria", location, errors)
-        evidence_criteria.update(refs)
+        is_current_passing_evidence = (
+            evidence_status == "pass"
+            and isinstance(implementation_revision, str)
+            and bool(implementation_revision.strip())
+            and evidence.get("spec_revision") == revision
+            and evidence.get("implementation_revision") == implementation_revision
+        )
+        if is_current_passing_evidence:
+            evidence_criteria.update(refs)
         for criterion_id in refs:
             if criterion_id not in criterion_ids:
-                errors.append(f"{location} references missing acceptance criterion {criterion_id}")
+                errors.append(
+                    f"{location} references missing acceptance criterion {criterion_id}"
+                )
         _validate_evidence_references(
             evidence,
             location,
             validation_evidence_ids,
             validation_evidence_by_id,
+            revision,
             implementation_revision,
+            set(refs),
+            evidence_status == "pass",
             errors,
         )
 
@@ -773,14 +888,26 @@ def validate_state(payload: Any) -> list[str]:
                 for entry in evidence_by_task.get(str(task_id), [])
                 if entry.get("status") == "pass"
                 and entry.get("spec_revision") == revision
-                and (
-                    not implementation_revision
-                    or entry.get("implementation_revision") == implementation_revision
-                )
+                and isinstance(implementation_revision, str)
+                and bool(implementation_revision.strip())
+                and entry.get("implementation_revision") == implementation_revision
             ]
             if not current_evidence:
                 errors.append(
                     f"{_path(prefix, 'tasks')}[{index}] {task_id} is complete without current passing implementation evidence"
+                )
+                continue
+            task_criteria = set(task.get("acceptance_criteria", []))
+            covered_criteria = {
+                criterion_id
+                for entry in current_evidence
+                for criterion_id in entry.get("acceptance_criteria", [])
+            }
+            uncovered_criteria = task_criteria - covered_criteria
+            if uncovered_criteria:
+                errors.append(
+                    f"{_path(prefix, 'tasks')}[{index}] {task_id} has no passing implementation evidence for criteria: "
+                    + ", ".join(sorted(uncovered_criteria))
                 )
 
     qa = state.get("qa")
@@ -796,12 +923,19 @@ def validate_state(payload: Any) -> list[str]:
     if isinstance(qa, dict):
         if qa_status == "pass":
             qa_run_id = _check_id(
-                qa.get("qa_run_id"), "QA run", f"{_path(prefix, 'qa')}.qa_run_id", errors
+                qa.get("qa_run_id"),
+                "QA run",
+                f"{_path(prefix, 'qa')}.qa_run_id",
+                errors,
             )
             if qa.get("spec_revision") != revision:
-                errors.append(f"{_path(prefix, 'qa')} records a stale specification revision")
+                errors.append(
+                    f"{_path(prefix, 'qa')} records a stale specification revision"
+                )
             if qa.get("implementation_revision") != implementation_revision:
-                errors.append(f"{_path(prefix, 'qa')} records a stale implementation revision")
+                errors.append(
+                    f"{_path(prefix, 'qa')} records a stale implementation revision"
+                )
         qa_refs = _string_ids(qa, "acceptance_criteria", _path(prefix, "qa"), errors)
         qa_criteria.update(qa_refs)
         for criterion_id in qa_refs:
@@ -814,7 +948,10 @@ def validate_state(payload: Any) -> list[str]:
             _path(prefix, "qa"),
             validation_evidence_ids,
             validation_evidence_by_id,
+            revision,
             implementation_revision,
+            set(qa_refs),
+            qa_status == "pass",
             errors,
         )
 
@@ -827,12 +964,23 @@ def validate_state(payload: Any) -> list[str]:
         errors,
     )
     if isinstance(review, dict):
+        review_criteria = _string_ids(
+            review, "acceptance_criteria", _path(prefix, "review"), errors
+        )
+        for criterion_id in review_criteria:
+            if criterion_id not in criterion_ids:
+                errors.append(
+                    f"{_path(prefix, 'review')} references missing acceptance criterion {criterion_id}"
+                )
         _validate_evidence_references(
             review,
             _path(prefix, "review"),
             validation_evidence_ids,
             validation_evidence_by_id,
+            revision,
             implementation_revision,
+            set(review_criteria),
+            review_status == "approve",
             errors,
         )
     if isinstance(review, dict) and review_status == "approve":
@@ -843,17 +991,25 @@ def validate_state(payload: Any) -> list[str]:
             errors,
         )
         if review.get("spec_revision") != revision:
-            errors.append(f"{_path(prefix, 'review')} records a stale specification revision")
+            errors.append(
+                f"{_path(prefix, 'review')} records a stale specification revision"
+            )
         if review.get("implementation_revision") != implementation_revision:
-            errors.append(f"{_path(prefix, 'review')} records a stale implementation revision")
+            errors.append(
+                f"{_path(prefix, 'review')} records a stale implementation revision"
+            )
         if review.get("qa_run_id") != qa_run_id or qa_status != "pass":
-            errors.append(f"{_path(prefix, 'review')} references a stale or non-passing QA run")
+            errors.append(
+                f"{_path(prefix, 'review')} references a stale or non-passing QA run"
+            )
 
     stale_artifacts = state.get("stale_artifacts", [])
     if not isinstance(stale_artifacts, list) or any(
         not isinstance(item, str) for item in stale_artifacts
     ):
-        errors.append(f"{_path(prefix, 'stale_artifacts')} must be a list of artifact names")
+        errors.append(
+            f"{_path(prefix, 'stale_artifacts')} must be a list of artifact names"
+        )
         stale_artifacts = []
     findings = state.get("open_findings", [])
     if not isinstance(findings, list):
@@ -881,17 +1037,25 @@ def validate_state(payload: Any) -> list[str]:
     )
     if convergence_status == "converged":
         if spec_status != "ready":
-            errors.append("convergence cannot be converged unless the specification is ready")
+            errors.append(
+                "convergence cannot be converged unless the specification is ready"
+            )
         if "architecture" in required_gates and architecture_status != "ready":
             errors.append("convergence requires the selected current architecture gate")
-        if "architecture" not in required_gates and architecture_status != "not_required":
-            errors.append("convergence requires unselected architecture to be not_required")
+        if (
+            "architecture" not in required_gates
+            and architecture_status != "not_required"
+        ):
+            errors.append(
+                "convergence requires unselected architecture to be not_required"
+            )
         if "plan" in required_gates and plan_status != "ready":
             errors.append("convergence requires the selected current planning gate")
         if "plan" not in required_gates and plan_status != "not_required":
             errors.append("convergence requires unselected planning to be not_required")
         if "plan" in required_gates and any(
-            task.get("status") not in {"complete", "completed", "done"} for task in tasks
+            task.get("status") not in {"complete", "completed", "done"}
+            for task in tasks
         ):
             errors.append("convergence requires every task to be complete")
         if implementation_status != "complete":
@@ -905,12 +1069,18 @@ def validate_state(payload: Any) -> list[str]:
         if "review" not in required_gates and review_status != "not_required":
             errors.append("convergence requires unselected Review to be not_required")
         if stale_artifacts:
-            errors.append(f"convergence cannot include stale artifacts: {', '.join(stale_artifacts)}")
+            errors.append(
+                f"convergence cannot include stale artifacts: {', '.join(stale_artifacts)}"
+            )
         if _has_required_open_decision(specification):
-            errors.append("convergence cannot include unresolved required open decisions")
+            errors.append(
+                "convergence cannot include unresolved required open decisions"
+            )
         blockers = _blocking_findings(state)
         if blockers:
-            errors.append(f"convergence cannot include blocking findings: {', '.join(blockers)}")
+            errors.append(
+                f"convergence cannot include blocking findings: {', '.join(blockers)}"
+            )
         unrequested = state.get("unrequested_material_changes", [])
         if unrequested:
             errors.append("convergence cannot include unrequested material changes")
@@ -920,7 +1090,9 @@ def validate_state(payload: Any) -> list[str]:
             for requirement_id in refs
         }
         for requirement_id in requirement_ids - covered_requirements:
-            errors.append(f"convergence has no acceptance criterion for {requirement_id}")
+            errors.append(
+                f"convergence has no acceptance criterion for {requirement_id}"
+            )
         planned_criteria = {
             criterion_id
             for task in tasks
@@ -944,7 +1116,9 @@ def validate_state(payload: Any) -> list[str]:
                     f"convergence has no implementation evidence for existing behavior {criterion_id}"
                 )
         for criterion_id in criterion_ids - evidence_criteria:
-            errors.append(f"convergence has no implementation evidence for {criterion_id}")
+            errors.append(
+                f"convergence has no implementation evidence for {criterion_id}"
+            )
         if "qa" in required_gates:
             for criterion_id in criterion_ids - qa_criteria:
                 errors.append(f"convergence has no QA evidence for {criterion_id}")
@@ -960,7 +1134,7 @@ def propagate_staleness(payload: Any, changed_artifact: str) -> dict[str, Any]:
         choices = ", ".join(sorted(INVALIDATION_GRAPH))
         raise ValueError(f"changed_artifact must be one of: {choices}")
     if not isinstance(payload, dict):
-        raise ValueError("state must be an object")
+        raise TypeError("state must be an object")
     updated = copy.deepcopy(payload)
     state, _ = _manifest(updated)
     if state is None:
@@ -970,9 +1144,12 @@ def propagate_staleness(payload: Any, changed_artifact: str) -> dict[str, Any]:
     if not isinstance(stale, list) or any(not isinstance(item, str) for item in stale):
         raise ValueError("stale_artifacts must be a list of artifact names")
     for artifact in INVALIDATION_GRAPH[changed_artifact]:
-        if artifact == "architecture" and isinstance(state.get(artifact), dict):
-            if state[artifact].get("status") == "not_required":
-                continue
+        if (
+            artifact == "architecture"
+            and isinstance(state.get(artifact), dict)
+            and state[artifact].get("status") == "not_required"
+        ):
+            continue
         value = state.get(artifact)
         if artifact == "tasks" and isinstance(value, list):
             for task in value:
@@ -994,13 +1171,21 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
     """Build requirement-to-acceptance/task/implementation/QA coverage."""
     errors = validate_state(payload)
     if errors:
-        raise ValueError("cannot build coverage from invalid SDD state: " + "; ".join(errors))
+        raise ValueError(
+            "cannot build coverage from invalid SDD state: " + "; ".join(errors)
+        )
     state, _ = _manifest(payload)
     if state is None:
         raise ValueError("state must be an object or contain an object manifest")
     specification = state.get("specification", {})
-    requirements = specification.get("requirements", []) if isinstance(specification, dict) else []
-    criteria = specification.get("acceptance_criteria", []) if isinstance(specification, dict) else []
+    requirements = (
+        specification.get("requirements", []) if isinstance(specification, dict) else []
+    )
+    criteria = (
+        specification.get("acceptance_criteria", [])
+        if isinstance(specification, dict)
+        else []
+    )
     tasks = state.get("tasks", [])
     implementation = state.get("implementation", {})
     implementation_evidence = (
@@ -1012,7 +1197,9 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
     review = state.get("review", {})
     if not isinstance(review, dict):
         review = {}
-    qa_criteria = set(qa.get("acceptance_criteria", [])) if isinstance(qa, dict) else set()
+    qa_criteria = (
+        set(qa.get("acceptance_criteria", [])) if isinstance(qa, dict) else set()
+    )
 
     criterion_to_tasks: dict[str, set[str]] = {}
     for task in tasks if isinstance(tasks, list) else []:
@@ -1021,6 +1208,24 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
         for criterion_id in task.get("acceptance_criteria", []):
             criterion_to_tasks.setdefault(criterion_id, set()).add(task.get("id", ""))
 
+    implementation_revision = (
+        implementation.get("revision") if isinstance(implementation, dict) else None
+    )
+    specification_revision = (
+        specification.get("revision") if isinstance(specification, dict) else None
+    )
+    implementation_criteria = {
+        criterion_id
+        for evidence in implementation_evidence
+        if isinstance(evidence, dict)
+        and evidence.get("status") == "pass"
+        and evidence.get("spec_revision") == specification_revision
+        and isinstance(implementation_revision, str)
+        and bool(implementation_revision.strip())
+        and evidence.get("implementation_revision") == implementation_revision
+        for criterion_id in evidence.get("acceptance_criteria", [])
+    }
+
     matrix: dict[str, Any] = {}
     for requirement in requirements if isinstance(requirements, list) else []:
         if not isinstance(requirement, dict):
@@ -1028,7 +1233,8 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
         requirement_id = requirement.get("id")
         related_criteria = [
             criterion
-            for criterion in criteria if isinstance(criterion, dict)
+            for criterion in criteria
+            if isinstance(criterion, dict)
             and requirement_id in criterion.get("requirements", [])
         ]
         criterion_ids = [criterion.get("id") for criterion in related_criteria]
@@ -1040,22 +1246,21 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
                 if task_id
             }
         )
-        implementation_criteria = {
-            criterion_id
-            for evidence in implementation_evidence if isinstance(evidence, dict)
-            for criterion_id in evidence.get("acceptance_criteria", [])
-        }
         matrix[requirement_id] = {
             "acceptance_criteria": criterion_ids,
             "tasks": related_tasks,
             "implementation_evidence": sorted(
                 set(criterion_ids) & implementation_criteria
             ),
-            "qa_status": "pass"
-            if criterion_ids
-            and set(criterion_ids).issubset(qa_criteria)
-            and qa.get("status") == "pass"
-            else qa.get("status", "pending"),
+            "qa_status": (
+                "pass"
+                if criterion_ids
+                and set(criterion_ids).issubset(qa_criteria)
+                and qa.get("status") == "pass"
+                else "uncovered"
+                if qa.get("status") == "pass"
+                else qa.get("status", "pending")
+            ),
             "qa_run_id": qa.get("qa_run_id"),
             "review_status": review.get("status", "pending"),
             "review_id": review.get("review_id"),
@@ -1068,9 +1273,7 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
         "specification_id": specification.get("id"),
         "specification_revision": specification.get("revision"),
         "risk_level": state.get("risk_level"),
-        "required_gates": sorted(
-            state.get("required_gates", LEGACY_REQUIRED_GATES)
-        ),
+        "required_gates": sorted(state.get("required_gates", LEGACY_REQUIRED_GATES)),
         "review_status": review.get("status", "pending"),
         "review_id": review.get("review_id"),
         "requirements": matrix,
@@ -1081,7 +1284,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Validate SDD lifecycle fields embedded in an Orchestrator task state."
     )
-    parser.add_argument("state_file", type=Path, help="task-state or manifest JSON file")
+    parser.add_argument(
+        "state_file", type=Path, help="task-state or manifest JSON file"
+    )
     parser.add_argument(
         "--invalidate",
         choices=sorted(INVALIDATION_GRAPH),

@@ -13,38 +13,30 @@ references:
   - ../references/create-skill/references/authoring-patterns.md
   - ../references/create-skill/references/final-checklist.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
-<admission>
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
 
-## ACCEPT
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
 
-- Create and scaffold a new skill package from an approved capability.
-- Author its immediate workflows and the support files those workflows consume.
-- Update authoring assets or validators as required to create the approved package.
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
 
-## REJECT
-
-- Repair, restructure, review, or validate an existing skill -> `plugin-engineering`'s `skill-maintenance` workflow.
-- Create or edit an agent -> `plugin-engineering`'s `agent-authoring` workflow.
-- Create or edit the direct-user Orchestrator -> `plugin-engineering`'s `agent-authoring` workflow.
-- Create or edit a reusable prompt -> `orchestrate` for lightweight routing.
-- Implement or repair MCP server code -> Implementer with `plugin-engineering`'s `create-mcp` workflow.
-- Measure a skill context projection -> `context-management`'s `token-optimization` workflow.
-- Optimize an existing skill or design its evaluation benchmark -> `plugin-engineering`'s `optimize-skill` workflow.
-- Define always-on repository guidance -> repository instructions.
-- Implement general product behavior -> the relevant implementation workflow.
-
-For REJECT, return exactly:
-
-```json
-{"status":"rejected","skill":"create-skill","reason":"<concise reason>","routing":"<route or null>"}
-```
-
-</admission>
-
+<workflow>
 ## Step 0 - Confirm the authoring target.
 
-1. Inspect the requested package path and preserve existing user work; stop before scaffolding over a non-empty destination.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Inspect the requested package path and preserve existing user work; stop before scaffolding over a non-empty destination.
 
 ## Step 1 - Establish the package contract.
 
@@ -67,3 +59,4 @@ For REJECT, return exactly:
 1. Run [validate.py](../references/create-skill/scripts/validate.py) by its resolved absolute path: `PYTHONDONTWRITEBYTECODE=1 python [absolute-validate.py-path] --skill-dir [skill_dir]`. Fix structural errors; use [lint.py](../references/create-skill/scripts/lint.py) only for content checks.
 2. Consult `validation` or `latest-docs` only when unclear. Load `context-management` and select `token-optimization` for `SKILL.md`, each selected workflow, and available tool schemas; exclude generic references.
 3. Return the package, evidence, estimate/method, unresolved decisions, and risks; use `final-checklist`.
+</workflow>

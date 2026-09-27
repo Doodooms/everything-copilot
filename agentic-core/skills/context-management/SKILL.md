@@ -8,6 +8,15 @@ metadata:
 license: MIT
 ---
 
+<definitions>
+
+- **raw history**: A prior transcript or event log; its presence does not mean it is active context or durable memory.
+- **active context**: Material actually retrieved into the current harness context for this task.
+- **durable memory**: An approved, provenance-bearing note retained across sessions.
+- **retrieval state**: `available`, `retrieved`, and `expanded` are distinct; a reference can be available without being read, and a retrieved summary does not mean its full source was expanded.
+
+</definitions>
+
 <critical_rules>
 
 - MUST preserve canonical task/specification state and keep private source text local during measurement.
@@ -30,6 +39,9 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
 <rules>
 
 - This domain curates retrieval, memory, session boundaries, and approximate local context measurements; it does not own canonical product or task state.
+- MUST distinguish what is available, what was retrieved, and what was expanded; never claim that an unread source informed a decision.
+- SHOULD verify a durable note's source revision or observation date before relying on it; mark it stale when a dependency changed and keep the current source authoritative.
+- A local token projection estimates selected files that may be loaded; it cannot measure an active host conversation or provider quota. Use the `multi-harness` host-observation workflows for those values and label missing observations `unknown`.
 - DO load only the workflow matching the current gap; generic references are excluded from context totals, while selected workflows are counted.
 
 </rules>

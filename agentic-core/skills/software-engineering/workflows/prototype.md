@@ -10,10 +10,30 @@ avoid_for:
   tests and review
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Bound the question and artifact.
 
-1. Read the task, relevant domain language, nearby implementation, and existing run conventions; use #tool:search to identify the smallest safe location and relevant interface.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Read the task, relevant domain language, nearby implementation, and existing run conventions; use #tool:search to identify the smallest safe location and relevant interface.
 2. Read [prototype shapes](../references/prototype/references/prototype-shapes.md) to choose a state-model demo or UI comparison; if the question is still ambiguous, return the exact missing decision rather than building both.
 3. Record the question, expected observation, approved file boundary, non-goals, and disposal/preservation expectation.
 
@@ -27,3 +47,4 @@ references: []
 
 1. Return the prototype question, exact location and run instructions, options shown, validation performed, observed result or user decision still needed, assumptions, and changed files.
 2. State that the artifact is not production-ready. Route any selected behavior to the approved architecture/implementation workflow; do not migrate the code yourself under this skill.
+</workflow>

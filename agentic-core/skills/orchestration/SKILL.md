@@ -43,6 +43,7 @@ Assess impact/blast radius, reversibility, security or data exposure, external c
    - [orchestrate](./workflows/orchestrate.md) for material changes, multi-agent coordination, and handoffs.
    - [spec-driven-development](./workflows/spec-driven-development.md) for non-trivial requirements, cross-component changes, migrations, or convergence.
    - [implementation-planning](./workflows/implementation-planning.md) for dependency-aware phases, tasks, sequencing, and validation.
+   - [chatgpt-work-handoff](./workflows/chatgpt-work-handoff.md) when a completed implementation should be surfaced to ChatGPT Work through a GitHub pull request and returned as a discussion summary.
    - [commit-message](./workflows/commit-message.md) after an authorized, validated commit.
    - [resolving-merge-conflicts](./workflows/resolving-merge-conflicts.md) for an authorized active merge/rebase conflict.
 

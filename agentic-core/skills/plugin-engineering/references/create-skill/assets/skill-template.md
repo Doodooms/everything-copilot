@@ -35,7 +35,7 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
 
 <rules>
 - MUST use `MUST`/`MUST NOT` for invariants, `SHOULD`/`SHOULD NOT` for preferences, `MAY` for optional behavior, and `DO`/`DO NOT` for local actions.
-- Keep shared expertise and admission here; every immediate workflow MUST contain its actual specialized procedure. References are supporting knowledge, never hidden workflow layers.
+- Keep shared expertise and domain admission here; every immediate subskill under `workflows/` MUST use the same `<critical_rules>`, `<general_rules>`, `<risk_assessment>`, `<rules>`, and `<workflow>` body structure and contain its actual specialized procedure. Its workflow metadata does not make it an independently registered Agent Skill or a global route. References are supporting knowledge, never hidden workflow layers.
 </rules>
 
 <workflow>

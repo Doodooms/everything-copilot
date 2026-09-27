@@ -9,10 +9,30 @@ avoid_for:
 - first-time skill authoring, general prompt editing, or application implementation
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Resolve the target
 
-1. Use #tool:read to inspect the target `SKILL.md`, [provenance](../references/optimize-skill/references/original-spec.md), architecture configuration, and consumed support files.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read to inspect the target `SKILL.md`, [provenance](../references/optimize-skill/references/original-spec.md), architecture configuration, and consumed support files.
 2. Use #tool:search to locate its existing validator, benchmark, SkillOpt adapter, and output directory.
 3. Stop if the target is missing, structurally invalid, or outside the selected canonical architecture.
 
@@ -52,3 +72,4 @@ references: []
 2. Preserve rejected candidates and their validation reasons, but do not replace the target package until S* passes the independent holdout.
 3. Summarize the exact selected content changes and the next manual review decision.
 4. Before accepting a candidate, use [the target validator](../references/optimize-skill/scripts/validate_optimize_target.py) for any target-specific checks that are not covered by the canonical scaffold validator.
+</workflow>

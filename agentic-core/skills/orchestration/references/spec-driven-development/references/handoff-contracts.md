@@ -2,6 +2,12 @@
 
 Every packet contains only the task slice, current artifact IDs/revisions, assigned `risk_level`, selected required gates, relevant evidence, constraints, expected return fields, and exact next resume point. The canonical task state is the source of truth; specialists MUST NOT infer missing facts from hidden conversation history or downgrade assigned risk.
 
+Machine-readable exchange packets MUST use the versioned [handoff schema](../../orchestrate/schemas/handoff.schema.json). Before sending and before accepting a packet, validate it with `uv run --script <absolute-path-to-validate_exchange.py> --kind handoff --input <packet.json>`; add `--repo <absolute-repository-path>` whenever the packet contains commit or artifact claims, and `--repository-id <logical-repository-name>` when checking a named repository. A structurally valid packet with unresolved Git or artifact checks is not a verified handoff. Receivers MUST validate again because the producer's reported result may be stale or altered.
+
+`git_commits[].commit_sha` is a Git commit object ID (40 hex for SHA-1 repositories or 64 hex for SHA-256 repositories). `artifacts[].sha256` is a SHA-256 digest over the exact file bytes (64 hex). Never put an artifact digest in a Git commit field or treat an unverified commit string as proof of changed files. If no commit was created, set `commit_status` to `not_created`, `not_applicable`, or `unknown` and provide `commit_reason`; do not invent a SHA or make a commit just to satisfy the packet.
+
+For a merge commit, `git_commits[].changed_paths` means the complete path set changed between the merge commit and its first parent. The validator uses that first-parent comparison consistently, including octopus merges; list paths added, modified, or deleted by the merge result relative to that parent.
+
 ## Ownership and required traceability
 
 - **Architect** receives specification revision, relevant `REQ-*`/`AC-*`, approved semantic IDs, repository evidence, and constraints; returns technical `ADR-*`, architectural invariants, alternatives, and unresolved blockers. It MUST NOT redefine problem-space semantics.

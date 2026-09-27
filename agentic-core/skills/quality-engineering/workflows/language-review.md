@@ -11,23 +11,33 @@ avoid_for:
   code changes
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
-## Step 0 - **CONFIRMATION**
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
 
-1. USE #tool:read **IMMEDIATELY** on #file:../references/language-review/references/USEFOR.md ([when to use](../references/language-review/references/USEFOR.md)) and **IMMEDIATELY** on #file:../references/language-review/references/DONOTUSEFOR.md ([when not to use](../references/language-review/references/DONOTUSEFOR.md)) to confirm with certainty if this skill should be used.
-2. Now read the following rules and workflow steps to understand how the skill works and what it requires for execution.
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
 
 <rules>
-
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
 - Apply only the sections relevant to the languages actually changed.
 - Prioritize correctness and maintainability over style-only preferences.
 - Reference support files only at the point of need.
-
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
 </rules>
 
+<workflow>
 ## Step 1 - Identify the changed languages and their critical semantics.
 
-1. Use #tool:read on the changed files and their nearest tests.
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:read on the changed files and their nearest tests.
 2. Use #tool:search to group the changed surfaces by language and locate relevant interfaces or call sites.
 3. Use #tool:read on #file:../references/language-review/references/guide.md ([language review guide](../references/language-review/references/guide.md)) only if the language checklist is still needed.
 
@@ -41,3 +51,4 @@ references: []
 
 1. Use #tool:read to verify the final finding locations and examples before returning them.
 2. Return only the material language-driven findings or explicitly state that no such findings were identified.
+</workflow>

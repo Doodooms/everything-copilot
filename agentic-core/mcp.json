@@ -9,6 +9,14 @@
         "@upstash/context7-mcp@4.1.1"
       ]
     },
+    "github-mcp-server": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "runtime/mcp/github-app-stdio.sh"
+      ],
+      "cwd": "${PLUGIN_ROOT}"
+    },
     "semgrep": {
       "type": "stdio",
       "command": "uvx",

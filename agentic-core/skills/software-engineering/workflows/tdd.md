@@ -10,10 +10,30 @@ avoid_for:
   tasks with no executable behavior
 references: []
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 0 - Establish the test target
 
-1. Inspect the target repository's existing test commands, test layout, and language tooling before editing with #tool:read
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Inspect the target repository's existing test commands, test layout, and language tooling before editing with #tool:read
    - Use [test templates](../references/tdd/assets/test-templates.md) only when the repository lacks a clear local pattern.
    - Use #tool:execute with [test project verification](../references/tdd/scripts/verify_tdd_project.py) when the repository's test tooling or layout is unclear.
 2. State the acceptance criterion as observable behavior and identify the narrowest test target that can prove it.
@@ -62,3 +82,4 @@ references: []
 1. Run the project's normal test, lint, type-check, and security commands with #tool:execute when they apply to the changed code.
 2. Verify the test files follow the repository's convention; otherwise use the [test layout guidance](../references/tdd/assets/test-templates.md).
 3. Stop and report evidence if RED was never proven, the focused test is not executed, a required coverage gate cannot be measured, or another required quality gate fails.
+</workflow>

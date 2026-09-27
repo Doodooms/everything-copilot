@@ -15,7 +15,27 @@ references:
   - ../references/create-skill/references/skill-composition.md
   - ../references/create-skill/references/original-spec.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Inspect the current package and approved scope.
 
 1. DO consume the assigned `risk_level`; read the target `SKILL.md`, its provenance, selected workflows, and only relevant support files.
@@ -26,7 +46,7 @@ references:
 
 1. Keep critical invariants, general preferences, risk policy, and admission in `SKILL.md`; put each distinct procedure directly into an immediate `workflows/[id].md` child.
 2. Replace square-bracketed fillable values, link each workflow from the parent, and add support files only when a selected step consumes them.
-   - Do not add nested workflow metadata or place a procedure under `references/`; references contain supporting knowledge only.
+   - Each immediate subskill keeps its `id`, `description`, `invoke_for`, `avoid_for`, and `references` metadata plus the canonical skill body structure. Do not create another workflow level, a peer `SKILL.md` package, or a global route for that subskill. Put the complete procedure in its `<workflow>` block; references contain supporting knowledge only.
    - For composed skills, use the [composition contract](../references/create-skill/references/skill-composition.md); MUST NOT turn a workflow into an MCP tool.
 
 ## Step 3 - Validate and report.
@@ -35,3 +55,4 @@ references:
 2. Measure the `SKILL.md`, expected selected workflows, and available tool schemas with `context-management`'s `token-optimization` workflow; exclude generic references and DO NOT load every workflow for the estimate.
 3. Complete the [final checklist](../references/create-skill/references/final-checklist.md), present the diff for user review, and report findings or unresolved intent.
    - Inspect [skill_lint_core.py](../references/create-skill/scripts/skill_lint_core.py) only when public validator behavior needs diagnosis.
+</workflow>

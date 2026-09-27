@@ -19,7 +19,27 @@ references:
   - ../references/create-agent/references/validation.md
   - ../references/create-agent/references/final-checklist.md
 ---
+<critical_rules>
+- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+</critical_rules>
 
+<general_rules>
+- SHOULD load listed references only at the procedure step that needs them.
+- MAY report unavailable evidence or unresolved decisions as unknown.
+</general_rules>
+
+<risk_assessment>
+Consume the Orchestrator-assigned `risk_level` through the parent domain skill; MUST NOT reclassify or downgrade it. SHOULD escalate only when new evidence materially increases risk. Scale evidence depth, not authority or approvals.
+</risk_assessment>
+
+<rules>
+- MUST follow this selected subskill only within its declared procedure and scope.
+- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
+</rules>
+
+<workflow>
 ## Step 1 - Establish the contract.
 
 1. DO consume the assigned `risk_level`; inspect the approved role request and target. Consult `primitive-selection` only for artifact ambiguity and `latest-docs` only when relevant.
@@ -41,3 +61,4 @@ references:
 1. Resolve `[agent_file]` to an absolute path. From the repository root, run `PYTHONDONTWRITEBYTECODE=1 python agentic-core/skills/plugin-engineering/references/create-agent/scripts/validate_agent.py --agent-file [agent_file]`.
 2. Fix errors; use `validation` and `final-checklist` as needed. Inspect [lint core](../references/create-agent/scripts/agent_lint_core.py) only to diagnose validator behavior.
 3. Return the path, role, tools/delegates, one route example, validation result, and unresolved risks.
+</workflow>
