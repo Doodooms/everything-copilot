@@ -1,0 +1,17 @@
+{
+  "name": "agentic-workflow-local",
+  "plugins": [
+    {
+      "name": "agentic-core",
+      "source": {
+        "source": "local",
+        "path": "./agentic-core"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    }
+  ]
+}

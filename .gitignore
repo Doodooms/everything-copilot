@@ -1,0 +1,23 @@
+# Python bytecode and local virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local Python tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Workspace-generated Copilot capability snapshot
+.vscode/copilot-tools.snapshot.json
+
+# Workspace MCP launch configuration may contain machine-local secret paths
+.vscode/mcp.json
+
+# Locally installed Waza executable and extension manifest
+.tools/bin/waza
+.tools/bin/extension.yaml
+
+# Raw SkillOpt runs; keep curated evaluation evidence under outputs/evals/
+/outputs/skillopt-create-skill/
+/outputs/skillopt-create-skill-invalid-rubric-20260923/
