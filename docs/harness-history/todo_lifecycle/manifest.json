@@ -1,0 +1,419 @@
+{
+  "manifest": {
+    "architecture": {
+      "decisions": [
+        {
+          "id": "ADR-TODO-LIFECYCLE-01",
+          "requirements": [
+            "REQ-TODO-01",
+            "REQ-TODO-03"
+          ],
+          "statement": "Reuse the repository's task manifest and event ledgers for approval and execution; TODO documents remain source inputs and do not form a second task system."
+        }
+      ],
+      "revision": 1,
+      "spec_revision": 1,
+      "status": "ready"
+    },
+    "architecture_ref": "docs/todo-lifecycle.md",
+    "base_revision": "662ea3471b9e0a7a0ef34082a1539a8175c668b9",
+    "convergence": {
+      "status": "pending"
+    },
+    "description": "Introduce a lightweight, explicit boundary between TODO/research inputs and approved implementation slices.",
+    "id": "todo_lifecycle",
+    "implementation": {
+      "current_tasks": [],
+      "evidence": [
+        {
+          "acceptance_criteria": [
+            "AC-TODO-01",
+            "AC-TODO-02",
+            "AC-TODO-03",
+            "AC-TODO-04",
+            "AC-TODO-05"
+          ],
+          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-TODO-LIFECYCLE-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-TODO-METADATA-CLI",
+            "EVIDENCE-TODO-UNIT-TESTS",
+            "EVIDENCE-TODO-SOURCE-PRESERVATION",
+            "EVIDENCE-TODO-INDEPENDENT-REVIEW"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-TODO-04",
+            "AC-TODO-05"
+          ],
+          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-TODO-LIFECYCLE-QA",
+          "validation_evidence_refs": [
+            "EVIDENCE-TODO-METADATA-CLI",
+            "EVIDENCE-TODO-UNIT-TESTS",
+            "EVIDENCE-TODO-SOURCE-PRESERVATION"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-TODO-01",
+            "AC-TODO-02",
+            "AC-TODO-03",
+            "AC-TODO-04",
+            "AC-TODO-05"
+          ],
+          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-TODO-LIFECYCLE-REVIEW",
+          "validation_evidence_refs": [
+            "EVIDENCE-TODO-INDEPENDENT-REVIEW"
+          ]
+        }
+      ],
+      "revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+      "status": "complete"
+    },
+    "lifecycle": {
+      "branch": "docs/todo-lifecycle",
+      "cleanup": "not_requested",
+      "commit_reason": "Implementation and independent gates are complete; commit, push, and PR handoff remain pending.",
+      "commit_shas": [],
+      "commit_status": "not_created",
+      "pull_request": null,
+      "worktree": "/tmp/agentic-workflow-todo-lifecycle"
+    },
+    "plan": {
+      "approval": "Plan r2 is approved by the Orchestrator under the explicit user request; it adds task IDs, scopes, dependencies, and exit gates after independent review. PR merge remains out of scope.",
+      "revision": 2,
+      "spec_revision": 1,
+      "status": "ready"
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/todo_lifecycle/plan-r2.md",
+      "revision": 2,
+      "spec_revision": 1,
+      "status": "approved"
+    },
+    "qa": {
+      "acceptance_criteria": [
+        "AC-TODO-04",
+        "AC-TODO-05"
+      ],
+      "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-02",
+      "spec_revision": 1,
+      "status": "pass",
+      "validation_evidence_refs": [
+        "EVIDENCE-TODO-METADATA-CLI",
+        "EVIDENCE-TODO-UNIT-TESTS",
+        "EVIDENCE-TODO-SOURCE-PRESERVATION"
+      ]
+    },
+    "required_gates": [
+      "architecture",
+      "plan",
+      "implementation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-TODO-01",
+        "AC-TODO-02",
+        "AC-TODO-03",
+        "AC-TODO-04",
+        "AC-TODO-05"
+      ],
+      "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-02",
+      "review_id": "REVIEW-TODO-LIFECYCLE-02",
+      "spec_revision": 1,
+      "status": "approve",
+      "validation_evidence_refs": [
+        "EVIDENCE-TODO-INDEPENDENT-REVIEW"
+      ]
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "audit",
+      "documentation",
+      "validation",
+      "independent_review",
+      "handoff"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "separate architecture agent",
+        "reason": "The task is a bounded documentation contract; the approved user prompt and this manifest define the semantics, while the implementation keeps the existing repository task ledger."
+      },
+      {
+        "phase": "automation framework",
+        "reason": "Only a small local metadata validator will be considered after checking for an existing equivalent."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-TODO-01",
+          "requirements": [
+            "REQ-TODO-01",
+            "REQ-TODO-03"
+          ],
+          "statement": "Canonical documentation explicitly distinguishes research input, backlog, active task, and implemented behavior and says presence in todos/ does not authorize implementation."
+        },
+        {
+          "id": "AC-TODO-02",
+          "requirements": [
+            "REQ-TODO-02"
+          ],
+          "statement": "The chosen metadata model distinguishes review maturity from disposition and explains each allowed value."
+        },
+        {
+          "id": "AC-TODO-03",
+          "requirements": [
+            "REQ-TODO-01",
+            "REQ-TODO-04"
+          ],
+          "statement": "The lifecycle covers intake, review/research, disposition, optional approved slice, implementation, and evidence; todos/ is explicitly non-FIFO."
+        },
+        {
+          "id": "AC-TODO-04",
+          "requirements": [
+            "REQ-TODO-05"
+          ],
+          "statement": "All six named inputs have accurate kind/status/disposition metadata, with derived work linked only where traceable; substantive source text remains intact."
+        },
+        {
+          "id": "AC-TODO-05",
+          "requirements": [
+            "REQ-TODO-02",
+            "REQ-TODO-05"
+          ],
+          "statement": "Any added validation is local, deterministic, and proportionate; metadata validation passes and no obsolete-behavior assertions are introduced."
+        }
+      ],
+      "constraints": [
+        "Do not modify code owned by PR #6 or the execution backend, security, cost-eval, or private Control-Plane lanes.",
+        "Do not turn an input disposition into implementation approval.",
+        "Preserve all existing source text and existing detailed task gates."
+      ],
+      "id": "SPEC-TODO-LIFECYCLE",
+      "non_goals": [
+        "workflow engine, issue tracker, database, runtime state machine, scheduler, or automatic promotion agent",
+        "merge the resulting pull request"
+      ],
+      "objective": "Preserve design and research inputs while making clear that only an approved task slice authorizes implementation.",
+      "requirements": [
+        {
+          "id": "REQ-TODO-01",
+          "statement": "A document's presence under todos/ never grants implementation authority."
+        },
+        {
+          "id": "REQ-TODO-02",
+          "statement": "Intake status and disposition are separate, small, explicit metadata dimensions."
+        },
+        {
+          "id": "REQ-TODO-03",
+          "statement": "An approved implementation slice is recorded in the existing task manifest and task-event ledger."
+        },
+        {
+          "id": "REQ-TODO-04",
+          "statement": "The lifecycle documentation states that todos/ is not FIFO and defines the evidence path."
+        },
+        {
+          "id": "REQ-TODO-05",
+          "statement": "Current named research inputs receive metadata consistent with known evidence, without changing their substantive content."
+        }
+      ],
+      "revision": 1,
+      "semantic_model": {
+        "concepts": [
+          {
+            "id": "CONCEPT-TODO-INPUT",
+            "kind": "repository source record",
+            "meaning": "A durable design or research document kept for consideration; it is not an implementation authorization.",
+            "term": "design/research input"
+          },
+          {
+            "id": "CONCEPT-INTAKE-STATUS",
+            "kind": "review maturity",
+            "meaning": "How far an input has progressed through intake and review, independently of its disposition.",
+            "term": "intake status"
+          },
+          {
+            "id": "CONCEPT-DISPOSITION",
+            "kind": "handling decision",
+            "meaning": "The current decision about an input's handling; it does not itself authorize code changes.",
+            "term": "disposition"
+          },
+          {
+            "id": "CONCEPT-APPROVED-SLICE",
+            "kind": "bounded task scope",
+            "meaning": "An implementation unit recorded as approved work through the repository's task manifest and task-event ledger.",
+            "term": "approved task slice"
+          },
+          {
+            "id": "CONCEPT-IMPLEMENTED-BEHAVIOR",
+            "kind": "repository behavior",
+            "meaning": "Behavior present in code or configuration and backed by task-linked validation evidence.",
+            "term": "implemented behavior"
+          }
+        ],
+        "invariants": [
+          {
+            "concept_ids": [
+              "CONCEPT-TODO-INPUT",
+              "CONCEPT-DISPOSITION",
+              "CONCEPT-APPROVED-SLICE"
+            ],
+            "id": "INV-TODO-INPUT-NO-AUTHORITY",
+            "statement": "A TODO/research input and its disposition never authorize implementation; an approved slice must be recorded in the canonical task state."
+          },
+          {
+            "concept_ids": [
+              "CONCEPT-APPROVED-SLICE",
+              "CONCEPT-IMPLEMENTED-BEHAVIOR"
+            ],
+            "id": "INV-TASK-EVIDENCE",
+            "statement": "An implemented behavior claim is linked to its approved task and evidence; a source input is not labeled wholly implemented when only part was adopted."
+          }
+        ],
+        "schema_version": 1,
+        "scope": "Repository records and implementation authority for design and research inputs."
+      },
+      "status": "ready"
+    },
+    "status": "in_progress",
+    "task_events_ref": "docs/tasks-history/todo_lifecycle.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "architecture_decisions": [
+          "ADR-TODO-LIFECYCLE-01"
+        ],
+        "id": "TASK-TODO-LIFECYCLE-01",
+        "requirements": [
+          "REQ-TODO-01",
+          "REQ-TODO-02",
+          "REQ-TODO-03",
+          "REQ-TODO-04",
+          "REQ-TODO-05"
+        ],
+        "status": "complete"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "depends_on": [
+          "TASK-TODO-LIFECYCLE-01"
+        ],
+        "id": "TASK-TODO-LIFECYCLE-QA",
+        "requirements": [
+          "REQ-TODO-02",
+          "REQ-TODO-05"
+        ],
+        "status": "complete"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "depends_on": [
+          "TASK-TODO-LIFECYCLE-QA"
+        ],
+        "id": "TASK-TODO-LIFECYCLE-REVIEW",
+        "requirements": [
+          "REQ-TODO-01",
+          "REQ-TODO-02",
+          "REQ-TODO-03",
+          "REQ-TODO-04",
+          "REQ-TODO-05"
+        ],
+        "status": "complete"
+      }
+    ],
+    "title": "Define lifecycle for design and research inputs",
+    "updated_at": "2026-09-27T23:02:16Z",
+    "validation_evidence": [
+      {
+        "acceptance_criteria": [
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Metadata validator accepts all six named source documents.",
+        "command": "uv run --script scripts/validate_todo_metadata.py <six named input paths>",
+        "environment": "uv-managed Python 3.12 with PyYAML",
+        "id": "EVIDENCE-TODO-METADATA-CLI",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-05"
+        ],
+        "check": "Focused metadata validator behavior tests pass.",
+        "command": "uv run --no-project --with PyYAML -- python -m unittest discover -s tests -p test_todo_metadata.py -v",
+        "environment": "uv-managed Python 3.12 with PyYAML",
+        "id": "EVIDENCE-TODO-UNIT-TESTS",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-04"
+        ],
+        "check": "Six input bodies are byte-for-byte unchanged after removing the inserted frontmatter separator.",
+        "environment": "Git source comparison against develop base 662ea3471b9e0a7a0ef34082a1539a8175c668b9",
+        "id": "EVIDENCE-TODO-SOURCE-PRESERVATION",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Independent Reviewer approves lifecycle semantics, provenance, source preservation, and excluded-lane boundaries.",
+        "environment": "Read-only review of docs/todo-lifecycle against develop 662ea3471b9e0a7a0ef34082a1539a8175c668b9",
+        "id": "EVIDENCE-TODO-INDEPENDENT-REVIEW",
+        "producer": "reviewer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52"
+      }
+    ]
+  },
+  "status": "in_progress",
+  "task_id": "todo_lifecycle",
+  "updated_at": "2026-09-27T23:02:16Z"
+}

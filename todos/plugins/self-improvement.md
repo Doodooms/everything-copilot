@@ -1,3 +1,10 @@
+---
+kind: design_input
+status: researched
+disposition: deferred
+derived_work: []
+---
+
 > **Design/research input — not an approved implementation plan.**
 
 # Phase 3
