@@ -40,3 +40,9 @@ The Orchestrator records the task level and rationale, then re-evaluates when ev
 - Published or handed-off commit SHAs are immutable: never squash, amend, rebase, force-push, or otherwise rewrite them.
 - Before committing, isolate only the task-owned coherent changes. Preserve other work in the workspace and do not stage it incidentally.
 - Use [the PR template](.github/PULL_REQUEST_TEMPLATE.md) for handoff PRs. Never merge automatically; leave architecture and the next major step to the user.
+
+## Default Orchestration
+
+- The primary Codex conversation is the user's Orchestrator by default. The user should not need to select or address `@orchestrator` for each task.
+- Keep specialist agents available for Orchestrator-directed delegation; do not use a specialist role as the user's root conversation.
+- If the active host cannot dispatch a named plugin specialist, report that limitation and do not impersonate the specialist.

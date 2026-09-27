@@ -18,7 +18,7 @@ Checkpoint inventory for the local canonical lineage at `main`. This records why
 | Class | Paths | Decision |
 |---|---|---|
 | Active other-session ownership | `harness_factory/`, `tests/test_harness_factory.py`, `experiments/harness-evals/`, `experiments/routing/`, `outputs/evals/baseline-inventory-r7.json`, task 3 histories and `todos/harness/cost-eval-opt.md` | `task_3` remains active. Do not stage or commit these files until its owner releases them. |
-| Mixed or machine-local VS Code state | `.vscode/settings.json`, `.vscode/mcp.json` | Settings combine Copilot behavior with the user's editor preference. MCP launch config is machine-specific and may refer to local secret paths. Keep both local. |
+| Machine-local VS Code preference | `.vscode/settings.json` | Contains the user's editor preference; preserve locally and do not include in this checkpoint. |
 | Redundant installer candidate | root `install_codex_agents.py` | Not referenced by canonical task plans and duplicates `scripts/install_codex_agents.py`; retain untracked pending owner review. |
 | User notes and unassigned inputs | root `todo.md`, `todos/harness/`, `todos/plugins/`, `todos/skills/`, `todos/gh-repos/`, `todos/agents/`, `todos/mcp/` | Preserve as intake material; do not treat an idea as accepted implementation scope. |
 | Stale ownership records | `docs/` task 1 and task 2 records | Not listed as active in `todos/README.md`; preserve pending an explicit history audit rather than claim completion. |
@@ -27,9 +27,9 @@ Checkpoint inventory for the local canonical lineage at `main`. This records why
 
 ## Ignored local/generated files
 
-The root `.gitignore` excludes Python bytecode and common local caches, `.vscode/copilot-tools.snapshot.json`, `.vscode/mcp.json`, `.tools/bin/waza`, `.tools/bin/extension.yaml`, and the two raw SkillOpt run directories. It does not ignore `outputs/` wholesale: curated evidence under `outputs/evals/` remains trackable, subject to its task owner.
+The root `.gitignore` excludes Python bytecode and common local caches, `.vscode/copilot-tools.snapshot.json`, `.tools/bin/waza`, `.tools/bin/extension.yaml`, and the two raw SkillOpt run directories. It does not ignore `outputs/` wholesale: curated evidence under `outputs/evals/` remains trackable, subject to its task owner.
 
-The Waza executable and extension manifest are locally installed artifacts. The Copilot snapshot is generated workspace state. Raw SkillOpt runs are reproducible outputs rather than curated fixtures. No ignored file was deleted.
+The Waza executable and extension manifest are locally installed artifacts. The Copilot snapshot is generated workspace state. Raw SkillOpt runs are reproducible outputs rather than curated fixtures. On 2026-09-27, the two ignored raw SkillOpt run trees and the generated Copilot snapshot were removed from the working tree; curated benchmark fixtures and `outputs/evals/baseline-inventory-r7.json` were preserved.
 
 ## Ownership state
 
