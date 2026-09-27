@@ -1,10 +1,8 @@
-from pathlib import Path
 import json
 import subprocess
 import sys
+from pathlib import Path
 from unittest.mock import Mock, patch
-
-import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -76,7 +74,10 @@ def test_execution_result_supports_external_session_and_separate_failure_dimensi
 
 
 def test_backend_capabilities_distinguish_supported_unsupported_and_unknown():
-    from harness_factory.execution import BackendCapabilities, EXECUTION_CAPABILITY_NAMES
+    from harness_factory.execution import (
+        EXECUTION_CAPABILITY_NAMES,
+        BackendCapabilities,
+    )
     from harness_factory.models import CapabilityObservation, CapabilityState
 
     observations = {
@@ -94,7 +95,7 @@ def test_backend_capabilities_distinguish_supported_unsupported_and_unknown():
 
 def test_codex_exec_uses_stdin_and_normalizes_structured_output(tmp_path):
     from harness_factory.adapters import CodexExecBackend
-    from harness_factory.execution import ExecutionOutcome, ExecutionRequest
+    from harness_factory.execution import ExecutionOutcome
 
     adapter = Mock()
     adapter.detect.return_value = _installed_codex_capabilities()
@@ -107,20 +108,34 @@ def test_codex_exec_uses_stdin_and_normalizes_structured_output(tmp_path):
             {
                 "task_id": request.task_id,
                 "attempt_id": request.attempt_id,
-                "result": {"answer": 42},
+                "result_json": json.dumps({"answer": 42}),
             }
         ),
         stderr="",
     )
 
-    with patch("harness_factory.adapters.subprocess.run", return_value=completed) as run:
+    def run_with_schema(command, **kwargs):
+        schema_path = Path(command[command.index("--output-schema") + 1])
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        assert schema["properties"]["task_id"]["enum"] == [request.task_id]
+        assert schema["properties"]["attempt_id"]["enum"] == [request.attempt_id]
+        assert schema["properties"]["result_json"]["type"] == "string"
+        assert schema["additionalProperties"] is False
+        return completed
+
+    with patch(
+        "harness_factory.adapters.subprocess.run", side_effect=run_with_schema
+    ) as run:
         result = backend.execute(request)
 
     command = run.call_args.args[0]
     assert command[:2] == ["/usr/bin/codex", "exec"]
     assert command[-1] == "-"
     assert "--output-schema" in command
-    assert "--sandbox" in command and command[command.index("--sandbox") + 1] == "read-only"
+    assert (
+        "--sandbox" in command
+        and command[command.index("--sandbox") + 1] == "read-only"
+    )
     assert run.call_args.kwargs["input"] == request.input
     assert result.outcome is ExecutionOutcome.SUCCEEDED
     assert result.result == {"answer": 42}
@@ -135,7 +150,6 @@ def test_codex_exec_classifies_process_protocol_semantic_and_timeout_failures(tm
     from harness_factory.adapters import CodexExecBackend
     from harness_factory.execution import (
         ExecutionOutcome,
-        ExecutionRequest,
         FailureCause,
     )
 
@@ -146,12 +160,14 @@ def test_codex_exec_classifies_process_protocol_semantic_and_timeout_failures(tm
     correct_payload = {
         "task_id": request.task_id,
         "attempt_id": request.attempt_id,
-        "result": "ok",
+        "result_json": json.dumps("ok"),
     }
 
     with patch(
         "harness_factory.adapters.subprocess.run",
-        return_value=subprocess.CompletedProcess([], 2, _codex_execution_events(correct_payload), "error"),
+        return_value=subprocess.CompletedProcess(
+            [], 2, _codex_execution_events(correct_payload), "error"
+        ),
     ):
         process_failure = backend.execute(request)
     assert process_failure.outcome is ExecutionOutcome.FAILED
@@ -164,15 +180,16 @@ def test_codex_exec_classifies_process_protocol_semantic_and_timeout_failures(tm
         protocol_failure = backend.execute(request)
     assert protocol_failure.failure.cause is FailureCause.PROTOCOL_FAILURE
 
-    mismatched_payload = dict(correct_payload, task_id="OTHER-TASK")
-    with patch(
-        "harness_factory.adapters.subprocess.run",
-        return_value=subprocess.CompletedProcess(
-            [], 0, _codex_execution_events(mismatched_payload), ""
-        ),
-    ):
-        semantic_failure = backend.execute(request)
-    assert semantic_failure.failure.cause is FailureCause.SEMANTIC_FAILURE
+    for identity_field in ("task_id", "attempt_id"):
+        mismatched_payload = dict(correct_payload, **{identity_field: "OTHER-ID"})
+        with patch(
+            "harness_factory.adapters.subprocess.run",
+            return_value=subprocess.CompletedProcess(
+                [], 0, _codex_execution_events(mismatched_payload), ""
+            ),
+        ):
+            semantic_failure = backend.execute(request)
+        assert semantic_failure.failure.cause is FailureCause.SEMANTIC_FAILURE
 
     with patch(
         "harness_factory.adapters.subprocess.run",
@@ -250,14 +267,17 @@ def _installed_codex_capabilities():
 
 
 def _codex_execution_events(payload):
-    return "\n".join(
-        json.dumps(event)
-        for event in (
-            {"type": "thread.started", "thread_id": "native-thread"},
-            {
-                "type": "item.completed",
-                "item": {"type": "agent_message", "text": json.dumps(payload)},
-            },
-            {"type": "turn.completed"},
+    return (
+        "\n".join(
+            json.dumps(event)
+            for event in (
+                {"type": "thread.started", "thread_id": "native-thread"},
+                {
+                    "type": "item.completed",
+                    "item": {"type": "agent_message", "text": json.dumps(payload)},
+                },
+                {"type": "turn.completed"},
+            )
         )
-    ) + "\n"
+        + "\n"
+    )
