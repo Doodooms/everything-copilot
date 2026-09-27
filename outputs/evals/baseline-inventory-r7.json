@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "inventory_id": "cost-eval-baseline-inventory-r7",
+  "specification": "SPEC-COST-EVAL-OPT@1",
+  "acceptance_criterion": "AC-COST-3",
+  "status": "gap",
+  "searched_commands": [
+    "rg --files outputs | rg -i '(flat|hierarchical|risk[-_.]?proportional|baseline|routing)' | rg -v '^outputs/evals/baseline-inventory-r7\\.json$'",
+    "rg -n -i -g '*.json' -g '*.jsonl' -g '*.yaml' -g '*.yml' -g '*.csv' -g '!**/baseline-inventory-r7.json' '(flat|hierarchical|risk.proportional|old.?routing|new.?routing|baseline)' outputs"
+  ],
+  "machine_readable_matches": [
+    {
+      "path": "outputs/skillopt-create-skill-invalid-rubric-20260923/summary.json",
+      "fields": {
+        "baseline_selection_hard": 0.0,
+        "baseline_test_hard": null,
+        "baseline_test_soft": null
+      },
+      "exclusion_reason": "Unrelated SkillOpt summary fields; they do not identify flat and hierarchical profiles or matched suite, fixture, prompt, and expected behavior."
+    }
+  ],
+  "excluded_candidate_artifacts": [
+    {
+      "path": "outputs/skillopt-create-skill/selection_eval_baseline/candidate-selection/eval.yaml",
+      "observed_identity": {
+        "name": "create-skill-selection",
+        "skill": "create-skill",
+        "executor": "copilot-sdk"
+      },
+      "exclusion_reason": "A SkillOpt selection benchmark; it contains no matched flat and hierarchical plugin profile results."
+    },
+    {
+      "path": "outputs/skillopt-create-skill-invalid-rubric-20260923/selection_eval_baseline/candidate-selection/eval.yaml",
+      "observed_identity": {
+        "name": "create-skill-selection",
+        "skill": "create-skill",
+        "executor": "copilot-sdk"
+      },
+      "exclusion_reason": "A SkillOpt selection benchmark; it contains no matched flat and hierarchical plugin profile results."
+    }
+  ],
+  "flat_vs_hierarchical_pair": {
+    "status": "not_found",
+    "left_artifact": null,
+    "right_artifact": null
+  },
+  "old_vs_risk_proportional_pair": {
+    "status": "not_found",
+    "left_artifact": null,
+    "right_artifact": null
+  },
+  "ac_cost_3_evidence": "No valid historical matched result pair was found. No pair was synthesized and no single smoke result is represented as a comparison baseline."
+}

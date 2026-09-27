@@ -1,0 +1,72 @@
+"""Harness integration layer for the Agent Plugin Factory."""
+
+from .adapters import CodexHarnessAdapter, CopilotHarnessAdapter, HarnessAdapter
+from .evaluation import (
+    ALLOWED_COPILOT_REASONS,
+    CrossHarnessValidationContext,
+    EvaluationProfile,
+    RunBudget,
+    compare_run_artifacts,
+    load_profile,
+    load_run_artifact,
+    run_suite,
+    validate_run_target,
+)
+from .models import (
+    CAPABILITY_NAMES,
+    COPILOT_MIN_AI_CREDITS,
+    CapabilityObservation,
+    CapabilityState,
+    CrossHarnessRequest,
+    HarnessCapabilities,
+    HarnessResult,
+    HarnessScenario,
+    Purpose,
+    ResultStatus,
+    RunMode,
+    RunStatus,
+)
+from .runs import HarnessRun, HarnessRunManager
+from .suites import (
+    SCENARIO_CATEGORIES,
+    Scenario,
+    ScenarioSuite,
+    SuiteValidationError,
+    load_suite,
+    validate_suite,
+)
+
+__all__ = [
+    "ALLOWED_COPILOT_REASONS",
+    "CAPABILITY_NAMES",
+    "COPILOT_MIN_AI_CREDITS",
+    "SCENARIO_CATEGORIES",
+    "CapabilityObservation",
+    "CapabilityState",
+    "CodexHarnessAdapter",
+    "CopilotHarnessAdapter",
+    "CrossHarnessRequest",
+    "CrossHarnessValidationContext",
+    "EvaluationProfile",
+    "HarnessAdapter",
+    "HarnessCapabilities",
+    "HarnessResult",
+    "HarnessRun",
+    "HarnessRunManager",
+    "HarnessScenario",
+    "Purpose",
+    "ResultStatus",
+    "RunBudget",
+    "RunMode",
+    "RunStatus",
+    "Scenario",
+    "ScenarioSuite",
+    "SuiteValidationError",
+    "compare_run_artifacts",
+    "load_profile",
+    "load_run_artifact",
+    "load_suite",
+    "run_suite",
+    "validate_run_target",
+    "validate_suite",
+]

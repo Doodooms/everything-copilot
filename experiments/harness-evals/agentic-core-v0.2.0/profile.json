@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "profile_id": "agentic-core-shared-cache-v0.2.0",
+  "source_path": "/home/pm/.codex/plugins/cache/agentic-workflow-local/agentic-core/0.2.0",
+  "source_mode": "external",
+  "metadata": {
+    "plugin_id": "agentic-core@agentic-workflow-local",
+    "plugin_version": "0.2.0",
+    "profile_origin": "installed shared Codex plugin cache",
+    "declared_mcp_servers": ["Context7", "GitHub", "Semgrep"],
+    "multi_harness_skill_sha256": "72330f25c58e6a99f235a3ad459c3caac4e8ab9fd297884f01bdf73042d2ba46",
+    "codex_workflow_sha256": "2c204f19efbc4d249e4beac175c4c3e591a7faca0e5363ea1e2688972a8aca29",
+    "copilot_workflow_sha256": "2dc39d384848e99ba067d2e13bdab43b2e5ca114000bfa85f5d96adbe65da028",
+    "execution_status": "reference_only_smoke_blocked_under_plan_r7"
+  }
+}
