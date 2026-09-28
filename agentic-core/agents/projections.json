@@ -1,0 +1,372 @@
+{
+  "copilot": {
+    "architect": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "high",
+      "tools": [
+        "read",
+        "agent",
+        "search/usages",
+        "search",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "challenger": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "max",
+      "tools": [
+        "read",
+        "agent",
+        "search/usages",
+        "search",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "devops": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "medium",
+      "tools": [
+        "read",
+        "search",
+        "edit",
+        "execute",
+        "todo",
+        "agent",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "implementer": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "high",
+      "tools": [
+        "read",
+        "search",
+        "edit",
+        "execute",
+        "todo",
+        "agent",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "orchestrator": {
+      "target": "vscode",
+      "user-invocable": true,
+      "disable-model-invocation": true,
+      "tools": [
+        "vscode/askQuestions",
+        "execute",
+        "read",
+        "agent",
+        "edit",
+        "search",
+        "skill",
+        "github/*",
+        "todo"
+      ],
+      "agents": [
+        "architect",
+        "challenger",
+        "devops",
+        "implementer",
+        "planner",
+        "quality-assurance",
+        "researcher",
+        "reviewer"
+      ]
+    },
+    "planner": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "medium",
+      "tools": [
+        "read",
+        "search",
+        "agent",
+        "todo",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "quality-assurance": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "high",
+      "tools": [
+        "read",
+        "search",
+        "edit",
+        "execute",
+        "todo",
+        "agent",
+        "skill"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    },
+    "researcher": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "medium",
+      "tools": [
+        "read",
+        "browser",
+        "search",
+        "web",
+        "skill",
+        "mcp_context7_resolve_library_id",
+        "mcp_context7_query_docs",
+        "mcp_github_mcp_se_search_repositories",
+        "mcp_github_mcp_se_get_commit",
+        "mcp_github_mcp_se_list_commits",
+        "mcp_github_mcp_se_list_releases",
+        "mcp_github_mcp_se_search_code",
+        "mcp_github_mcp_se_get_file_contents",
+        "mcp_github_mcp_se_search_issues",
+        "mcp_github_mcp_se_issue_read",
+        "mcp_github_mcp_se_search_pull_requests",
+        "mcp_github_mcp_se_pull_request_read"
+      ]
+    },
+    "reviewer": {
+      "target": "vscode",
+      "user-invocable": false,
+      "model": "GPT-6 Luna (copilot)",
+      "reasoning-effort": "high",
+      "tools": [
+        "execute",
+        "read",
+        "agent",
+        "search",
+        "skill",
+        "mcp_semgrep_semgrep_scan"
+      ],
+      "agents": [
+        "researcher"
+      ]
+    }
+  },
+  "codex": {
+    "architect": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "high"
+    },
+    "challenger": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "max"
+    },
+    "devops": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "medium"
+    },
+    "implementer": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "high"
+    },
+    "orchestrator": {
+      "model": null,
+      "reasoning-effort": null
+    },
+    "planner": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "medium"
+    },
+    "quality-assurance": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "high"
+    },
+    "researcher": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "medium"
+    },
+    "reviewer": {
+      "model": "gpt-6-luna",
+      "reasoning-effort": "high"
+    }
+  },
+  "antigravity": {
+    "architect": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "invoke_subagent",
+        "find_file",
+        "grep_search",
+        "search_directory"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "challenger": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "invoke_subagent",
+        "find_file",
+        "grep_search",
+        "search_directory"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "devops": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "find_file",
+        "grep_search",
+        "search_directory",
+        "write_to_file",
+        "run_command",
+        "invoke_subagent"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "implementer": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "find_file",
+        "grep_search",
+        "search_directory",
+        "write_to_file",
+        "run_command",
+        "invoke_subagent"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "orchestrator": {
+      "tools": [
+        "ask_question",
+        "run_command",
+        "list_directory",
+        "view_file",
+        "invoke_subagent",
+        "write_to_file",
+        "find_file",
+        "grep_search",
+        "search_directory"
+      ],
+      "mainAgent": true,
+      "subagent": false,
+      "agents": [
+        "architect",
+        "challenger",
+        "devops",
+        "implementer",
+        "planner",
+        "quality-assurance",
+        "researcher",
+        "reviewer"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "planner": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "find_file",
+        "grep_search",
+        "search_directory",
+        "invoke_subagent"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "quality-assurance": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "find_file",
+        "grep_search",
+        "search_directory",
+        "write_to_file",
+        "run_command",
+        "invoke_subagent"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "researcher": {
+      "tools": [
+        "list_directory",
+        "view_file",
+        "find_file",
+        "grep_search",
+        "search_directory"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [],
+      "commandExecutionPolicy": "sandbox"
+    },
+    "reviewer": {
+      "tools": [
+        "run_command",
+        "list_directory",
+        "view_file",
+        "invoke_subagent",
+        "find_file",
+        "grep_search",
+        "search_directory"
+      ],
+      "mainAgent": false,
+      "subagent": true,
+      "agents": [
+        "researcher"
+      ],
+      "commandExecutionPolicy": "sandbox"
+    }
+  }
+}

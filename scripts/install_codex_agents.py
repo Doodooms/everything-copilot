@@ -9,10 +9,12 @@ from pathlib import Path
 import tomllib
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-AGENT_SOURCE_DIR = REPOSITORY_ROOT / "agentic-core" / "com.github.copilot" / "agents"
 sys.path.insert(0, str(REPOSITORY_ROOT))
+sys.path.insert(0, str(REPOSITORY_ROOT / "agentic-core"))
 
-from expertise.targets.codex import render_codex_agent
+from core_agents import load_core_agents  # noqa: E402
+
+from expertise.targets.codex import render_codex_fields  # noqa: E402
 
 
 def _codex_home(explicit: Path | None) -> Path:
@@ -27,20 +29,18 @@ def _codex_home(explicit: Path | None) -> Path:
 
 
 def _projected_agents() -> dict[str, bytes]:
-    sources = sorted(AGENT_SOURCE_DIR.glob("*.agent.md"))
-    if not sources:
-        raise ValueError(f"no canonical Copilot agents found in {AGENT_SOURCE_DIR}")
-
     projected: dict[str, bytes] = {}
-    for source in sources:
-        agent_id = source.name.removesuffix(".agent.md")
+    for agent_id, agent in load_core_agents().items():
         filename = f"{agent_id}.toml"
         if filename in projected:
             raise ValueError(f"duplicate Codex agent output: {filename}")
-        content = render_codex_agent(
-            agent_id,
-            source.read_bytes(),
-            source_name=source.relative_to(REPOSITORY_ROOT).as_posix(),
+        codex_profile = agent.projection("codex")
+        content = render_codex_fields(
+            agent.name,
+            agent.description,
+            agent.instructions_for("codex"),
+            model=codex_profile.get("model"),
+            reasoning_effort=codex_profile.get("reasoning-effort"),
         )
         try:
             role = tomllib.loads(content.decode("utf-8"))
@@ -159,7 +159,7 @@ def main() -> int:
             check=args.check,
             force=args.force,
         )
-    except (OSError, ValueError) as exc:
+    except (OSError, TypeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 

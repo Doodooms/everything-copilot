@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +43,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="create a validated starter Expertise Pack source and skill package",
     )
     scaffold.add_argument("pack_id")
-    scaffold.add_argument("--type", choices=("horizontal", "vertical"), default="horizontal")
+    scaffold.add_argument(
+        "--type", choices=("horizontal", "vertical"), default="horizontal"
+    )
     scaffold.add_argument("--name", required=True)
     scaffold.add_argument("--description", required=True)
     scaffold.add_argument("--capability", required=True)
@@ -57,7 +58,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--project-to",
         action="append",
         default=[],
-        help="core agent to receive this skill/capability projection; may be repeated",
+        help="known agent to receive this skill/capability projection; may be repeated",
+    )
+    scaffold.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="agent ID in the host catalog; may be repeated",
     )
     scaffold.add_argument(
         "--target",
@@ -66,27 +73,35 @@ def build_parser() -> argparse.ArgumentParser:
         help="target to validate in the scaffold; may be repeated (default: all supported)",
     )
 
-    validate = commands.add_parser("validate", help="parse and validate one local pack source")
+    validate = commands.add_parser(
+        "validate", help="parse and validate one local pack source"
+    )
     validate.add_argument("pack_id")
+    validate.add_argument("--known-agent", action="append", default=[])
 
-    build = commands.add_parser("build", help="compile a pack to a portable or Copilot target")
+    build = commands.add_parser(
+        "build", help="compile a pack to a portable or Copilot target"
+    )
     build.add_argument("pack_id")
     build.add_argument("--target", choices=sorted(SUPPORTED_TARGETS), required=True)
+    build.add_argument("--known-agent", action="append", default=[])
     build.add_argument(
         "--output",
         type=Path,
         help="optional output path; it must resolve below this repository's dist/ directory",
     )
 
-    test = commands.add_parser("test", help="validate and smoke-compile declared targets in memory")
+    test = commands.add_parser(
+        "test", help="validate and smoke-compile declared targets in memory"
+    )
     test.add_argument("pack_id")
+    test.add_argument("--known-agent", action="append", default=[])
     return parser
 
 
 def _test_pack(source, repository_root: Path) -> dict[str, Any]:
     artifacts = [
-        compile_target(source, target)
-        for target in source.ir.compatibility.targets
+        compile_target(source, target) for target in source.ir.compatibility.targets
     ]
     by_target = {artifact.target: artifact for artifact in artifacts}
     if "portable" in by_target:
@@ -139,11 +154,14 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
                 source=args.source,
                 version=args.version,
                 targets=args.target or sorted(SUPPORTED_TARGETS),
+                known_agents=args.known_agent,
             )
             _json_line(result)
             return 0
 
-        source = parse_pack(_pack_root(repository_root, args.pack_id))
+        source = parse_pack(
+            _pack_root(repository_root, args.pack_id), known_agents=args.known_agent
+        )
         if args.command == "validate":
             _json_line(
                 {
@@ -161,9 +179,7 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
         if args.command == "build":
             artifact = compile_target(source, args.target)
             dist_root = repository_root / "dist"
-            default_output = (
-                dist_root / source.ir.id / source.ir.version / args.target
-            )
+            default_output = dist_root / source.ir.id / source.ir.version / args.target
             if args.output is None:
                 output = default_output
             else:

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any
-from collections.abc import Mapping
 
 from .ontology import canonical_digest
 
@@ -200,6 +200,7 @@ class PackSource:
         compare=False,
         repr=False,
     )
+    known_agents: frozenset[str] = field(default_factory=frozenset, compare=False)
 
     @property
     def reference(self) -> PackReference:
@@ -253,7 +254,9 @@ class EffectiveIR:
                     "capabilities": list(item.capabilities),
                     "skills": list(item.skills),
                     "mcp_servers": list(item.mcp_servers),
-                    "packs": [{"id": ref.id, "version": ref.version} for ref in item.packs],
+                    "packs": [
+                        {"id": ref.id, "version": ref.version} for ref in item.packs
+                    ],
                 }
                 for item in self.agent_projections
             ],

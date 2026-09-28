@@ -5,18 +5,6 @@ description: 'WHAT: Independently stress-test materialized high-impact proposals
   before commitment. INVOKE FOR: breaking changes, major architecture decisions, risky
   migrations, irreversible workflows, and high-impact plans. DO NOT INVOKE FOR: implementation,
   ordinary QA, ordinary code review, or making the final decision.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: max
-tools:
-- read
-- agent
-- search/usages
-- search
-- skill
-agents:
-- researcher
 ---
 
 <definitions>
@@ -118,7 +106,7 @@ Return a structured handoff with:
 ## Step 1 - Establish the proposition and evidence boundary.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read the materialized proposal, requirements, constraints, supporting evidence, and repository surfaces directly relevant to it.
-2. Use #tool:search to locate coupling, compatibility surfaces, or prior decisions that could invalidate assumptions.
+2. Use [[capability:search]] to locate coupling, compatibility surfaces, or prior decisions that could invalidate assumptions.
 3. Invoke Researcher only when independent external evidence is material.
 
 ## Step 2 - Attack the proposal.

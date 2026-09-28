@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import tempfile
 from pathlib import Path
 from typing import Iterable
@@ -19,7 +18,6 @@ from .ontology import (
 )
 from .parser import parse_pack
 from .targets import compile_target
-from .validator import core_agent_ids
 
 
 def scaffold_pack(
@@ -37,12 +35,19 @@ def scaffold_pack(
     version: str = "0.1.0",
     pack_type: str = "horizontal",
     targets: Iterable[str] = SUPPORTED_TARGETS,
+    known_agents: Iterable[str] = (),
 ) -> dict[str, object]:
     root = Path(repository_root).resolve(strict=True)
     if not root.is_dir():
         raise PackValidationError(("repository root must be a directory",))
-    if not isinstance(pack_id, str) or not PACK_ID_PATTERN.fullmatch(pack_id) or len(pack_id) > 64:
-        raise PackValidationError(("pack_id must be a lowercase hyphenated ID of at most 64 characters",))
+    if (
+        not isinstance(pack_id, str)
+        or not PACK_ID_PATTERN.fullmatch(pack_id)
+        or len(pack_id) > 64
+    ):
+        raise PackValidationError(
+            ("pack_id must be a lowercase hyphenated ID of at most 64 characters",)
+        )
     if not isinstance(pack_type, str) or pack_type not in PLUGIN_TYPES:
         raise PackValidationError(("pack_type must be horizontal or vertical",))
     if not isinstance(version, str) or VERSION_PATTERN.fullmatch(version) is None:
@@ -50,7 +55,9 @@ def scaffold_pack(
     try:
         compatibility = parse_agent_plugins_requirement(">=1.0")[0]
     except ValueError as exc:
-        raise PackValidationError((f"built-in compatibility default is invalid: {exc}",)) from exc
+        raise PackValidationError(
+            (f"built-in compatibility default is invalid: {exc}",)
+        ) from exc
 
     for label, value in (
         ("name", name),
@@ -61,27 +68,37 @@ def scaffold_pack(
     ):
         if not isinstance(value, str) or not value.strip():
             raise PackValidationError((f"{label} must be non-empty text",))
-    if not isinstance(capability, str) or CAPABILITY_ID_PATTERN.fullmatch(capability) is None:
-        raise PackValidationError(("capability must be a valid dotted/hyphenated capability ID",))
+    if (
+        not isinstance(capability, str)
+        or CAPABILITY_ID_PATTERN.fullmatch(capability) is None
+    ):
+        raise PackValidationError(
+            ("capability must be a valid dotted/hyphenated capability ID",)
+        )
     if (
         not isinstance(skill_id, str)
         or COMPONENT_ID_PATTERN.fullmatch(skill_id) is None
         or len(skill_id) > 64
     ):
-        raise PackValidationError(("skill_id must be a lowercase hyphenated component ID",))
+        raise PackValidationError(
+            ("skill_id must be a lowercase hyphenated component ID",)
+        )
 
     selected_targets = tuple(sorted(set(targets)))
-    if not selected_targets or any(target not in SUPPORTED_TARGETS for target in selected_targets):
+    if not selected_targets or any(
+        target not in SUPPORTED_TARGETS for target in selected_targets
+    ):
         raise PackValidationError(
-            "targets must contain one or more of: " + ", ".join(sorted(SUPPORTED_TARGETS))
+            "targets must contain one or more of: "
+            + ", ".join(sorted(SUPPORTED_TARGETS))
         )
 
     selected_agents = tuple(sorted(set(project_to)))
-    known_agents = core_agent_ids()
-    unknown_agents = sorted(set(selected_agents) - known_agents)
+    catalog = frozenset(known_agents)
+    unknown_agents = sorted(set(selected_agents) - catalog)
     if unknown_agents:
         raise PackValidationError(
-            "project_to contains unknown core agents: " + ", ".join(unknown_agents)
+            "project_to contains unknown agents: " + ", ".join(unknown_agents)
         )
 
     packs_root = root / "expertise" / "packs"
@@ -91,7 +108,9 @@ def scaffold_pack(
     try:
         packs_root.resolve(strict=True).relative_to(root)
     except (OSError, ValueError) as exc:
-        raise PackValidationError("expertise/packs must remain inside the repository") from exc
+        raise PackValidationError(
+            "expertise/packs must remain inside the repository"
+        ) from exc
 
     destination = packs_root / pack_id
     if destination.exists() or destination.is_symlink():
@@ -169,22 +188,25 @@ def scaffold_pack(
                 encoding="utf-8",
             )
 
-            parsed = parse_pack(staging_root, known_core_agents=known_agents)
+            parsed = parse_pack(staging_root, known_agents=catalog)
             artifacts = {
-                target: compile_target(parsed, target)
-                for target in selected_targets
+                target: compile_target(parsed, target) for target in selected_targets
             }
             expected_outputs = {
                 target: sorted(artifact.files)
                 for target, artifact in sorted(artifacts.items())
             }
             if destination.exists() or destination.is_symlink():
-                raise PackValidationError(f"pack destination appeared during scaffold: {destination}")
+                raise PackValidationError(
+                    f"pack destination appeared during scaffold: {destination}"
+                )
             staging_root.rename(destination)
     except PackValidationError:
         raise
     except (OSError, UnicodeError, yaml.YAMLError, ValueError) as exc:
-        raise PackValidationError((f"could not scaffold pack {pack_id!r}: {exc}",)) from exc
+        raise PackValidationError(
+            (f"could not scaffold pack {pack_id!r}: {exc}",)
+        ) from exc
 
     return {
         "status": "scaffolded",

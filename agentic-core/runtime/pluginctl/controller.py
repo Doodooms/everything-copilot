@@ -4,42 +4,52 @@ import base64
 import json
 import os
 import shutil
+import sys
 import uuid
 from collections.abc import Iterable, Mapping
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import Any
 
-from expertise.errors import ExpertiseError, ResolutionError, TargetError
+from expertise.errors import ExpertiseError
 from expertise.ir import EffectiveIR, PackReference, PackSource
 from expertise.ontology import (
-    AGENT_PLUGINS_VERSION,
     CAPABILITY_ID_PATTERN,
     MCP_SCHEMA,
     PACK_ID_PATTERN,
     VERSION_PATTERN,
     canonical_digest,
-    parse_agent_plugins_requirement,
     parse_version,
 )
 from expertise.parser import parse_pack, source_content_digest
 from expertise.registry import LocalPackRegistry
 from expertise.resolver import _version_key, resolve_effective_ir
-from expertise.targets import compile_target, validate_mcp_manifest, validate_plugin_manifest
+from expertise.targets import (
+    compile_target,
+    validate_mcp_manifest,
+    validate_plugin_manifest,
+)
 from expertise.targets.common import (
     CompiledTarget,
     ensure_supported_agent_plugins,
     validate_target_files,
 )
 from expertise.targets.copilot import _validate_agent
-from expertise.validator import (
-    core_agent_ids,
-    load_json_no_duplicate_keys,
-    load_pack_yaml_bytes,
+from expertise.validator import load_json_no_duplicate_keys, load_pack_yaml_bytes
+
+from .models import (
+    ActiveSet,
+    EffectiveProfile,
+    ManagedEffectiveIR,
+    PluginControlError,
+    TrustedRegistry,
+    TrustedSource,
 )
 
-from .models import ActiveSet, EffectiveProfile, ManagedEffectiveIR, PluginControlError, TrustedRegistry, TrustedSource
-
+_CORE_PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_CORE_PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_CORE_PACKAGE_ROOT))
+from core_agents import load_core_agents
 
 _HEX_DIGEST = frozenset("0123456789abcdef")
 _INSTALL_RECORD_FIELDS = {
@@ -181,7 +191,7 @@ class PluginController:
 
         self.repository_root = Path(__file__).resolve().parents[3]
         self.core_root = self.repository_root / "agentic-core"
-        self.core_agent_ids = core_agent_ids(self.repository_root)
+        self.core_agent_ids = frozenset(load_core_agents(_CORE_PACKAGE_ROOT / "agents"))
 
     @property
     def workspace_state_dir(self) -> Path:
@@ -244,7 +254,7 @@ class PluginController:
         raw_root = Path(source_root)
         if raw_root.is_symlink():
             raise PluginControlError("trusted source root must not be a symlink")
-        source = parse_pack(raw_root)
+        source = parse_pack(raw_root, known_agents=self.core_agent_ids)
         ensure_supported_agent_plugins(source)
         compile_target(source, "copilot")
         entry = self.trusted_registry.get(source.ir.reference)
@@ -288,7 +298,7 @@ class PluginController:
         raw_source = entry.source_root
         if raw_source.is_symlink():
             raise PluginControlError("trusted source root must not be a symlink")
-        source = parse_pack(raw_source)
+        source = parse_pack(raw_source, known_agents=self.core_agent_ids)
         self._trusted_source_for(source)
         ensure_supported_agent_plugins(source)
         if "copilot" not in source.ir.compatibility.targets:
@@ -325,7 +335,7 @@ class PluginController:
         try:
             stage_root.mkdir(parents=True, exist_ok=False)
             self._write_source_snapshot(stage_source, source)
-            staged_source = parse_pack(stage_source)
+            staged_source = parse_pack(stage_source, known_agents=self.core_agent_ids)
             if staged_source.ir.content_digest != source.ir.content_digest:
                 raise PluginControlError("staged pack digest differs from trusted source")
             self._validate_dependency_closure(staged_source, installed)
@@ -619,7 +629,7 @@ class PluginController:
 
         registry = LocalPackRegistry(
             installed.values(),
-            known_core_agents=self.core_agent_ids,
+            known_agents=self.core_agent_ids,
         )
         try:
             effective_packs = resolve_effective_ir(
@@ -826,7 +836,7 @@ class PluginController:
         refs = tuple(sorted(selected))
         registry = LocalPackRegistry(
             selected.values(),
-            known_core_agents=self.core_agent_ids,
+            known_agents=self.core_agent_ids,
         )
         try:
             resolve_effective_ir(
@@ -888,7 +898,7 @@ class PluginController:
                 source_root = version_dir / "source"
                 if source_root.is_symlink() or not source_root.is_dir():
                     raise PluginControlError(f"installed source is unavailable: {source_root}")
-                source = parse_pack(source_root)
+                source = parse_pack(source_root, known_agents=self.core_agent_ids)
                 if source.ir.reference != reference or source.ir.content_digest != record["digest"]:
                     raise PluginControlError(f"installed source digest mismatch: {reference.id}@{reference.version}")
                 ensure_supported_agent_plugins(source)
@@ -1013,7 +1023,7 @@ class PluginController:
         if raw.is_symlink():
             raise PluginControlError("pack source root must not be a symlink")
         try:
-            return parse_pack(raw)
+            return parse_pack(raw, known_agents=self.core_agent_ids)
         except ExpertiseError as exc:
             raise PluginControlError(f"pack source check failed: {exc}") from exc
 
@@ -1087,7 +1097,7 @@ class PluginController:
             if path.is_symlink():
                 raise PluginControlError(f"agentic-core agent is a symlink: {path}")
             content = _read_regular_file(path, self.core_root, "agentic-core agent")
-            _validate_agent(content, path, self.repository_root)
+            _validate_agent(content, path, self.core_agent_ids)
             agent_ids.add(path.name.removesuffix(".agent.md"))
             files[f"com.github.copilot/agents/{path.name}"] = content
         if agent_ids != set(self.core_agent_ids):

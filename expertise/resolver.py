@@ -193,7 +193,7 @@ def resolve_effective_ir(
     for reference in sorted(active):
         visit(reference)
 
-    visible_agent_ids = set(registry.core_agent_ids)
+    visible_agent_ids = set(registry.agent_ids)
     for reference, source in active_sources.items():
         contribution_ids = {item.id for item in source.ir.agents.contributions}
         duplicates = contribution_ids & visible_agent_ids

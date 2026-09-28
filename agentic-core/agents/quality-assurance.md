@@ -7,20 +7,6 @@ description: 'WHAT: Diagnose unknown runtime failures and adversarially falsify 
   performance testing, and test-surface weakness. DO NOT INVOKE FOR: production fixes,
   architecture, delivery planning, dedicated static/design security audits, or final
   acceptance.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: high
-tools:
-- read
-- search
-- edit
-- execute
-- todo
-- agent
-- skill
-agents:
-- researcher
 ---
 
 <definitions>

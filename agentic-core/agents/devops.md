@@ -5,20 +5,6 @@ description: 'WHAT: Modify CI, packaging, deployment, runtime configuration, rel
   automation, build/package pipelines, deployment configuration, runtime environments,
   observability, release workflows, and operational repair. DO NOT INVOKE FOR: product
   feature implementation, QA ownership, final review, architecture, or planning.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: medium
-tools:
-- read
-- search
-- edit
-- execute
-- todo
-- agent
-- skill
-agents:
-- researcher
 ---
 
 <definitions>
@@ -122,7 +108,7 @@ Return a structured handoff with:
 ## Step 1 - Gather operational context.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read workflow files, scripts, runtime configuration, deployment/package manifests, and environment-facing documentation required for the target behavior.
-2. Use #tool:search to locate owning operational surfaces and validation hooks.
+2. Use [[capability:search]] to locate owning operational surfaces and validation hooks.
 3. Invoke Researcher only for provider/tool/version evidence required before mutation.
 
 ## Step 2 - Apply the smallest safe operational change.

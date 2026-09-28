@@ -5,28 +5,6 @@ description: 'WHAT: Perform isolated, evidence-heavy repository and external tec
   research, compatibility checks, standards, papers, technical comparisons, repository
   archaeology, and investigations that would otherwise pollute another agent''s context.
   DO NOT INVOKE FOR: implementation, planning ownership, QA, review, or final decisions.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: medium
-tools:
-- read
-- browser
-- search
-- web
-- skill
-- mcp_context7_resolve_library_id
-- mcp_context7_query_docs
-- mcp_github_mcp_se_search_repositories
-- mcp_github_mcp_se_get_commit
-- mcp_github_mcp_se_list_commits
-- mcp_github_mcp_se_list_releases
-- mcp_github_mcp_se_search_code
-- mcp_github_mcp_se_get_file_contents
-- mcp_github_mcp_se_search_issues
-- mcp_github_mcp_se_issue_read
-- mcp_github_mcp_se_search_pull_requests
-- mcp_github_mcp_se_pull_request_read
 ---
 
 <definitions>
@@ -129,8 +107,8 @@ Return a structured handoff with:
 ## Step 1 - Gather evidence.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read the repository files that directly constrain the exact question and stop condition.
-2. Use #tool:search to locate owning symbols, configs, docs, or historical patterns.
-3. Use #tool:web or #tool:browser only when external evidence is necessary; prefer authoritative primary sources.
+2. Use [[capability:search]] to locate owning symbols, configs, docs, or historical patterns.
+3. Use [[capability:web]] or [[capability:browser]] only when external evidence is necessary; prefer authoritative primary sources.
 
 ## Step 2 - Analyze only what affects the caller.
 

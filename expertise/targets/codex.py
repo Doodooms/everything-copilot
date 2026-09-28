@@ -3,15 +3,12 @@ from __future__ import annotations
 import json
 import re
 
-import yaml
-
+from ..agent_validation import AgentSource, validate_agent_semantics
 from ..errors import TargetError
 from ..ir import PackSource
 from .common import CompiledTarget, ensure_supported_agent_plugins
-from .copilot import _repository_root, _validate_agent
 from .portable import _compile_portable_core, _read_source_snapshot
 
-_FRONTMATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n?(.*)\Z", re.DOTALL)
 _COPILOT_MODEL_SUFFIX = re.compile(r"\s+\(copilot\)$", re.IGNORECASE)
 _SUPPORTED_REASONING_EFFORTS = frozenset(
     {"none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"}
@@ -22,42 +19,24 @@ def _toml_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def render_codex_agent(agent_id: str, content: bytes, *, source_name: str) -> bytes:
-    try:
-        text = content.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise TargetError(
-            f"Codex agent source is not valid UTF-8: {source_name}"
-        ) from exc
-
-    match = _FRONTMATTER.match(text.replace("\r\n", "\n"))
-    if match is None:
-        raise TargetError(
-            f"Codex agent source is missing YAML frontmatter: {source_name}"
-        )
-    try:
-        metadata = yaml.safe_load(match.group(1))
-    except yaml.YAMLError as exc:
-        raise TargetError(f"Codex agent frontmatter is invalid: {source_name}") from exc
-    if not isinstance(metadata, dict):
-        raise TargetError(f"Codex agent frontmatter must be a mapping: {source_name}")
-
-    name = metadata.get("name")
-    description = metadata.get("description")
-    instructions = match.group(2).strip()
-    if name != agent_id:
-        raise TargetError(f"Codex agent name must match contribution ID: {agent_id}")
+def render_codex_fields(
+    agent_id: str,
+    description: str,
+    instructions: str,
+    *,
+    model: object = None,
+    reasoning_effort: object = None,
+) -> bytes:
+    """Render already separated agent semantics and Codex-specific settings."""
     if not isinstance(description, str) or not description.strip():
         raise TargetError(f"Codex agent description must be non-empty: {agent_id}")
-    if not instructions:
+    if not isinstance(instructions, str) or not instructions.strip():
         raise TargetError(f"Codex agent instructions must be non-empty: {agent_id}")
 
     fields = [
-        f"name = {_toml_string(name)}",
+        f"name = {_toml_string(agent_id)}",
         f"description = {_toml_string(description)}",
     ]
-
-    model = metadata.get("model")
     if model is not None:
         if not isinstance(model, str) or not model.strip():
             raise TargetError(
@@ -70,8 +49,6 @@ def render_codex_agent(agent_id: str, content: bytes, *, source_name: str) -> by
                 f"Codex cannot map the Copilot-specific model identifier: {model!r}"
             )
         fields.append(f"model = {_toml_string(codex_model)}")
-
-    reasoning_effort = metadata.get("reasoning-effort")
     if reasoning_effort is not None:
         if (
             not isinstance(reasoning_effort, str)
@@ -81,20 +58,22 @@ def render_codex_agent(agent_id: str, content: bytes, *, source_name: str) -> by
                 f"unsupported Codex reasoning effort for {agent_id}: {reasoning_effort!r}"
             )
         fields.append(f"model_reasoning_effort = {_toml_string(reasoning_effort)}")
-
-    fields.append(f"developer_instructions = {_toml_string(instructions)}")
-    document = "\n".join(fields) + "\n"
-    return document.encode("utf-8")
+    fields.append(f"developer_instructions = {_toml_string(instructions.strip())}")
+    return ("\n".join(fields) + "\n").encode("utf-8")
 
 
-def _codex_agent(source: PackSource, agent_id: str, relative_path: str) -> bytes:
-    try:
-        content = source.source_snapshot[relative_path]
-    except KeyError as exc:
-        raise TargetError(
-            f"Codex agent source is unavailable: {relative_path}"
-        ) from exc
-    return render_codex_agent(agent_id, content, source_name=relative_path)
+def render_codex_agent(agent_id: str, source: AgentSource) -> bytes:
+    metadata = source.metadata
+    description = metadata.get("description")
+    if not isinstance(description, str):
+        raise TargetError(f"Codex agent description must be non-empty: {agent_id}")
+    return render_codex_fields(
+        agent_id,
+        description,
+        source.body,
+        model=metadata.get("model"),
+        reasoning_effort=metadata.get("reasoning-effort"),
+    )
 
 
 def compile_codex(source: PackSource) -> CompiledTarget:
@@ -104,7 +83,6 @@ def compile_codex(source: PackSource) -> CompiledTarget:
     ensure_supported_agent_plugins(source)
     snapshot = _read_source_snapshot(source)
     files = _compile_portable_core(source, snapshot).file_map()
-    repository_root = _repository_root()
 
     for contribution in source.ir.agents.contributions:
         content = snapshot.get(contribution.source)
@@ -112,11 +90,11 @@ def compile_codex(source: PackSource) -> CompiledTarget:
             raise TargetError(
                 f"Codex agent source is absent from the validated snapshot: {contribution.source}"
             )
-        _validate_agent(content, source.root / contribution.source, repository_root)
+        parsed = validate_agent_semantics(content, contribution.id, contribution.source)
         output_path = f"codex-agents/{contribution.id}.toml"
         if output_path in files:
             raise TargetError(f"duplicate Codex agent export: {output_path}")
-        files[output_path] = _codex_agent(source, contribution.id, contribution.source)
+        files[output_path] = render_codex_agent(contribution.id, parsed)
 
     return CompiledTarget.create(
         "codex",

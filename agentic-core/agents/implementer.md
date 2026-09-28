@@ -5,20 +5,6 @@ description: 'WHAT: Execute approved product changes by writing the smallest com
   scoped refactors, confirmed defects, test-driven implementation, and repository
   changes that alter product behavior. DO NOT INVOKE FOR: architecture, planning,
   adversarial QA, final review, pure research, or infrastructure-only work.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: high
-tools:
-- read
-- search
-- edit
-- execute
-- todo
-- agent
-- skill
-agents:
-- researcher
 ---
 
 <definitions>
@@ -133,7 +119,7 @@ Return a structured handoff with:
 ## Step 1 - Establish the implementation slice.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read the handoff, canonical task-state slice, semantic contracts, target files, nearest tests, and relevant repository instructions.
-2. Use #tool:search to locate the controlling code path, existing patterns, and minimal validation surface.
+2. Use [[capability:search]] to locate the controlling code path, existing patterns, and minimal validation surface.
 3. Invoke Researcher only for isolated evidence that is genuinely required before editing.
 
 ## Step 2 - Implement the smallest complete change.

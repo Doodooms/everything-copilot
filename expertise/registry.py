@@ -5,7 +5,6 @@ from typing import Iterable, Mapping
 
 from .errors import RegistryError
 from .ir import PackReference, PackSource
-from .validator import core_agent_ids as discover_core_agent_ids
 
 
 class LocalPackRegistry:
@@ -15,7 +14,7 @@ class LocalPackRegistry:
         self,
         packs: Iterable[PackSource],
         *,
-        known_core_agents: set[str] | frozenset[str] | None = None,
+        known_agents: set[str] | frozenset[str] | None = None,
     ):
         indexed: dict[PackReference, PackSource] = {}
         for pack in packs:
@@ -38,11 +37,11 @@ class LocalPackRegistry:
                 for capability, references in sorted(providers.items())
             }
         )
-        self.core_agent_ids = frozenset(
-            known_core_agents
-            if known_core_agents is not None
-            else discover_core_agent_ids()
-        )
+        if known_agents is None:
+            known_agents = frozenset().union(
+                *(pack.known_agents for pack in self._packs.values())
+            )
+        self.agent_ids = frozenset(known_agents)
 
     @property
     def references(self) -> tuple[PackReference, ...]:

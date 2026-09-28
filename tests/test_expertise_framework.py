@@ -1,16 +1,17 @@
 import contextlib
 import io
 import json
+import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-import tomllib
 from unittest.mock import patch
 
+import tomllib
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
@@ -228,7 +229,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             "targets/__init__.py",
         )
         missing = [
-            path for path in expected_modules if not (ROOT / "expertise" / path).is_file()
+            path
+            for path in expected_modules
+            if not (ROOT / "expertise" / path).is_file()
         ]
         self.assertEqual(
             missing,
@@ -248,14 +251,36 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         from expertise.resolver import resolve_effective_ir
         from expertise.targets import compile_target, materialize_target
 
+        fixture_agents = frozenset(
+            {
+                "architect",
+                "challenger",
+                "devops",
+                "implementer",
+                "orchestrator",
+                "planner",
+                "quality-assurance",
+                "researcher",
+                "reviewer",
+            }
+        )
+
+        def parse_with_catalog(*args, **kwargs):
+            kwargs.setdefault("known_agents", fixture_agents)
+            return parse_pack(*args, **kwargs)
+
+        def registry_with_catalog(*args, **kwargs):
+            kwargs.setdefault("known_agents", fixture_agents)
+            return LocalPackRegistry(*args, **kwargs)
+
         return {
             "PackValidationError": PackValidationError,
             "RegistryError": RegistryError,
             "ResolutionError": ResolutionError,
             "TargetError": TargetError,
             "PackReference": PackReference,
-            "parse_pack": parse_pack,
-            "LocalPackRegistry": LocalPackRegistry,
+            "parse_pack": parse_with_catalog,
+            "LocalPackRegistry": registry_with_catalog,
             "resolve_effective_ir": resolve_effective_ir,
             "compile_target": compile_target,
             "materialize_target": materialize_target,
@@ -273,9 +298,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         )
 
         schema = json.loads(
-            (ROOT / "expertise/schemas/pack.schema.json").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / "expertise/schemas/pack.schema.json").read_text(encoding="utf-8")
         )
         expected = {
             "schema_version",
@@ -337,9 +360,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             id_64 = "a" * 64
-            valid_source = api["parse_pack"](
-                write_pack(root / "id-64", pack_id=id_64)
-            )
+            valid_source = api["parse_pack"](write_pack(root / "id-64", pack_id=id_64))
             artifact = api["compile_target"](valid_source, "portable")
             plugin = json.loads(artifact.files["plugin.json"])
             self.assertEqual(len(plugin["name"]), 64)
@@ -363,9 +384,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                     write_pack_manifest(source_root, manifest)
                     source = api["parse_pack"](source_root)
 
-                    self.assertEqual(
-                        source.ir.compatibility.agent_plugins, ">=1.0.0"
-                    )
+                    self.assertEqual(source.ir.compatibility.agent_plugins, ">=1.0.0")
                     api["compile_target"](source, "portable")
                     api["compile_target"](source, "copilot")
 
@@ -376,9 +395,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                     manifest["compatibility"]["agent_plugins"] = requirement
                     write_pack_manifest(source_root, manifest)
                     source = api["parse_pack"](source_root)
-                    self.assertEqual(
-                        source.ir.compatibility.agent_plugins, requirement
-                    )
+                    self.assertEqual(source.ir.compatibility.agent_plugins, requirement)
                     for target in ("portable", "copilot"):
                         with self.subTest(target=target):
                             with self.assertRaisesRegex(
@@ -413,9 +430,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             (
                 "agent-component",
                 "demo.pack-engineer",
-                lambda manifest, identifier: manifest["agents"]["contributions"][0].update(
-                    id=identifier
-                ),
+                lambda manifest, identifier: manifest["agents"]["contributions"][
+                    0
+                ].update(id=identifier),
             ),
             (
                 "extension-component",
@@ -427,7 +444,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             (
                 "skill-component",
                 "demo.pack-skill",
-                lambda manifest, identifier: manifest["skills"][0].update(id=identifier),
+                lambda manifest, identifier: manifest["skills"][0].update(
+                    id=identifier
+                ),
             ),
             (
                 "mcp-component",
@@ -526,9 +545,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                 ),
                 (
                     "approval-not-required",
-                    lambda manifest: manifest["trust"].update(
-                        approval_required=False
-                    ),
+                    lambda manifest: manifest["trust"].update(approval_required=False),
                     "approval_required: must be true",
                 ),
                 (
@@ -574,7 +591,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         with self.assertRaises((AttributeError, TypeError)):
             first.ir.capabilities[0].id = "changed"
 
-    def test_rejects_unknown_schema_fields_duplicate_capabilities_and_bad_references(self):
+    def test_rejects_unknown_schema_fields_duplicate_capabilities_and_bad_references(
+        self,
+    ):
         api = self.framework()
         with tempfile.TemporaryDirectory() as directory:
             unknown_root = write_pack(Path(directory) / "unknown")
@@ -631,7 +650,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                 api["parse_pack"](unknown_capability_root)
             self.assertIn("missing.capability", str(capability_error.exception))
 
-    def test_rejects_malformed_yaml_and_core_agent_id_collisions(self):
+    def test_rejects_malformed_yaml_and_known_agent_id_collisions(self):
         api = self.framework()
         with tempfile.TemporaryDirectory() as directory:
             malformed_root = write_pack(Path(directory) / "malformed")
@@ -649,7 +668,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             )
             with self.assertRaises(api["PackValidationError"]) as agent_error:
                 api["parse_pack"](duplicate_agent_root)
-            self.assertIn("duplicates core agent", str(agent_error.exception))
+            self.assertIn("duplicates known agent", str(agent_error.exception))
 
     def test_invalid_utf8_skill_frontmatter_is_a_structured_cli_error(self):
         api = self.framework()
@@ -667,7 +686,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 result = api["cli_main"](
-                    ["validate", "demo-pack"], repo_root=repo
+                    ["validate", "demo-pack", "--known-agent", "researcher"],
+                    repo_root=repo,
                 )
 
         self.assertEqual(result, 2)
@@ -747,9 +767,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             for case, contents in duplicate_documents:
                 with self.subTest(case=case):
                     source_root = write_pack(Path(directory) / case)
-                    (source_root / "mcp.json").write_text(
-                        contents, encoding="utf-8"
-                    )
+                    (source_root / "mcp.json").write_text(contents, encoding="utf-8")
 
                     with self.assertRaises(api["PackValidationError"]) as error:
                         api["parse_pack"](source_root)
@@ -785,7 +803,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             version_one = api["parse_pack"](
                 write_pack(root / "version-one", version="1.0.0")
             )
-            with self.assertRaisesRegex(api["RegistryError"], "duplicate local pack source"):
+            with self.assertRaisesRegex(
+                api["RegistryError"], "duplicate local pack source"
+            ):
                 api["LocalPackRegistry"]([version_one, version_one])
 
             version_two = api["parse_pack"](
@@ -871,7 +891,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                     registry = api["LocalPackRegistry"]([consumer, provider])
                     references = [consumer.ir.reference, provider.ir.reference]
                     with self.assertRaisesRegex(
-                        api["ResolutionError"], "not provided by an installed, active, approved pack"
+                        api["ResolutionError"],
+                        "not provided by an installed, active, approved pack",
                     ):
                         api["resolve_effective_ir"](
                             registry,
@@ -894,7 +915,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             references = [consumer.ir.reference, provider.ir.reference]
 
             with self.assertRaisesRegex(
-                api["ResolutionError"], "not provided by an installed, active, approved pack"
+                api["ResolutionError"],
+                "not provided by an installed, active, approved pack",
             ):
                 api["resolve_effective_ir"](
                     registry,
@@ -921,7 +943,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         self.assertIn("consumer.call", effective.capabilities)
         self.assertIn("ml.dataset.inspect", effective.capabilities)
 
-    def test_default_deny_projection_hides_ungranted_capabilities_and_inactive_packs(self):
+    def test_default_deny_projection_hides_ungranted_capabilities_and_inactive_packs(
+        self,
+    ):
         api = self.framework()
         with tempfile.TemporaryDirectory() as directory:
             source_root = write_pack(
@@ -968,7 +992,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         self.assertEqual(core_only.capabilities, ())
         self.assertEqual(
             {projection.agent_id for projection in core_only.agent_projections},
-            set(registry.core_agent_ids),
+            set(registry.agent_ids),
         )
         self.assertTrue(
             all(
@@ -1232,6 +1256,69 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         self.assertEqual(projections["reviewer"].skills, ())
         self.assertEqual(projections["reviewer"].mcp_servers, ())
 
+    def test_explicit_agent_catalog_resolves_and_compiles_without_core_tree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory) / "workspace"
+            workspace.mkdir()
+            source_root = write_pack(workspace / "packs/demo-pack")
+            manifest = read_pack_manifest(source_root)
+            manifest["compatibility"]["targets"] = ["portable", "copilot", "codex"]
+            write_pack_manifest(source_root, manifest)
+            shutil.copytree(
+                ROOT / "expertise",
+                workspace / "expertise",
+                ignore=shutil.ignore_patterns("__pycache__"),
+            )
+
+            child_environment = os.environ.copy()
+            child_environment.pop("PYTHONPATH", None)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    """
+import json
+from pathlib import Path
+from expertise.parser import parse_pack
+from expertise.registry import LocalPackRegistry
+from expertise.resolver import resolve_effective_ir
+from expertise.targets import compile_target
+
+source = parse_pack(Path('packs/demo-pack'), known_agents={'researcher'})
+registry = LocalPackRegistry([source], known_agents={'researcher'})
+reference = source.reference
+effective = resolve_effective_ir(
+    registry,
+    ['demo.read'],
+    installed_pack_refs=[reference],
+    active_pack_refs=[reference],
+    approved_pack_refs=[reference],
+)
+artifacts = {
+    target: compile_target(source, target)
+    for target in ('portable', 'copilot', 'codex')
+}
+print(json.dumps({
+    'agents': [projection.agent_id for projection in effective.agent_projections],
+    'targets': {target: len(artifact.files) for target, artifact in artifacts.items()},
+}))
+""",
+                ],
+                cwd=workspace,
+                env=child_environment,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertIn("demo-pack-engineer", payload["agents"])
+        self.assertIn("researcher", payload["agents"])
+        self.assertEqual(set(payload["targets"]), {"portable", "copilot", "codex"})
+        self.assertTrue(all(count > 0 for count in payload["targets"].values()))
+
     def test_active_pack_projection_is_static_not_filtered_per_task_capability(self):
         api = self.framework()
         with tempfile.TemporaryDirectory() as directory:
@@ -1262,10 +1349,14 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             first = api["parse_pack"](
-                write_pack(root / "first", pack_id="first-pack", capability_id="shared.cap")
+                write_pack(
+                    root / "first", pack_id="first-pack", capability_id="shared.cap"
+                )
             )
             second = api["parse_pack"](
-                write_pack(root / "second", pack_id="second-pack", capability_id="shared.cap")
+                write_pack(
+                    root / "second", pack_id="second-pack", capability_id="shared.cap"
+                )
             )
             registry = api["LocalPackRegistry"]([first, second])
             references = [
@@ -1313,7 +1404,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                     agent_ids=["cycle-a-engineer"],
                 )
 
-    def test_targets_reject_post_parse_mutation_and_cli_never_builds_invalid_bytes(self):
+    def test_targets_reject_post_parse_mutation_and_cli_never_builds_invalid_bytes(
+        self,
+    ):
         api = self.framework()
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
@@ -1336,8 +1429,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             source_root = write_pack(repo / "expertise/packs/demo-pack")
             skill_file = source_root / "skills/demo-pack-skill/SKILL.md"
 
-            def mutate_after_parse(pack_root):
-                source = api["parse_pack"](pack_root)
+            def mutate_after_parse(pack_root, **kwargs):
+                source = api["parse_pack"](pack_root, **kwargs)
                 skill_file.write_bytes(
                     b"---\nname: demo-pack-skill\ndescription:\n---\n"
                     b"\nInvalid post-parse content.\n"
@@ -1348,7 +1441,14 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             with patch("expertise.cli.parse_pack", side_effect=mutate_after_parse):
                 with contextlib.redirect_stdout(output):
                     result = api["cli_main"](
-                        ["build", "demo-pack", "--target", "portable"],
+                        [
+                            "build",
+                            "demo-pack",
+                            "--target",
+                            "portable",
+                            "--known-agent",
+                            "researcher",
+                        ],
                         repo_root=repo,
                     )
 
@@ -1429,7 +1529,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
                 result = api["cli_main"](
-                    ["validate", "demo-pack"], repo_root=repo
+                    ["validate", "demo-pack", "--known-agent", "researcher"],
+                    repo_root=repo,
                 )
 
             self.assertEqual(result, 0)
@@ -1470,6 +1571,76 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                 )
 
             self.assertFalse(output.exists())
+
+    def test_copilot_validates_routing_file_references_against_the_pack_root(
+        self,
+    ):
+        api = self.framework()
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            direct_root = write_pack(root / "direct")
+            direct_agent = direct_root / "agents/demo-pack-engineer.agent.md"
+            direct_agent.write_text(
+                direct_agent.read_text(encoding="utf-8").replace(
+                    "</workflow>", "#file:./references/USEFOR.md\n</workflow>"
+                ),
+                encoding="utf-8",
+            )
+            direct_source = api["parse_pack"](direct_root)
+            with self.assertRaisesRegex(
+                api["TargetError"], "per-agent package directory"
+            ):
+                api["compile_target"](direct_source, "copilot")
+
+            def nested_pack(path: Path, *, include_support_files: bool) -> Path:
+                nested_root = write_pack(path)
+                agent_id = "demo-pack-engineer"
+                old_agent = nested_root / f"agents/{agent_id}.agent.md"
+                agent_dir = nested_root / f"agents/{agent_id}"
+                reference_dir = agent_dir / "references"
+                reference_dir.mkdir(parents=True)
+                nested_agent = agent_dir / f"{agent_id}.agent.md"
+                nested_agent.write_text(
+                    old_agent.read_text(encoding="utf-8").replace(
+                        "</workflow>", "#file:./references/USEFOR.md\n</workflow>"
+                    ),
+                    encoding="utf-8",
+                )
+                old_agent.unlink()
+                manifest = read_pack_manifest(nested_root)
+                manifest["agents"]["contributions"][0]["source"] = (
+                    f"agents/{agent_id}/{agent_id}.agent.md"
+                )
+                write_pack_manifest(nested_root, manifest)
+                if include_support_files:
+                    (reference_dir / "USEFOR.md").write_text(
+                        "Use this agent for demo work.\n", encoding="utf-8"
+                    )
+                    (reference_dir / "DONOTUSEFOR.md").write_text(
+                        "Do not use for unrelated work.\n", encoding="utf-8"
+                    )
+                return nested_root
+
+            missing_root = nested_pack(
+                root / "nested-missing", include_support_files=False
+            )
+            missing_source = api["parse_pack"](missing_root)
+            with self.assertRaisesRegex(
+                api["TargetError"], "routing reference is unavailable"
+            ):
+                api["compile_target"](missing_source, "copilot")
+
+            complete_root = nested_pack(
+                root / "nested-complete", include_support_files=True
+            )
+            complete_source = api["parse_pack"](complete_root)
+            artifact = api["compile_target"](complete_source, "copilot")
+            self.assertIn(
+                "com.github.copilot/agents/demo-pack-engineer.agent.md",
+                artifact.files,
+            )
+            self.assertEqual(artifact.source_digest, complete_source.ir.content_digest)
 
     def test_portable_and_copilot_reject_mcp_mutation_after_parse(self):
         api = self.framework()
@@ -1550,9 +1721,7 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                 (source_root / "agents/demo-pack-engineer.agent.md").read_bytes(),
             )
             integration = yaml.safe_load(
-                portable_files[
-                    "com.doodooms.agentic-workflow/integration.yaml"
-                ]
+                portable_files["com.doodooms.agentic-workflow/integration.yaml"]
             )
             self.assertEqual(
                 integration["agents"]["contributions"][0]["source"],
@@ -1628,16 +1797,16 @@ class ExpertiseFrameworkTests(unittest.TestCase):
         )
         self.assertIn("skills/demo-pack-skill/SKILL.md", artifact.files)
         agent_toml = tomllib.loads(
-            artifact.files[
-                "codex-agents/demo-pack-engineer.toml"
-            ].decode("utf-8")
+            artifact.files["codex-agents/demo-pack-engineer.toml"].decode("utf-8")
         )
         self.assertEqual(agent_toml["name"], "demo-pack-engineer")
         self.assertIn("declared demo responsibility", agent_toml["description"])
         self.assertIn("<workflow>", agent_toml["developer_instructions"])
         self.assertNotIn("mcp_servers", agent_toml)
         self.assertNotIn("tools", agent_toml)
-        self.assertFalse(any(path.startswith("com.github.copilot/") for path in artifact.files))
+        self.assertFalse(
+            any(path.startswith("com.github.copilot/") for path in artifact.files)
+        )
         self.assertIn(
             "com.doodooms.agentic-workflow/integration.yaml",
             artifact.files,
@@ -1706,6 +1875,8 @@ class ExpertiseFrameworkTests(unittest.TestCase):
                 "local-workspace",
                 "--project-to",
                 "researcher",
+                "--known-agent",
+                "researcher",
             ]
             with contextlib.redirect_stdout(output):
                 self.assertEqual(api["cli_main"](args, repo_root=root), 0)
@@ -1716,7 +1887,9 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             self.assertEqual(result["status"], "scaffolded")
             self.assertEqual(source.ir.type, "horizontal")
             self.assertIn("docs-helper-lookup", {item.id for item in source.ir.skills})
-            self.assertEqual(source.ir.compatibility.targets, ("codex", "copilot", "portable"))
+            self.assertEqual(
+                source.ir.compatibility.targets, ("codex", "copilot", "portable")
+            )
 
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(api["cli_main"](args, repo_root=root), 2)
@@ -1749,8 +1922,10 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             "com.github.copilot/agents/demo-pack-engineer.agent.md",
             rebuilt.files,
         )
-        self.assertEqual(rebuilt.files["skills/demo-pack-skill/SKILL.md"],
-                         artifact.files["skills/demo-pack-skill/SKILL.md"])
+        self.assertEqual(
+            rebuilt.files["skills/demo-pack-skill/SKILL.md"],
+            artifact.files["skills/demo-pack-skill/SKILL.md"],
+        )
 
     def test_build_materializes_only_under_dist_and_never_overwrites(self):
         api = self.framework()
@@ -1867,11 +2042,31 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             output = io.StringIO()
 
             with contextlib.redirect_stdout(output):
-                self.assertEqual(api["cli_main"](["validate", "demo-pack"], repo_root=repo), 0)
-                self.assertEqual(api["cli_main"](["test", "demo-pack"], repo_root=repo), 0)
                 self.assertEqual(
                     api["cli_main"](
-                        ["build", "demo-pack", "--target", "portable"], repo_root=repo
+                        ["validate", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
+                )
+                self.assertEqual(
+                    api["cli_main"](
+                        ["test", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
+                )
+                self.assertEqual(
+                    api["cli_main"](
+                        [
+                            "build",
+                            "demo-pack",
+                            "--target",
+                            "portable",
+                            "--known-agent",
+                            "researcher",
+                        ],
+                        repo_root=repo,
                     ),
                     0,
                 )
@@ -1886,11 +2081,19 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             second_validate_output = io.StringIO()
             with contextlib.redirect_stdout(first_validate_output):
                 self.assertEqual(
-                    api["cli_main"](["validate", "demo-pack"], repo_root=repo), 0
+                    api["cli_main"](
+                        ["validate", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
                 )
             with contextlib.redirect_stdout(second_validate_output):
                 self.assertEqual(
-                    api["cli_main"](["validate", "demo-pack"], repo_root=repo), 0
+                    api["cli_main"](
+                        ["validate", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
                 )
             self.assertEqual(
                 json.loads(first_validate_output.getvalue()),
@@ -1900,9 +2103,21 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             first_test_output = io.StringIO()
             second_test_output = io.StringIO()
             with contextlib.redirect_stdout(first_test_output):
-                self.assertEqual(api["cli_main"](["test", "demo-pack"], repo_root=repo), 0)
+                self.assertEqual(
+                    api["cli_main"](
+                        ["test", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
+                )
             with contextlib.redirect_stdout(second_test_output):
-                self.assertEqual(api["cli_main"](["test", "demo-pack"], repo_root=repo), 0)
+                self.assertEqual(
+                    api["cli_main"](
+                        ["test", "demo-pack", "--known-agent", "researcher"],
+                        repo_root=repo,
+                    ),
+                    0,
+                )
             self.assertEqual(
                 json.loads(first_test_output.getvalue()),
                 json.loads(second_test_output.getvalue()),
@@ -1919,7 +2134,14 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             with contextlib.redirect_stdout(copilot_build_output):
                 self.assertEqual(
                     api["cli_main"](
-                        ["build", "demo-pack", "--target", "copilot"],
+                        [
+                            "build",
+                            "demo-pack",
+                            "--target",
+                            "copilot",
+                            "--known-agent",
+                            "researcher",
+                        ],
                         repo_root=repo,
                     ),
                     0,
@@ -1934,15 +2156,20 @@ class ExpertiseFrameworkTests(unittest.TestCase):
             with contextlib.redirect_stdout(overwrite_output):
                 self.assertEqual(
                     api["cli_main"](
-                        ["build", "demo-pack", "--target", "portable"],
+                        [
+                            "build",
+                            "demo-pack",
+                            "--target",
+                            "portable",
+                            "--known-agent",
+                            "researcher",
+                        ],
                         repo_root=repo,
                     ),
                     2,
                 )
             self.assertEqual((built / "plugin.json").read_bytes(), original_plugin)
-            self.assertEqual(
-                json.loads(overwrite_output.getvalue())["status"], "error"
-            )
+            self.assertEqual(json.loads(overwrite_output.getvalue())["status"], "error")
 
             escaped_output = io.StringIO()
             with contextlib.redirect_stdout(escaped_output):

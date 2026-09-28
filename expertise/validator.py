@@ -20,7 +20,6 @@ from .ontology import (
     parse_agent_plugins_requirement,
 )
 
-
 MAX_DIAGNOSTICS = 50
 MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
 PACK_SCHEMA_PATH = Path(__file__).resolve().parent / "schemas" / "pack.schema.json"
@@ -109,7 +108,9 @@ def load_pack_yaml(path: Path) -> Any:
     try:
         content = path.read_bytes()
     except OSError as exc:
-        raise PackValidationError((f"pack.yaml: cannot parse source manifest: {exc}",)) from exc
+        raise PackValidationError(
+            (f"pack.yaml: cannot parse source manifest: {exc}",)
+        ) from exc
     return load_pack_yaml_bytes(content)
 
 
@@ -121,20 +122,14 @@ def load_pack_schema() -> Mapping[str, Any]:
             (f"pack schema is unavailable or malformed: {PACK_SCHEMA_PATH}",)
         ) from exc
     if not isinstance(schema, dict) or not isinstance(schema.get("properties"), dict):
-        raise PackValidationError((f"pack schema has an invalid root: {PACK_SCHEMA_PATH}",))
+        raise PackValidationError(
+            (f"pack schema has an invalid root: {PACK_SCHEMA_PATH}",)
+        )
     if not isinstance(schema.get("required"), list):
-        raise PackValidationError((f"pack schema has no required-field list: {PACK_SCHEMA_PATH}",))
+        raise PackValidationError(
+            (f"pack schema has no required-field list: {PACK_SCHEMA_PATH}",)
+        )
     return schema
-
-
-def core_agent_ids(repository_root: Path | None = None) -> frozenset[str]:
-    root = repository_root or Path(__file__).resolve().parents[1]
-    agent_dir = root / "agentic-core" / "com.github.copilot" / "agents"
-    return frozenset(
-        path.name.removesuffix(".agent.md")
-        for path in agent_dir.glob("*.agent.md")
-        if path.is_file()
-    )
 
 
 def _diagnostic(errors: list[str], location: str, message: str) -> None:
@@ -302,16 +297,24 @@ def _directory_files(
         try:
             entry.resolve(strict=False).relative_to(root)
         except (OSError, RuntimeError, ValueError):
-            _diagnostic(errors, location, f"package path escapes the pack root: {entry}")
+            _diagnostic(
+                errors, location, f"package path escapes the pack root: {entry}"
+            )
             continue
         if entry.is_file():
             if "__pycache__" in entry.parts or entry.suffix in {".pyc", ".pyo"}:
-                _diagnostic(errors, location, f"generated cache file is not pack source: {entry.name}")
+                _diagnostic(
+                    errors,
+                    location,
+                    f"generated cache file is not pack source: {entry.name}",
+                )
                 continue
             relative = f"{source_prefix}/{entry.relative_to(directory).as_posix()}"
             source_files.add(relative)
         elif not entry.is_dir():
-            _diagnostic(errors, location, f"unsupported non-file package entry: {entry.name}")
+            _diagnostic(
+                errors, location, f"unsupported non-file package entry: {entry.name}"
+            )
 
 
 def _load_skill_metadata(
@@ -350,15 +353,27 @@ def _load_skill_metadata(
         return
     if metadata.get("name") != skill_id:
         _diagnostic(errors, location, f"frontmatter name must match {skill_id!r}")
-    if not isinstance(metadata.get("description"), str) or not metadata["description"].strip():
-        _diagnostic(errors, location, "frontmatter description must be a non-empty string")
+    if (
+        not isinstance(metadata.get("description"), str)
+        or not metadata["description"].strip()
+    ):
+        _diagnostic(
+            errors, location, "frontmatter description must be a non-empty string"
+        )
 
 
 def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]:
     allowed_root = {"$schema", "mcpServers"}
-    config = _mapping(data, location, errors, required=allowed_root, allowed=allowed_root)
-    if config.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json":
-        _diagnostic(errors, f"{location}.$schema", "must use the Agent Plugins 1.0 MCP schema")
+    config = _mapping(
+        data, location, errors, required=allowed_root, allowed=allowed_root
+    )
+    if (
+        config.get("$schema")
+        != "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+    ):
+        _diagnostic(
+            errors, f"{location}.$schema", "must use the Agent Plugins 1.0 MCP schema"
+        )
     servers = config.get("mcpServers")
     if not isinstance(servers, dict):
         _diagnostic(errors, f"{location}.mcpServers", "must be an object")
@@ -367,7 +382,9 @@ def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str
     for server_id, server in sorted(servers.items(), key=lambda item: str(item[0])):
         server_path = f"{location}.mcpServers.{server_id}"
         if not isinstance(server_id, str) or not server_id:
-            _diagnostic(errors, f"{location}.mcpServers", "server IDs must be non-empty strings")
+            _diagnostic(
+                errors, f"{location}.mcpServers", "server IDs must be non-empty strings"
+            )
             continue
         if not isinstance(server, dict):
             _diagnostic(errors, server_path, "must be an object")
@@ -376,26 +393,45 @@ def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str
         if server_type == "stdio":
             allowed = {"type", "command", "args", "env", "cwd"}
             required = {"type", "command"}
-            server = _mapping(server, server_path, errors, required=required, allowed=allowed)
-            if not isinstance(server.get("command"), str) or not server.get("command", "").strip():
-                _diagnostic(errors, f"{server_path}.command", "must be a non-empty string")
+            server = _mapping(
+                server, server_path, errors, required=required, allowed=allowed
+            )
+            if (
+                not isinstance(server.get("command"), str)
+                or not server.get("command", "").strip()
+            ):
+                _diagnostic(
+                    errors, f"{server_path}.command", "must be a non-empty string"
+                )
             if "args" in server and (
                 not isinstance(server["args"], list)
                 or any(not isinstance(item, str) for item in server["args"])
             ):
-                _diagnostic(errors, f"{server_path}.args", "must be an array of strings")
+                _diagnostic(
+                    errors, f"{server_path}.args", "must be an array of strings"
+                )
             if "env" in server:
                 env = server["env"]
                 if not isinstance(env, dict) or any(
                     not isinstance(key, str) or not isinstance(value, str)
                     for key, value in env.items()
                 ):
-                    _diagnostic(errors, f"{server_path}.env", "must map strings to strings")
+                    _diagnostic(
+                        errors, f"{server_path}.env", "must map strings to strings"
+                    )
                 elif {"PLUGIN_ROOT", "PLUGIN_DATA"} & set(env):
-                    _diagnostic(errors, f"{server_path}.env", "must not override reserved plugin variables")
+                    _diagnostic(
+                        errors,
+                        f"{server_path}.env",
+                        "must not override reserved plugin variables",
+                    )
             if "cwd" in server:
                 if not _is_bounded_plugin_cwd(server["cwd"]):
-                    _diagnostic(errors, f"{server_path}.cwd", "must be a bounded plugin-relative or supported-root path")
+                    _diagnostic(
+                        errors,
+                        f"{server_path}.cwd",
+                        "must be a bounded plugin-relative or supported-root path",
+                    )
         elif server_type in {"streamable-http", "sse"}:
             allowed = {"type", "url", "headers"}
             server = _mapping(
@@ -405,7 +441,10 @@ def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str
                 required={"type", "url"},
                 allowed=allowed,
             )
-            if not isinstance(server.get("url"), str) or not server.get("url", "").strip():
+            if (
+                not isinstance(server.get("url"), str)
+                or not server.get("url", "").strip()
+            ):
                 _diagnostic(errors, f"{server_path}.url", "must be a non-empty string")
             if "headers" in server:
                 headers = server["headers"]
@@ -413,7 +452,9 @@ def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str
                     not isinstance(key, str) or not isinstance(value, str)
                     for key, value in headers.items()
                 ):
-                    _diagnostic(errors, f"{server_path}.headers", "must map strings to strings")
+                    _diagnostic(
+                        errors, f"{server_path}.headers", "must map strings to strings"
+                    )
         else:
             _diagnostic(
                 errors,
@@ -427,7 +468,7 @@ def validate_pack_document(
     document: Any,
     root: Path,
     *,
-    known_core_agents: set[str] | frozenset[str] | None = None,
+    known_agents: set[str] | frozenset[str] = frozenset(),
     source_snapshot: Mapping[str, bytes] | None = None,
     discover_only: bool = False,
     manifest_path: str = "pack.yaml",
@@ -452,7 +493,7 @@ def validate_pack_document(
 
     if type(top.get("schema_version")) is not int or top.get("schema_version") != 1:
         _diagnostic(errors, "schema_version", "must be integer 1")
-    pack_id = _pack_id(top.get("id"), "id", errors)
+    _pack_id(top.get("id"), "id", errors)
     pack_type = top.get("type")
     if not isinstance(pack_type, str) or pack_type not in {"vertical", "horizontal"}:
         _diagnostic(errors, "type", "must be horizontal or vertical")
@@ -474,7 +515,9 @@ def validate_pack_document(
     )
     for target in targets:
         if target not in SUPPORTED_TARGETS:
-            _diagnostic(errors, "compatibility.targets", f"unsupported target {target!r}")
+            _diagnostic(
+                errors, "compatibility.targets", f"unsupported target {target!r}"
+            )
     plugin_requirement = _string(
         compatibility.get("agent_plugins"),
         "compatibility.agent_plugins",
@@ -530,7 +573,9 @@ def validate_pack_document(
         _string(capability.get("description"), f"{location}.description", errors)
         if capability_id:
             if capability_id in capability_ids:
-                _diagnostic(errors, f"{location}.id", f"duplicate capability {capability_id!r}")
+                _diagnostic(
+                    errors, f"{location}.id", f"duplicate capability {capability_id!r}"
+                )
             capability_ids.add(capability_id)
 
     dependencies_raw = top.get("dependencies")
@@ -555,14 +600,16 @@ def validate_pack_document(
         )
         provider_pack = dependency.get("pack_id")
         if provider_pack is not None:
-            provider_pack = _pack_id(
-                provider_pack, f"{location}.pack_id", errors
-            )
+            provider_pack = _pack_id(provider_pack, f"{location}.pack_id", errors)
         minimum_version = dependency.get("minimum_version")
         if minimum_version is not None:
-            minimum_version = _string(minimum_version, f"{location}.minimum_version", errors)
+            minimum_version = _string(
+                minimum_version, f"{location}.minimum_version", errors
+            )
             if minimum_version and VERSION_PATTERN.fullmatch(minimum_version) is None:
-                _diagnostic(errors, f"{location}.minimum_version", "must be a semantic version")
+                _diagnostic(
+                    errors, f"{location}.minimum_version", "must be a semantic version"
+                )
         if capability:
             dependency_key = (capability, provider_pack, minimum_version)
             if dependency_key in dependencies:
@@ -576,7 +623,7 @@ def validate_pack_document(
         required={"contributions", "extensions"},
         allowed={"contributions", "extensions"},
     )
-    core_ids = set(known_core_agents if known_core_agents is not None else core_agent_ids())
+    catalog = set(known_agents)
     contributions_raw = agents.get("contributions")
     extensions_raw = agents.get("extensions")
     if not isinstance(contributions_raw, list):
@@ -597,24 +644,45 @@ def validate_pack_document(
             required={"id", "source", "capabilities"},
             allowed={"id", "source", "capabilities"},
         )
-        agent_id = _id(contribution.get("id"), f"{location}.id", errors, COMPONENT_ID_PATTERN)
+        agent_id = _id(
+            contribution.get("id"), f"{location}.id", errors, COMPONENT_ID_PATTERN
+        )
         if agent_id:
             if agent_id in contribution_ids:
-                _diagnostic(errors, f"{location}.id", f"duplicate agent contribution {agent_id!r}")
-            if agent_id in core_ids:
-                _diagnostic(errors, f"{location}.id", f"contribution duplicates core agent {agent_id!r}")
+                _diagnostic(
+                    errors,
+                    f"{location}.id",
+                    f"duplicate agent contribution {agent_id!r}",
+                )
+            if agent_id in catalog:
+                _diagnostic(
+                    errors,
+                    f"{location}.id",
+                    f"contribution duplicates known agent {agent_id!r}",
+                )
             contribution_ids.add(agent_id)
         source = _safe_relative_path(
-            root, contribution.get("source"), f"{location}.source", errors,
-            expected="file", source_files=source_files
+            root,
+            contribution.get("source"),
+            f"{location}.source",
+            errors,
+            expected="file",
+            source_files=source_files,
         )
         if source is not None and agent_id is not None:
             if source.name != f"{agent_id}.agent.md":
-                _diagnostic(errors, f"{location}.source", "filename must match the agent ID")
-        provider_capabilities.update(_validate_reference_list(
-            contribution.get("capabilities"), f"{location}.capabilities",
-            capability_ids, errors, minimum=1
-        ))
+                _diagnostic(
+                    errors, f"{location}.source", "filename must match the agent ID"
+                )
+        provider_capabilities.update(
+            _validate_reference_list(
+                contribution.get("capabilities"),
+                f"{location}.capabilities",
+                capability_ids,
+                errors,
+                minimum=1,
+            )
+        )
 
     for index, item in enumerate(extensions_raw):
         location = f"agents.extensions[{index}]"
@@ -625,17 +693,33 @@ def validate_pack_document(
             required={"agent_id", "capabilities"},
             allowed={"agent_id", "capabilities"},
         )
-        agent_id = _id(extension.get("agent_id"), f"{location}.agent_id", errors, COMPONENT_ID_PATTERN)
+        agent_id = _id(
+            extension.get("agent_id"),
+            f"{location}.agent_id",
+            errors,
+            COMPONENT_ID_PATTERN,
+        )
         if agent_id:
-            if agent_id not in core_ids:
-                _diagnostic(errors, f"{location}.agent_id", f"unknown core agent {agent_id!r}")
+            if agent_id not in catalog and agent_id not in contribution_ids:
+                _diagnostic(
+                    errors, f"{location}.agent_id", f"unknown agent {agent_id!r}"
+                )
             if agent_id in extension_ids:
-                _diagnostic(errors, f"{location}.agent_id", f"duplicate agent extension {agent_id!r}")
+                _diagnostic(
+                    errors,
+                    f"{location}.agent_id",
+                    f"duplicate agent extension {agent_id!r}",
+                )
             extension_ids.add(agent_id)
-        provider_capabilities.update(_validate_reference_list(
-            extension.get("capabilities"), f"{location}.capabilities",
-            capability_ids, errors, minimum=1
-        ))
+        provider_capabilities.update(
+            _validate_reference_list(
+                extension.get("capabilities"),
+                f"{location}.capabilities",
+                capability_ids,
+                errors,
+                minimum=1,
+            )
+        )
 
     skills_raw = top.get("skills")
     if not isinstance(skills_raw, list):
@@ -658,12 +742,18 @@ def validate_pack_document(
                 _diagnostic(errors, f"{location}.id", f"duplicate skill {skill_id!r}")
             skill_ids.add(skill_id)
         skill_dir = _safe_relative_path(
-            root, skill.get("path"), f"{location}.path", errors,
-            expected="directory", source_files=source_files
+            root,
+            skill.get("path"),
+            f"{location}.path",
+            errors,
+            expected="directory",
+            source_files=source_files,
         )
         component_capabilities = _validate_reference_list(
-            skill.get("capabilities"), f"{location}.capabilities",
-            capability_ids, errors
+            skill.get("capabilities"),
+            f"{location}.capabilities",
+            capability_ids,
+            errors,
         )
         if skill_id is not None:
             skill_capabilities[skill_id] = component_capabilities
@@ -671,7 +761,11 @@ def validate_pack_document(
         if skill_dir is not None and skill_id is not None:
             skill_file = skill_dir / "SKILL.md"
             if not skill_file.is_file() or skill_file.is_symlink():
-                _diagnostic(errors, f"{location}.path", "package must contain a regular SKILL.md")
+                _diagnostic(
+                    errors,
+                    f"{location}.path",
+                    "package must contain a regular SKILL.md",
+                )
             else:
                 skill_source = f"{skill.get('path')}/SKILL.md"
                 source_files.add(skill_source)
@@ -724,22 +818,27 @@ def validate_pack_document(
             required={"id", "capabilities", "permissions"},
             allowed={"id", "capabilities", "permissions", "tools"},
         )
-        server_id = _id(server.get("id"), f"{location}.id", errors, COMPONENT_ID_PATTERN)
+        server_id = _id(
+            server.get("id"), f"{location}.id", errors, COMPONENT_ID_PATTERN
+        )
         if server_id:
             if server_id in mcp_server_ids:
-                _diagnostic(errors, f"{location}.id", f"duplicate MCP server {server_id!r}")
+                _diagnostic(
+                    errors, f"{location}.id", f"duplicate MCP server {server_id!r}"
+                )
             mcp_server_ids.add(server_id)
         component_capabilities = _validate_reference_list(
-            server.get("capabilities"), f"{location}.capabilities",
-            capability_ids, errors, minimum=1
+            server.get("capabilities"),
+            f"{location}.capabilities",
+            capability_ids,
+            errors,
+            minimum=1,
         )
         if server_id is not None:
             mcp_capabilities[server_id] = component_capabilities
         provider_capabilities.update(component_capabilities)
         _unique_list(server.get("permissions"), f"{location}.permissions", errors)
-        tool_names = _unique_list(
-            server.get("tools", []), f"{location}.tools", errors
-        )
+        tool_names = _unique_list(server.get("tools", []), f"{location}.tools", errors)
         for tool_name in tool_names:
             if "/" in tool_name or any(character.isspace() for character in tool_name):
                 _diagnostic(
@@ -752,11 +851,17 @@ def validate_pack_document(
     if mcp_servers_raw and mcp_config_raw is None:
         _diagnostic(errors, "mcp_config", "is required when MCP servers are declared")
     elif not mcp_servers_raw and mcp_config_raw is not None:
-        _diagnostic(errors, "mcp_config", "must be null when no MCP servers are declared")
+        _diagnostic(
+            errors, "mcp_config", "must be null when no MCP servers are declared"
+        )
     elif mcp_config_raw is not None:
         mcp_config_path = _safe_relative_path(
-            root, mcp_config_raw, "mcp_config", errors,
-            expected="file", source_files=source_files
+            root,
+            mcp_config_raw,
+            "mcp_config",
+            errors,
+            expected="file",
+            source_files=source_files,
         )
         if mcp_config_path is not None and not discover_only:
             try:
@@ -781,7 +886,9 @@ def validate_pack_document(
                     f"duplicate JSON key {exc.key!r}",
                 )
             except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-                _diagnostic(errors, "mcp_config", f"cannot parse MCP configuration: {exc}")
+                _diagnostic(
+                    errors, "mcp_config", f"cannot parse MCP configuration: {exc}"
+                )
             else:
                 if mcp_data is not None:
                     mcp_ids = validate_mcp_config(mcp_data, "mcp_config", errors)
@@ -797,7 +904,7 @@ def validate_pack_document(
         _diagnostic(errors, "projections", "must be an array")
         projections_raw = []
     projection_ids: set[str] = set()
-    known_agent_ids = core_ids | contribution_ids
+    known_agent_ids = catalog | contribution_ids
     for index, item in enumerate(projections_raw):
         location = f"projections[{index}]"
         projection = _mapping(
@@ -808,18 +915,27 @@ def validate_pack_document(
             allowed={"agent_id", "capabilities", "skills", "mcp_servers"},
         )
         agent_id = _id(
-            projection.get("agent_id"), f"{location}.agent_id", errors, COMPONENT_ID_PATTERN
+            projection.get("agent_id"),
+            f"{location}.agent_id",
+            errors,
+            COMPONENT_ID_PATTERN,
         )
         if agent_id:
             if agent_id not in known_agent_ids:
-                _diagnostic(errors, f"{location}.agent_id", f"unknown agent {agent_id!r}")
+                _diagnostic(
+                    errors, f"{location}.agent_id", f"unknown agent {agent_id!r}"
+                )
             if agent_id in projection_ids:
-                _diagnostic(errors, f"{location}.agent_id", f"duplicate projection {agent_id!r}")
+                _diagnostic(
+                    errors, f"{location}.agent_id", f"duplicate projection {agent_id!r}"
+                )
             projection_ids.add(agent_id)
         granted_capabilities = set(
             _validate_reference_list(
-                projection.get("capabilities"), f"{location}.capabilities",
-                capability_ids, errors
+                projection.get("capabilities"),
+                f"{location}.capabilities",
+                capability_ids,
+                errors,
             )
         )
         granted_skills = set(
@@ -843,7 +959,9 @@ def validate_pack_document(
                 )
         for server_id in granted_servers:
             if server_id not in mcp_server_ids:
-                _diagnostic(errors, f"{location}.mcp_servers", f"unknown server {server_id!r}")
+                _diagnostic(
+                    errors, f"{location}.mcp_servers", f"unknown server {server_id!r}"
+                )
             elif not set(mcp_capabilities.get(server_id, ())) <= granted_capabilities:
                 _diagnostic(
                     errors,
@@ -852,7 +970,11 @@ def validate_pack_document(
                 )
 
     for capability_id in sorted(capability_ids - provider_capabilities):
-        _diagnostic(errors, "capabilities", f"capability {capability_id!r} has no declared provider")
+        _diagnostic(
+            errors,
+            "capabilities",
+            f"capability {capability_id!r} has no declared provider",
+        )
 
     return PackValidationReport(
         diagnostics=tuple(sorted(set(errors))[:MAX_DIAGNOSTICS]),
@@ -876,7 +998,11 @@ def _validate_identifier_list(
         identifier = _id(item, f"{location}[{index}]", errors, pattern)
         if identifier is not None:
             if identifier in seen:
-                _diagnostic(errors, f"{location}[{index}]", f"duplicate identifier {identifier!r}")
+                _diagnostic(
+                    errors,
+                    f"{location}[{index}]",
+                    f"duplicate identifier {identifier!r}",
+                )
             seen.add(identifier)
             identifiers.append(identifier)
     return tuple(sorted(identifiers))
@@ -909,7 +1035,9 @@ def validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]
     for key in sorted(set(data) - allowed_root):
         _diagnostic(errors, location, f"unknown MCP configuration field {key!r}")
     if data.get("$schema") != "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json":
-        _diagnostic(errors, f"{location}.$schema", "must use the Agent Plugins 1.0 MCP schema")
+        _diagnostic(
+            errors, f"{location}.$schema", "must use the Agent Plugins 1.0 MCP schema"
+        )
     servers = data.get("mcpServers")
     if not isinstance(servers, dict):
         _diagnostic(errors, f"{location}.mcpServers", "must be an object")
@@ -917,7 +1045,9 @@ def validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]
     server_ids: set[str] = set()
     for server_id, server in sorted(servers.items()):
         if not isinstance(server_id, str) or not server_id:
-            _diagnostic(errors, f"{location}.mcpServers", "server IDs must be non-empty strings")
+            _diagnostic(
+                errors, f"{location}.mcpServers", "server IDs must be non-empty strings"
+            )
             continue
         server_ids.add(server_id)
         server_path = f"{location}.mcpServers.{server_id}"
@@ -929,33 +1059,59 @@ def validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]
             allowed = {"type", "command", "args", "env", "cwd"}
             required = {"type", "command"}
             if set(server) - allowed:
-                _diagnostic(errors, server_path, "contains unsupported stdio server fields")
+                _diagnostic(
+                    errors, server_path, "contains unsupported stdio server fields"
+                )
             if not required <= set(server):
-                _diagnostic(errors, server_path, "stdio server requires type and command")
-            if not isinstance(server.get("command"), str) or not server.get("command", "").strip():
-                _diagnostic(errors, f"{server_path}.command", "must be a non-empty string")
+                _diagnostic(
+                    errors, server_path, "stdio server requires type and command"
+                )
+            if (
+                not isinstance(server.get("command"), str)
+                or not server.get("command", "").strip()
+            ):
+                _diagnostic(
+                    errors, f"{server_path}.command", "must be a non-empty string"
+                )
             if "args" in server and (
                 not isinstance(server["args"], list)
                 or any(not isinstance(item, str) for item in server["args"])
             ):
-                _diagnostic(errors, f"{server_path}.args", "must be an array of strings")
+                _diagnostic(
+                    errors, f"{server_path}.args", "must be an array of strings"
+                )
             if "env" in server:
                 env = server["env"]
                 if not isinstance(env, dict) or any(
                     not isinstance(key, str) or not isinstance(value, str)
                     for key, value in env.items()
                 ):
-                    _diagnostic(errors, f"{server_path}.env", "must map strings to strings")
+                    _diagnostic(
+                        errors, f"{server_path}.env", "must map strings to strings"
+                    )
                 elif {"PLUGIN_ROOT", "PLUGIN_DATA"} & set(env):
-                    _diagnostic(errors, f"{server_path}.env", "must not override reserved plugin variables")
+                    _diagnostic(
+                        errors,
+                        f"{server_path}.env",
+                        "must not override reserved plugin variables",
+                    )
             if "cwd" in server:
                 if not _is_bounded_plugin_cwd(server["cwd"]):
-                    _diagnostic(errors, f"{server_path}.cwd", "must be a bounded plugin-relative or supported-root path")
+                    _diagnostic(
+                        errors,
+                        f"{server_path}.cwd",
+                        "must be a bounded plugin-relative or supported-root path",
+                    )
         elif server_type in {"streamable-http", "sse"}:
             allowed = {"type", "url", "headers"}
             if set(server) - allowed:
-                _diagnostic(errors, server_path, "contains unsupported HTTP server fields")
-            if not isinstance(server.get("url"), str) or not server.get("url", "").strip():
+                _diagnostic(
+                    errors, server_path, "contains unsupported HTTP server fields"
+                )
+            if (
+                not isinstance(server.get("url"), str)
+                or not server.get("url", "").strip()
+            ):
                 _diagnostic(errors, f"{server_path}.url", "must be a non-empty string")
             if "headers" in server:
                 headers = server["headers"]
@@ -963,7 +1119,9 @@ def validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]
                     not isinstance(key, str) or not isinstance(value, str)
                     for key, value in headers.items()
                 ):
-                    _diagnostic(errors, f"{server_path}.headers", "must map strings to strings")
+                    _diagnostic(
+                        errors, f"{server_path}.headers", "must map strings to strings"
+                    )
         else:
             _diagnostic(
                 errors,

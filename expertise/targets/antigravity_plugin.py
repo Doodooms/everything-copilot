@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 import stat
+import sys
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -126,7 +127,7 @@ def _read_source_file(source_root: Path, path: Path, label: str) -> bytes:
         if not resolved.is_file():
             raise TargetError(f"source path is not a regular file: {label}")
         return resolved.read_bytes()
-    except (OSError, ValueError) as exc:
+    except (OSError, TypeError, ValueError) as exc:
         raise TargetError(
             f"source file is missing or outside its root: {label}"
         ) from exc
@@ -324,6 +325,62 @@ def render_agent(
     return _render_frontmatter(target_metadata, body)
 
 
+def render_core_agent(
+    agent: Any,
+    *,
+    known_agents: set[str],
+    known_skills: set[str],
+) -> bytes:
+    """Render the private neutral Core source through Antigravity metadata."""
+    profile = agent.projection("antigravity")
+    tools = profile.get("tools")
+    if not isinstance(tools, list) or not all(
+        isinstance(tool, str) and tool in SUPPORTED_AGENT_TOOLS for tool in tools
+    ):
+        raise TargetError(f"unsupported Antigravity tool allowlist: {agent.name}")
+    capability_tools = {
+        "agent": {"invoke_subagent"},
+        "execute": {"run_command"},
+        "question": {"ask_question"},
+        "read": {"list_directory", "view_file"},
+        "search": {"find_file", "grep_search", "search_directory"},
+    }
+    for capability in agent.capabilities:
+        supported_tools = capability_tools.get(capability)
+        if supported_tools is not None and not (set(tools) & supported_tools):
+            raise TargetError(
+                f"Antigravity tools do not support {capability!r} capability: {agent.name}"
+            )
+        if capability not in {*capability_tools, "skill", "web", "browser"}:
+            raise TargetError(
+                f"Antigravity capability has no projection policy: {capability!r}"
+            )
+    main_agent = profile.get("mainAgent")
+    subagent = profile.get("subagent")
+    if not isinstance(main_agent, bool) or not isinstance(subagent, bool):
+        raise TargetError(f"invalid Antigravity invocation settings: {agent.name}")
+    dependencies = profile.get("agents", [])
+    if not isinstance(dependencies, list) or not all(
+        isinstance(item, str) and item in known_agents for item in dependencies
+    ):
+        raise TargetError(f"invalid Antigravity agent dependencies: {agent.name}")
+    if dependencies and "invoke_subagent" not in tools:
+        raise TargetError(f"agent dependencies require invoke_subagent: {agent.name}")
+    body = agent.instructions_for("antigravity")
+    metadata: dict[str, Any] = {
+        "name": agent.name,
+        "description": agent.description,
+        "tools": tools,
+        "mainAgent": main_agent,
+        "subagent": subagent,
+    }
+    if dependencies:
+        metadata["agents"] = dependencies
+    metadata["skills"] = _parse_agent_skills(body, known_skills, agent.name)
+    metadata["commandExecutionPolicy"] = "sandbox"
+    return _render_frontmatter(metadata, body)
+
+
 def _target_cwd(source_cwd: Any, server_id: str) -> str | None:
     if source_cwd is None:
         return None
@@ -438,31 +495,38 @@ def project_core_plugin(source_root: Path) -> AntigravityProjection:
     if not skill_ids:
         raise TargetError("Agentic Core has no valid domain skills")
 
-    source_agents = root / "com.github.copilot" / "agents"
+    source_agents = root / "agents"
     if source_agents.is_symlink() or not source_agents.is_dir():
-        raise TargetError("Agentic Core Copilot agent source directory is missing")
-    agent_paths = sorted(source_agents.glob("*.agent.md"))
-    if not agent_paths:
-        raise TargetError("Agentic Core has no source agents")
-    if any(path.is_symlink() for path in agent_paths):
-        raise TargetError("agent source files must not be symlinks")
-    agent_ids = {path.name.removesuffix(".agent.md") for path in agent_paths}
-    if len(agent_ids) != len(agent_paths):
-        raise TargetError("duplicate source agent IDs")
-    for agent_path in agent_paths:
-        agent_id = agent_path.name.removesuffix(".agent.md")
-        relative_source = agent_path.relative_to(root).as_posix()
-        content = _read_source_file(root, agent_path, relative_source)
+        raise TargetError("Agentic Core neutral agent source directory is missing")
+    core_source_path = Path(__file__).resolve().parents[2] / "agentic-core"
+    if str(core_source_path) not in sys.path:
+        sys.path.insert(0, str(core_source_path))
+    try:
+        from core_agents import load_core_agents, load_core_projection_losses
+
+        agents = load_core_agents(source_agents)
+        core_losses = load_core_projection_losses(source_agents)
+    except (OSError, ValueError) as exc:
+        raise TargetError(
+            f"Agentic Core neutral agent source is invalid: {exc}"
+        ) from exc
+    agent_ids = set(agents)
+    reported_losses = " ".join(core_losses["antigravity"]).casefold()
+    for agent in agents.values():
+        for unsupported in agent.capabilities & {"browser", "web"}:
+            if unsupported not in reported_losses:
+                raise TargetError(
+                    f"Antigravity projection omits {unsupported!r} without a loss record"
+                )
+    for agent_id, agent in agents.items():
         output_path = f"agents/{agent_id}.md"
         _add_file(
             files,
             output_path,
-            render_agent(
-                agent_id,
-                content,
+            render_core_agent(
+                agent,
                 known_agents=agent_ids,
                 known_skills=skill_ids,
-                source_name=relative_source,
             ),
         )
 
@@ -472,7 +536,12 @@ def project_core_plugin(source_root: Path) -> AntigravityProjection:
         wrapper_content = _read_source_file(root, github_wrapper, wrapper_relative)
         _add_file(files, wrapper_relative, wrapper_content)
 
-    projection = AntigravityProjection(files, frozenset(executable_files))
+    mapping_losses = tuple(
+        dict.fromkeys((*DOCUMENTED_MAPPING_LOSSES, *core_losses["antigravity"]))
+    )
+    projection = AntigravityProjection(
+        files, frozenset(executable_files), mapping_losses=mapping_losses
+    )
     validate_antigravity_layout(projection)
     return projection
 

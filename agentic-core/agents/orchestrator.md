@@ -6,28 +6,6 @@ description: 'WHAT: Coordinate specification-driven multi-agent software deliver
   changes, refactors, migrations, architecture, security, debugging, and delivery
   workflows that may require multiple specialists. DO NOT INVOKE FOR: being called
   as a subagent.'
-target: vscode
-user-invocable: true
-disable-model-invocation: true
-tools:
-- vscode/askQuestions
-- execute
-- read
-- agent
-- edit
-- search
-- skill
-- github/*
-- todo
-agents:
-- architect
-- challenger
-- devops
-- implementer
-- planner
-- quality-assurance
-- researcher
-- reviewer
 ---
 
 <definitions>
@@ -162,7 +140,7 @@ Return a structured orchestration report containing at minimum:
 1. Assess and record task risk using `<risk_assessment>`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read the user request and only the repository surfaces needed to classify the change, routing unclear runtime failures to QA before implementation.
 2. For non-trivial work, use the `orchestration` domain's `spec-driven-development` workflow with the request, existing task-state reference if any, repository constraints, and expected specification fields; resume at manifest generation with the returned spec object and IDs.
    - For a trivial or isolated request, follow its lightweight route without manufacturing full SDD ceremony.
-   - Use #tool:vscode/askQuestions only for unresolved user-owned decisions that materially affect behavior, scope, acceptance, architecture possibilities, or risk.
+   - Use [[capability:question]] only for unresolved user-owned decisions that materially affect behavior, scope, acceptance, architecture possibilities, or risk.
 3. Establish the problem-space semantic model when domain meaning is material; resolve semantic gaps before solution-space decisions.
 4. Decide whether a material solution-space decision exists. Dispatch Architect only when it does; give Researcher one exact evidence question and stop condition when external evidence is necessary.
 5. Select only the gates needed by impact, reversibility, exposure, uncertainty, and acceptance policy; persist `risk_level`, `required_gates`, selected/skipped phases, and reasons before dispatch. A gate is not required merely because its agent exists.

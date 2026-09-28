@@ -5,18 +5,6 @@ description: 'WHAT: Turn approved requirements and architecture decisions into p
   decomposition, dependency mapping, acceptance-criteria mapping, implementation sequencing,
   rollout planning, and validation planning. DO NOT INVOKE FOR: architecture decisions,
   raw requirements elicitation, implementation, QA, review, or operations execution.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: medium
-tools:
-- read
-- search
-- agent
-- todo
-- skill
-agents:
-- researcher
 ---
 
 <definitions>
@@ -124,7 +112,7 @@ Return a structured handoff with:
 ## Step 1 - Gather planning inputs.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read the normalized specification and semantic model, approved architecture decisions when present, current task state, nearest owning files, tests, and repository constraints.
-2. Use #tool:search to locate implementation surfaces, dependencies, existing validation hooks, and conventions.
+2. Use [[capability:search]] to locate implementation surfaces, dependencies, existing validation hooks, and conventions.
 3. Invoke Researcher only when a technical fact must be resolved before a reliable plan can exist.
 4. Select `implementation-planning` from the `orchestration` domain for an approved, non-trivial task decomposition; do not duplicate its plan schema in this agent.
 

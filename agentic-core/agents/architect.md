@@ -5,18 +5,6 @@ description: 'WHAT: Map approved problem-space semantics into a technical soluti
   persistence, integrations, technology choices, and migration architecture. DO NOT
   INVOKE FOR: product/domain semantics, raw requirements elicitation, delivery sequencing,
   implementation, QA, review, or operations.'
-target: vscode
-user-invocable: false
-model: GPT-6 Luna (copilot)
-reasoning-effort: high
-tools:
-- read
-- agent
-- search/usages
-- search
-- skill
-agents:
-- researcher
 ---
 
 <definitions>
@@ -125,7 +113,7 @@ Return a structured handoff with:
 ## Step 1 - Gather only structural evidence.
 
 1. Consume the assigned `risk_level`, then resolve this agent's `<agent-skills>` policy: load matching `MUST` entries, evaluate matching `SHOULD` entries, and skip unmatched methods; then read approved requirements, the canonical semantic model, current architecture notes, owning interfaces, data models, and integration points.
-2. Use #tool:search to locate existing boundaries, abstractions, dependency direction, and nearby decisions.
+2. Use [[capability:search]] to locate existing boundaries, abstractions, dependency direction, and nearby decisions.
 3. Invoke Researcher only when authoritative external evidence or large-context investigation is material to the decision.
 
 ## Step 2 - Produce the architecture brief.
