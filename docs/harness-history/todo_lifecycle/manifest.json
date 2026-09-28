@@ -81,9 +81,10 @@
     "lifecycle": {
       "branch": "docs/todo-lifecycle",
       "cleanup": "not_requested",
-      "commit_reason": "The implementation commit is published on docs/todo-lifecycle; PR #8 is open and merge remains out of scope.",
+      "commit_reason": "The initial implementation and validated provenance follow-up are committed on docs/todo-lifecycle; PR #8 remains open and merge is out of scope.",
       "commit_shas": [
-        "24504353cec9a9d6fdce1fc75cd8633bbacd4032"
+        "24504353cec9a9d6fdce1fc75cd8633bbacd4032",
+        "5dbeb0b15b6bcf04cb138c49291e5fd46753c571"
       ],
       "commit_status": "created",
       "pull_request": 8,
@@ -354,7 +355,7 @@
       }
     ],
     "title": "Define lifecycle for design and research inputs",
-    "updated_at": "2026-09-28T00:14:31Z",
+    "updated_at": "2026-09-28T00:16:15Z",
     "validation_evidence": [
       {
         "acceptance_criteria": [
@@ -577,5 +578,5 @@
   },
   "status": "success",
   "task_id": "todo_lifecycle",
-  "updated_at": "2026-09-28T00:14:31Z"
+  "updated_at": "2026-09-28T00:16:15Z"
 }
