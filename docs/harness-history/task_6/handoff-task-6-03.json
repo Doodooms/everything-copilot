@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "d773b028-2270-4cb5-9b25-63c9cb8e8e29",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-03-a1",
+  "created_at": "2026-09-28T13:45:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Complete TASK-6-03 by preserving the exact existing pluginctl 0.3.4 generated runtime-copy fix, validating installed execution, and recording composition profile support accurately without introducing a new public profile ABI.",
+  "requested_response": "After the Orchestrator merges the exact local 0.3.4 fix, report changed files, runtime-copy synchronization, arbitrary-CWD/no-checkout/no-PYTHONPATH Linux evidence, composition status for Core-only, Core+SWE, and Factory-only, Windows execution status, validation commands/results, and residual limitations.",
+  "constraints": [
+    "The Orchestrator will integrate local commit 3ebbed0ef953019164cb0ae534eb950f641c1cf0 through existing merge commit fe5be0097a835b54ff296e5606adad94c919137d using a normal local merge; do not rebase, amend, squash, or recreate either SHA.",
+    "Preserve the existing Option A generated copy of canonical expertise; after resolving task-owned overlaps, regenerate with scripts/sync_pluginctl_runtime.py --write and verify --check.",
+    "Keep pluginctl as Agentic Core lifecycle management. Do not create a generic Factory-only pluginctl mode or new composition ABI; accurately report that limitation if the existing controller remains Core-rooted.",
+    "Classify actual evidence for Core-only, Core+SWE, and Factory-only. Do not claim a physical SWE plugin profile exists when it does not.",
+    "Verify the installed layout from arbitrary CWD with PYTHONPATH and PYTHONHOME removed on Linux. Mark Windows NOT_EXECUTED unless a real Windows environment is available.",
+    "Do not modify the Control-Plane, repository name, public Pack v1 schema, or unrelated files. Use uv and Ruff; do not stage or commit."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r1.md"},
+    {"id": "PLUGINCTL-0.3.4-SOURCE", "kind": "observation", "reference": "Local branch fix/chatgpt-plugin-runtime contains exact commit 3ebbed0ef953019164cb0ae534eb950f641c1cf0 and merge head fe5be0097a835b54ff296e5606adad94c919137d."}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_created",
+  "commit_reason": "The Orchestrator owns integration and final focused commits after selected assurance gates.",
+  "git_commits": [],
+  "artifacts": []
+}

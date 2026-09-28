@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "87d71a87-2301-4a8b-bb66-4019d8a7534b",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-05-qa-a2",
+  "created_at": "2026-09-28T14:35:18Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Independently retest only the QA-defective Harness Factory Pack v1 explicit-catalog path after implementation attempt TASK-6-02-A2.",
+  "requested_response": "Return PASS/FAIL/BLOCKED for AC-6-2 and AC-6-7, exact commands/outcomes, expected/actual behavior, changed-file inspection, residual risks, and confirm no edits.",
+  "constraints": [
+    "Target worktree /var/tmp/agentic-workflow-plugin-factory-decoupling, HEAD 7df5475cf51d7ed1ed81685e280f6e60016f0a61 plus the exact patch sha256 c81f9bc27ac9e07184906857ae01c1b97d3afbd170815406de035ead1f0d6c2d in harness_factory/validation.py and tests/test_harness_factory.py.",
+    "Apply agentic-core:quality-engineering and its adversarial-testing workflow; derive checks from the current contract and defect packet.",
+    "Rerun test_harness_factory.py and test_expertise_framework.py, inspect positive explicit-catalog validation/materialization and rejection without the catalog, and verify no Core discovery was introduced.",
+    "The first QA run already passed the unaffected ACs; do not rerun unrelated suites unless the correction changes their evidence.",
+    "Use PYTHONDONTWRITEBYTECODE=1 for Python tests. Do not edit, stage, commit, branch, use remotes, or clean generated files.",
+    "Report result as QA evidence only; Reviewer remains the final acceptance owner."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "QA-6-05-AC2-FAIL", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-05-qa-a1.json"},
+    {"id": "IMPLEMENTATION-6-02-A2", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-02-a2.json"},
+    {"id": "IMPLEMENTATION-DIFF-6-02-A2", "kind": "observation", "reference": "sha256 c81f9bc27ac9e07184906857ae01c1b97d3afbd170815406de035ead1f0d6c2d"}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Independent QA is read-only and does not own implementation changes.",
+  "git_commits": [],
+  "artifacts": []
+}

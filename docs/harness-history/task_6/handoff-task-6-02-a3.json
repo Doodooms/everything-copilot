@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "7a61fb70-8871-4e47-936b-1070357fe032",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-07-a1",
+  "created_at": "2026-09-28T14:51:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Close REVIEW-6-01 by threading an explicitly supplied agent catalog through Harness Factory CLI and adapter preparation paths, without implicit Core discovery.",
+  "requested_response": "Report changed files, explicit catalog propagation across validate, suite-run, adapter preparation, and any other preparation CLI path, focused test commands/results, Ruff and diff checks, and residual limits. Do not edit task tracking, stage, or commit.",
+  "constraints": [
+    "Work only in /var/tmp/agentic-workflow-plugin-factory-decoupling on refactor/plugin-factory-decoupling; preserve existing commits and all other worktree files.",
+    "Own only harness_factory/cli.py, harness_factory/adapters.py, and tests/test_harness_factory.py unless an essential callsite requires a narrowly justified addition.",
+    "Keep the existing `known_agents` contract; omitted input stays empty and unknown IDs fail closed.",
+    "Do not add Core path discovery, a built-in Core agent list, a public Pack ABI, or a new generic abstraction.",
+    "Expose a repeatable CLI input for caller-supplied known agent IDs on validate and suite-run; also cover prepare/smoke if those paths materialize Pack inputs.",
+    "Add behavior tests for CLI validate, suite-run preflight, and HarnessAdapter preparation with an explicit catalog, including fail-closed omission.",
+    "Use uv for Python checks and Ruff for lint/format. Run test_harness_factory.py, test_expertise_framework.py, scoped Ruff check/format, and git diff --check; set PYTHONDONTWRITEBYTECODE=1 for Python runs.",
+    "Do not edit task records, stage, commit, branch, use remotes, or clean generated files."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6-R2", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r2.md"},
+    {"id": "REVIEW-6-01", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-06-review-a1.json"},
+    {"id": "TASK-6-02", "kind": "observation", "reference": "Completed task; preserve its history and explicit known_agents API contract."}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_created",
+  "commit_reason": "Implementer owns a bounded correction only; Orchestrator owns final commit after QA and review gates.",
+  "git_commits": [],
+  "artifacts": []
+}

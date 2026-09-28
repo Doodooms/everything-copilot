@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "fa381d51-74c8-4679-96db-b4b7b1137d49",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-06-review-a1",
+  "created_at": "2026-09-28T14:39:14Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "reviewer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Perform final static technical acceptance review of SPEC-6 implementation, current QA evidence, and documented residual composition/platform limits.",
+  "requested_response": "Return approve/reject/blocked with severity-ordered concrete findings, exact file/line and impact, reviewed scope, evidence consumed, residual risks, and any required implementation owner.",
+  "constraints": [
+    "Risk is L2. Use the quality-engineering skill and its code-review workflow; Reviewer is the final acceptance gate and must not repeat the full QA campaign.",
+    "Review the isolated worktree /var/tmp/agentic-workflow-plugin-factory-decoupling, branch refactor/plugin-factory-decoupling, base 662ea3471b9e0a7a0ef34082a1539a8175c668b9.",
+    "Current committed HEAD is 7df5475cf51d7ed1ed81685e280f6e60016f0a61 plus the Harness Factory correction diff sha256 c81f9bc27ac9e07184906857ae01c1b97d3afbd170815406de035ead1f0d6c2d in harness_factory/validation.py and tests/test_harness_factory.py.",
+    "Inspect the full task diff from base, including neutral agent projections, Factory input/validator boundaries, preserved pluginctl 0.3.4 runtime merge, Copilot instructions projection, and the correction.",
+    "Consume `return-task-6-05-qa-a1.json` and `return-task-6-05-qa-a2.json`; the first found and the second independently closed the AC-6-2/AC-6-7 defect. Treat Core+SWE as untested, pluginctl Factory-only as unsupported, and Windows runtime as not executed.",
+    "Review-only: do not edit files, stage, commit, branch, use remotes, run a duplicate QA campaign, or clean generated files.",
+    "Preserve all existing commit SHAs and do not perform any remote GitHub action."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r1.md"},
+    {"id": "QA-6-05-A1", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-05-qa-a1.json"},
+    {"id": "QA-6-05-A2", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-05-qa-a2.json"},
+    {"id": "IMPLEMENTATION-6-02-A2", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-02-a2.json"},
+    {"id": "IMPLEMENTATION-DIFF-6-02-A2", "kind": "observation", "reference": "sha256 c81f9bc27ac9e07184906857ae01c1b97d3afbd170815406de035ead1f0d6c2d"}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Review is read-only and owns no implementation commit.",
+  "git_commits": [],
+  "artifacts": []
+}

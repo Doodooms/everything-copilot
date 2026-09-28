@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "a0761aab-1ab2-4d60-bb27-b26d87345164",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-05-qa-a1",
+  "created_at": "2026-09-28T14:13:32Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Independently falsify SPEC-6 AC-6-1 through AC-6-7 on the integrated implementation at 7df5475cf51d7ed1ed81685e280f6e60016f0a61, preserving documented platform and composition limits.",
+  "requested_response": "Return exact PASS, FAIL, PARTIAL, or BLOCKED per acceptance criterion; commands and outcomes; defects with reproductions; profile/platform classifications; changed-file observations; and explicit no-edit confirmation. Do not edit, stage, commit, or change the task implementation.",
+  "constraints": [
+    "Inspect only /var/tmp/agentic-workflow-plugin-factory-decoupling; the shared checkout belongs to another session and must remain untouched.",
+    "Do not modify files, stage, commit, branch, use remotes, or clean generated files.",
+    "Test only current observable contracts and positive behavior; do not assert deleted files or obsolete implementation details must stay absent.",
+    "Treat Windows runtime as NOT_EXECUTED without a Windows runner; do not infer it from Linux.",
+    "Classify Core+SWE as untested because no distinct SWE pack exists and pluginctl Factory-only as unsupported by the current Core-rooted controller; do not report either as passing.",
+    "Run the relevant focused suites and independently inspect projections, explicit-catalog Factory behavior, validation boundaries, Copilot instructions parity, installed arbitrary-CWD runtime, and Pack v1 lifecycle behavior.",
+    "Use uv for Python checks and preserve the current committed code state."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r1.md"},
+    {"id": "IMPLEMENTATION-HEAD-6", "kind": "observation", "reference": "7df5475cf51d7ed1ed81685e280f6e60016f0a61; six local commits preserve the original pluginctl 0.3.4 fix ancestry."}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Independent QA is read-only and does not own implementation changes.",
+  "git_commits": [],
+  "artifacts": []
+}

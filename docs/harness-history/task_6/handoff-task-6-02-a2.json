@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "31a0ec7d-41d6-4822-aa25-46823f721eb7",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-02-a2",
+  "created_at": "2026-09-28T14:24:31Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Fix the QA-reproduced Harness Factory catalog regression within TASK-6-02 scope so a supplied explicit agent catalog is honored when validating and materializing Pack v1 sources.",
+  "requested_response": "Report exact changed files, how the explicit catalog reaches parse_pack without Core path discovery, focused tests and Ruff/diff checks, residual limits, and confirm no staging/commit.",
+  "constraints": [
+    "Work only in /var/tmp/agentic-workflow-plugin-factory-decoupling and preserve the committed implementation except for this bounded correction.",
+    "No implicit Agentic Core path discovery, built-in Core agent list, Copilot-specific validator dependency, new public pack ABI, or generic composition layer.",
+    "Keep the change minimal and use the explicit catalog at the existing Factory/Harness Factory boundary; avoid hard-coding the fixture agent researcher as a production default.",
+    "Likely owned files are harness_factory/validation.py and tests/test_harness_factory.py. If a minimal existing caller must be updated to thread the explicit input, report and limit that file expansion to the necessary call path.",
+    "Add or update a positive observable contract test that validation/materialization succeeds when the caller supplies the required catalog; preserve rejection of truly unknown agent IDs where the current contract requires it.",
+    "Run test_harness_factory.py and test_expertise_framework.py, scoped Ruff check and format check for changed Python files, and git diff --check. Set PYTHONDONTWRITEBYTECODE=1 for Python runs.",
+    "Do not edit task tracking, stage, commit, branch, use remotes, or clean generated files."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r1.md"},
+    {"id": "QA-6-05-AC2-FAIL", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-05-qa-a1.json"},
+    {"id": "PLANNER-6-02-FOLLOWUP", "kind": "observation", "reference": "The Planner classifies this as a bounded correction inside TASK-6-02; REQ-6-2/REQ-6-7, AC-6-2/AC-6-7; no new task ID or architecture change."}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_created",
+  "commit_reason": "Implementer is assigned a local correction only; the Orchestrator owns final integration and commit.",
+  "git_commits": [],
+  "artifacts": []
+}
