@@ -18,7 +18,7 @@
     "architecture_ref": "docs/todo-lifecycle.md",
     "base_revision": "662ea3471b9e0a7a0ef34082a1539a8175c668b9",
     "convergence": {
-      "status": "pending"
+      "status": "converged"
     },
     "description": "Introduce a lightweight, explicit boundary between TODO/research inputs and approved implementation slices.",
     "id": "todo_lifecycle",
@@ -27,38 +27,15 @@
       "evidence": [
         {
           "acceptance_criteria": [
-            "AC-TODO-01",
-            "AC-TODO-02",
-            "AC-TODO-03",
-            "AC-TODO-04",
-            "AC-TODO-05"
+            "AC-TODO-02"
           ],
-          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+          "implementation_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
           "source": "direct",
           "spec_revision": 1,
           "status": "pass",
-          "task_id": "TASK-TODO-LIFECYCLE-01",
+          "task_id": "TASK-TODO-LIFECYCLE-CLARIFY-03",
           "validation_evidence_refs": [
-            "EVIDENCE-TODO-METADATA-CLI",
-            "EVIDENCE-TODO-UNIT-TESTS",
-            "EVIDENCE-TODO-SOURCE-PRESERVATION",
-            "EVIDENCE-TODO-INDEPENDENT-REVIEW"
-          ]
-        },
-        {
-          "acceptance_criteria": [
-            "AC-TODO-04",
-            "AC-TODO-05"
-          ],
-          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
-          "source": "direct",
-          "spec_revision": 1,
-          "status": "pass",
-          "task_id": "TASK-TODO-LIFECYCLE-QA",
-          "validation_evidence_refs": [
-            "EVIDENCE-TODO-METADATA-CLI",
-            "EVIDENCE-TODO-UNIT-TESTS",
-            "EVIDENCE-TODO-SOURCE-PRESERVATION"
+            "EVIDENCE-TODO-CLARIFICATION-03"
           ]
         },
         {
@@ -69,53 +46,79 @@
             "AC-TODO-04",
             "AC-TODO-05"
           ],
-          "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+          "implementation_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
           "source": "direct",
           "spec_revision": 1,
           "status": "pass",
-          "task_id": "TASK-TODO-LIFECYCLE-REVIEW",
+          "task_id": "TASK-TODO-LIFECYCLE-QA-05",
           "validation_evidence_refs": [
-            "EVIDENCE-TODO-INDEPENDENT-REVIEW"
+            "EVIDENCE-QA-05-ACCEPTANCE",
+            "EVIDENCE-QA-05-VALIDATIONS"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-TODO-01",
+            "AC-TODO-02",
+            "AC-TODO-03",
+            "AC-TODO-04",
+            "AC-TODO-05"
+          ],
+          "implementation_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-TODO-LIFECYCLE-REVIEW-04",
+          "validation_evidence_refs": [
+            "EVIDENCE-REVIEW-04-APPROVAL",
+            "EVIDENCE-REVIEW-04-SCOPE"
           ]
         }
       ],
-      "revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
+      "revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
       "status": "complete"
     },
     "lifecycle": {
       "branch": "docs/todo-lifecycle",
       "cleanup": "not_requested",
-      "commit_reason": "Implementation and independent gates are complete; commit, push, and PR handoff remain pending.",
-      "commit_shas": [],
-      "commit_status": "not_created",
-      "pull_request": null,
+      "commit_reason": "The implementation commit is published on docs/todo-lifecycle; PR #8 is open and merge remains out of scope.",
+      "commit_shas": [
+        "24504353cec9a9d6fdce1fc75cd8633bbacd4032"
+      ],
+      "commit_status": "created",
+      "pull_request": 8,
       "worktree": "/tmp/agentic-workflow-todo-lifecycle"
     },
+    "open_findings": [],
     "plan": {
-      "approval": "Plan r2 is approved by the Orchestrator under the explicit user request; it adds task IDs, scopes, dependencies, and exit gates after independent review. PR merge remains out of scope.",
-      "revision": 2,
+      "approval": "Plan r5 is approved by the Orchestrator under the existing user request. It resolves the provenance finding without changing scope; QA-05 and Reviewer-04 passed on the current content revision.",
+      "revision": 5,
+      "sha256": "7377e3130ab64fc2e749b5f443abaf5dc0843758b7398de8ece6a39c13858986",
       "spec_revision": 1,
-      "status": "ready"
+      "status": "ready",
+      "supersedes": 4
     },
     "plan_ref": {
-      "path": "docs/planner-history/todo_lifecycle/plan-r2.md",
-      "revision": 2,
+      "path": "docs/planner-history/todo_lifecycle/plan-r5.md",
+      "revision": 5,
       "spec_revision": 1,
       "status": "approved"
     },
     "qa": {
       "acceptance_criteria": [
+        "AC-TODO-01",
+        "AC-TODO-02",
+        "AC-TODO-03",
         "AC-TODO-04",
         "AC-TODO-05"
       ],
-      "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
-      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-02",
+      "implementation_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
+      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-05",
       "spec_revision": 1,
       "status": "pass",
       "validation_evidence_refs": [
-        "EVIDENCE-TODO-METADATA-CLI",
-        "EVIDENCE-TODO-UNIT-TESTS",
-        "EVIDENCE-TODO-SOURCE-PRESERVATION"
+        "EVIDENCE-QA-05-ACCEPTANCE",
+        "EVIDENCE-QA-05-VALIDATIONS"
       ]
     },
     "required_gates": [
@@ -133,13 +136,14 @@
         "AC-TODO-04",
         "AC-TODO-05"
       ],
-      "implementation_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52",
-      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-02",
-      "review_id": "REVIEW-TODO-LIFECYCLE-02",
+      "implementation_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107",
+      "qa_run_id": "QA-RUN-TODO-LIFECYCLE-05",
+      "review_id": "REVIEW-TODO-LIFECYCLE-04",
       "spec_revision": 1,
       "status": "approve",
       "validation_evidence_refs": [
-        "EVIDENCE-TODO-INDEPENDENT-REVIEW"
+        "EVIDENCE-REVIEW-04-APPROVAL",
+        "EVIDENCE-REVIEW-04-SCOPE"
       ]
     },
     "risk_level": "L2",
@@ -292,9 +296,20 @@
       },
       "status": "ready"
     },
-    "status": "in_progress",
+    "stale_artifacts": [],
+    "status": "success",
     "task_events_ref": "docs/tasks-history/todo_lifecycle.jsonl",
     "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02"
+        ],
+        "id": "TASK-TODO-LIFECYCLE-CLARIFY-03",
+        "requirements": [
+          "REQ-TODO-02"
+        ],
+        "status": "complete"
+      },
       {
         "acceptance_criteria": [
           "AC-TODO-01",
@@ -303,10 +318,10 @@
           "AC-TODO-04",
           "AC-TODO-05"
         ],
-        "architecture_decisions": [
-          "ADR-TODO-LIFECYCLE-01"
+        "depends_on": [
+          "TASK-TODO-LIFECYCLE-CLARIFY-03"
         ],
-        "id": "TASK-TODO-LIFECYCLE-01",
+        "id": "TASK-TODO-LIFECYCLE-QA-05",
         "requirements": [
           "REQ-TODO-01",
           "REQ-TODO-02",
@@ -318,21 +333,6 @@
       },
       {
         "acceptance_criteria": [
-          "AC-TODO-04",
-          "AC-TODO-05"
-        ],
-        "depends_on": [
-          "TASK-TODO-LIFECYCLE-01"
-        ],
-        "id": "TASK-TODO-LIFECYCLE-QA",
-        "requirements": [
-          "REQ-TODO-02",
-          "REQ-TODO-05"
-        ],
-        "status": "complete"
-      },
-      {
-        "acceptance_criteria": [
           "AC-TODO-01",
           "AC-TODO-02",
           "AC-TODO-03",
@@ -340,9 +340,9 @@
           "AC-TODO-05"
         ],
         "depends_on": [
-          "TASK-TODO-LIFECYCLE-QA"
+          "TASK-TODO-LIFECYCLE-QA-05"
         ],
-        "id": "TASK-TODO-LIFECYCLE-REVIEW",
+        "id": "TASK-TODO-LIFECYCLE-REVIEW-04",
         "requirements": [
           "REQ-TODO-01",
           "REQ-TODO-02",
@@ -354,7 +354,7 @@
       }
     ],
     "title": "Define lifecycle for design and research inputs",
-    "updated_at": "2026-09-27T23:02:16Z",
+    "updated_at": "2026-09-28T00:14:31Z",
     "validation_evidence": [
       {
         "acceptance_criteria": [
@@ -410,10 +410,172 @@
         "result": "pass",
         "spec_revision": 1,
         "subject_revision": "todo-lifecycle-inputs-sha256:37351e6d010276e13fedc2536ca309d004ba7d498cbc406ca8d8fe9eebbc0d52"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Independent QA reran the focused metadata tests, six metadata documents, Ruff check and format, source-body preservation, and diff check; all passed.",
+        "command": "9 focused tests; metadata CLI on six inputs; Ruff check and format check; byte-for-byte source-body comparison; git diff --check",
+        "environment": "Independent QA in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-03-VALIDATIONS",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:cf0ef4a2fefae20cfba2c56c7a0f1f3ea3d257d0538e70f643b2d8119c3e8e9a"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02"
+        ],
+        "check": "AC-TODO-02 wording makes researched imply a recorded decision, contradicting the allowed pending disposition.",
+        "command": "Independent semantic review of docs/todo-lifecycle.md",
+        "environment": "Independent QA in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-03-AC02-FINDING",
+        "producer": "quality_assurance",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:cf0ef4a2fefae20cfba2c56c7a0f1f3ea3d257d0538e70f643b2d8119c3e8e9a"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02"
+        ],
+        "check": "The lifecycle documentation separates evidence-review maturity from handling disposition and explicitly permits researched with pending disposition.",
+        "command": "Manual review of docs/todo-lifecycle.md; metadata validator on six input documents; git diff --check",
+        "environment": "Orchestrator in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-TODO-CLARIFICATION-02",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:48d0a59c6bc839b98718c5f8e0481c2140e04a079df49bdaf0ea647b7e8a9598"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Independent QA passes all five acceptance criteria on the corrected TODO lifecycle content snapshot, including a valid researched/pending combination.",
+        "command": "Read-only review of AC-TODO-01 through AC-TODO-05 and current branch diff",
+        "environment": "Independent QA in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-04-ACCEPTANCE",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:48d0a59c6bc839b98718c5f8e0481c2140e04a079df49bdaf0ea647b7e8a9598"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Focused metadata validation, tests, Ruff, source-body preservation, and diff checks pass.",
+        "command": "9 focused tests; metadata CLI on six inputs; Ruff check and format check; byte-for-byte source-body comparison; git diff --check",
+        "environment": "Independent QA in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-04-VALIDATIONS",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:48d0a59c6bc839b98718c5f8e0481c2140e04a079df49bdaf0ea647b7e8a9598"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02"
+        ],
+        "check": "Clarify source disposition independently from direct output provenance; retain the user-supplied partially_adopted classification and use a non-ambiguous empty-list example.",
+        "command": "uv run --script scripts/validate_todo_metadata.py on six named inputs: PASS; git diff --check: PASS",
+        "environment": "Orchestrator in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-TODO-CLARIFICATION-03",
+        "producer": "orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02",
+          "AC-TODO-04"
+        ],
+        "check": "Reviewer-03 found the example and partial-adoption explanation could imply verified output links despite an empty derived_work list; no direct source-to-output paths were found.",
+        "command": "Read-only review of r4 documentation and task history",
+        "environment": "Independent Reviewer in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-REVIEW-03-PROVENANCE-FINDING",
+        "producer": "reviewer",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:48d0a59c6bc839b98718c5f8e0481c2140e04a079df49bdaf0ea647b7e8a9598"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Independent QA-05 reassessed all acceptance criteria, including source authority, metadata semantics, lifecycle, exact input dispositions, provenance, body preservation, and excluded-lane boundaries.",
+        "command": "Read-only independent QA of current r5 diff and six input records",
+        "environment": "todo_lifecycle_quality_audit in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-05-ACCEPTANCE",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Focused tests, six-document metadata CLI, Ruff check/format, byte-for-byte source body comparison, and tracked/untracked diff checks passed.",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with PyYAML python -m unittest discover -s tests -p test_todo_metadata.py -v; uv run --script scripts/validate_todo_metadata.py <six paths>; uvx ruff check scripts/validate_todo_metadata.py tests/test_todo_metadata.py; uvx ruff format --check scripts/validate_todo_metadata.py tests/test_todo_metadata.py; source comparison against develop; git diff --check",
+        "environment": "todo_lifecycle_quality_audit in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-QA-05-VALIDATIONS",
+        "producer": "quality_assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-01",
+          "AC-TODO-02",
+          "AC-TODO-03",
+          "AC-TODO-04",
+          "AC-TODO-05"
+        ],
+        "check": "Independent Reviewer-04 approves lifecycle semantics, exact input dispositions, direct-only output provenance, current QA evidence, and excluded-lane scope.",
+        "command": "Read-only independent review of the r5 diff and QA-05 evidence",
+        "environment": "todo_lifecycle_independent_review in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-REVIEW-04-APPROVAL",
+        "producer": "reviewer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-TODO-02",
+          "AC-TODO-04"
+        ],
+        "check": "Six metadata records preserve user-provided classifications; no unsupported derived_work path was added; source bodies remain intact per QA-05.",
+        "command": "Review of six frontmatters, docs/todo-lifecycle.md, plan-r5.md, and task/evidence state",
+        "environment": "todo_lifecycle_independent_review in /tmp/agentic-workflow-todo-lifecycle",
+        "id": "EVIDENCE-REVIEW-04-SCOPE",
+        "producer": "reviewer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "todo-lifecycle-inputs-sha256:0ed42895d9a7b082c52ab2b5e08f053015aa8b6d6201f6f6a37ef7ebd1f8a107"
       }
     ]
   },
-  "status": "in_progress",
+  "status": "success",
   "task_id": "todo_lifecycle",
-  "updated_at": "2026-09-27T23:02:16Z"
+  "updated_at": "2026-09-28T00:14:31Z"
 }
