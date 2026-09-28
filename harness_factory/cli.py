@@ -59,6 +59,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate.add_argument("--target", choices=HARNESS_NAMES, required=True)
     validate.add_argument("--source-root", type=Path, required=True)
+    validate.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="known agent ID (repeat for each agent available to this pack)",
+    )
 
     prepare = commands.add_parser(
         "prepare", help="create an isolated development or validation worktree"
@@ -80,6 +86,12 @@ def build_parser() -> argparse.ArgumentParser:
     smoke.add_argument("--base-revision", required=True)
     smoke.add_argument("--source", type=Path, required=True)
     smoke.add_argument("--owner", required=True)
+    smoke.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="known agent ID (repeat for each agent available to this pack)",
+    )
     smoke.add_argument(
         "--copilot-reason",
         choices=sorted(ALLOWED_COPILOT_REASONS),
@@ -133,6 +145,12 @@ def build_parser() -> argparse.ArgumentParser:
     suite_run.add_argument("--owner", required=True)
     suite_run.add_argument("--artifact", type=Path, required=True)
     suite_run.add_argument("--preflight-artifact", type=Path, required=True)
+    suite_run.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="known agent ID (repeat for each agent available to this pack)",
+    )
     suite_run.add_argument("--run-id")
     suite_run.add_argument("--timeout-seconds", type=int, default=90)
     suite_run.add_argument("--max-ai-credits", type=int, default=COPILOT_MIN_AI_CREDITS)
@@ -157,6 +175,12 @@ def _add_run_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-revision", required=True)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--owner", required=True)
+    parser.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="known agent ID (repeat for each agent available to this pack)",
+    )
     parser.add_argument(
         "--mode", choices=[mode.value for mode in RunMode], required=True
     )
@@ -187,7 +211,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if args.command == "validate":
-            result = validate_source(args.source_root, args.target)
+            result = validate_source(
+                args.source_root,
+                args.target,
+                known_agents=frozenset(args.known_agent),
+            )
             _emit(result.as_dict())
             return 0
 
@@ -306,7 +334,11 @@ def _prepare(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
         cross_harness_request=request,
     )
     try:
-        plugin_path = adapter.prepare(record, args.source)
+        plugin_path = adapter.prepare(
+            record,
+            args.source,
+            known_agents=frozenset(args.known_agent),
+        )
         command = (
             adapter.development_command(record, plugin_path)
             if mode is RunMode.DEVELOPMENT
@@ -357,7 +389,11 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
         raise HarnessFactoryError("max-ai-credits must be positive")
 
     if profile.source_mode == "external":
-        validate_source(profile.source_path, args.harness)
+        validate_source(
+            profile.source_path,
+            args.harness,
+            known_agents=frozenset(args.known_agent),
+        )
     if args.preflight_artifact == args.artifact:
         raise HarnessFactoryError("preflight and run artifact paths must differ")
     preflight = make_preflight_record(
@@ -411,7 +447,11 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
                     profile_input,
                     symlinks=True,
                 )
-            plugin_path = adapter.prepare(record, source_relative)
+            plugin_path = adapter.prepare(
+                record,
+                source_relative,
+                known_agents=frozenset(args.known_agent),
+            )
             running = manager.transition(
                 record.run_id,
                 owner=record.owner,
@@ -517,7 +557,11 @@ def _smoke(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
         owner=args.owner,
     )
     try:
-        plugin_path = adapter.prepare(record, args.source)
+        plugin_path = adapter.prepare(
+            record,
+            args.source,
+            known_agents=frozenset(args.known_agent),
+        )
         scenario = HarnessScenario(
             scenario_id="plugin-smoke",
             prompt=_smoke_prompt(adapter, plugin_path),
