@@ -49,7 +49,7 @@ from .models import (
 _CORE_PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 if str(_CORE_PACKAGE_ROOT) not in sys.path:
     sys.path.insert(0, str(_CORE_PACKAGE_ROOT))
-from core_agents import load_core_agents
+from core_agents import load_core_agents  # noqa: E402
 
 _HEX_DIGEST = frozenset("0123456789abcdef")
 _INSTALL_RECORD_FIELDS = {
@@ -63,6 +63,16 @@ _INSTALL_RECORD_FIELDS = {
     "approved",
 }
 _PROFILE_FIELDS = {"schema_version", "active_packs", "capabilities"}
+
+
+def _core_package_root() -> Path:
+    """Find the packaged Agentic Core root relative to this runtime module."""
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "plugin.json").is_file() and (parent / "skills").is_dir():
+            return parent
+    raise PluginControlError(
+        "agentic-core package root is unavailable relative to pluginctl"
+    )
 
 
 def _digest_is_valid(value: Any) -> bool:
@@ -189,9 +199,8 @@ class PluginController:
             raise PluginControlError("host_capabilities must be non-empty strings")
         self.host_capabilities = tuple(sorted(set(supplied_host_capabilities)))
 
-        self.repository_root = Path(__file__).resolve().parents[3]
-        self.core_root = self.repository_root / "agentic-core"
-        self.core_agent_ids = frozenset(load_core_agents(_CORE_PACKAGE_ROOT / "agents"))
+        self.core_root = _core_package_root()
+        self.core_agent_ids = frozenset(load_core_agents(self.core_root / "agents"))
 
     @property
     def workspace_state_dir(self) -> Path:
