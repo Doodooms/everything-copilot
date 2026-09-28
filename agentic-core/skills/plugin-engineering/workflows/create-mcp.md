@@ -1,21 +1,22 @@
 ---
 id: create-mcp
-description: Implement or repair MCP server code using a verified SDK and exact registered tools.
+description: Implement or repair MCP server code with Rust and the official rmcp SDK.
 invoke_for:
 - Implement or repair MCP server tools, resources, prompts, or transport entrypoints
-- Choose an MCP SDK language or transport based on approved constraints
 - Validate tool names against actual registrations or tools/list
 avoid_for:
 - Install or deploy an MCP server, manage host configuration, or implement unrelated product features
 references:
-- ../references/create-mcp/assets/language-selection-checklist.md
 - ../references/create-mcp/common-transport-security.md
 - ../references/create-mcp/scripts/validate_mcp.sh
 - ../references/create-mcp/references/URIs.md
 ---
 <critical_rules>
-- MUST keep work within this subskill’s declared scope and its specific safety or authority constraints.
-- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST keep work within this workflow's declared scope and its specific safety or authority constraints.
+- MUST implement every new standalone MCP server in Rust using the official `rmcp` SDK.
+- MAY use another language only when MCP must execute inside an existing non-Rust process/runtime and a separate Rust service would violate an explicit product or deployment constraint. Record the constraint and justification, then obtain a human checkpoint before implementation; this is an architectural exception, not a language-selection path.
+- MUST NOT claim Rust performance advantages quantitatively without a representative measured comparison.
+- MUST NOT replace the parent domain skill's admission, global routing, or authority boundaries.
 </critical_rules>
 
 <general_rules>
@@ -28,44 +29,65 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 </risk_assessment>
 
 <rules>
-- MUST follow this selected subskill only within its declared procedure and scope.
-- MUST NOT replace the parent domain skill’s admission, global routing, or authority boundaries.
+- MUST follow this workflow only within its declared procedure and scope.
 - MUST return the result, evidence, remaining unknowns, risks, and status required by this procedure.
 </rules>
 
 <workflow>
-## Step 1 - Inspect MCP entrypoints and repository state
 
-1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then Use #tool:search to locate MCP server entrypoints and stale server-code references when the repository already contains MCP code or was recently renamed.
-2. Read the relevant server entrypoints, dependency lockfile, registered names, host requirements, and existing tests directly.
+## Step 1 - Inspect the repository and MCP contract
 
-## Step 2 - Confirm the required contract
+1. DO consume the assigned `risk_level` inherited from the parent domain skill before applying this procedure; then locate relevant MCP entrypoints, dependency manifests and lockfiles, tool registrations, host requirements, and existing tests.
+2. Preserve the repository's MSRV, Rust toolchain, dependency, and operational policies. For an existing non-Rust server, establish whether it is an approved architectural exception before changing its implementation language.
 
-1. Confirm the requested tools, resources, prompts, input/output contracts, authority, runtime constraints, host, and transport from the request and repository evidence.
-2. Ask the user or Orchestrator only for an unresolved decision that materially changes the implementation; do not start dependent code until it is resolved.
+## Step 2 - Confirm capabilities and authority
 
-## Step 3 - Choose the language and SDK
+1. Confirm the requested tools, resources, prompts, typed input/output shapes, error behavior, state lifecycle, caller authority, runtime constraints, host, and deployment boundary from the request and repository evidence.
+2. Derive published tool names from actual registrations or `tools/list`; do not invent aliases or expand protocol capabilities without approval.
+3. Ask the user or Orchestrator only for an unresolved decision that materially changes the implementation; do not begin dependent work until it is resolved.
 
-1. Apply the [language selection checklist](../references/create-mcp/assets/language-selection-checklist.md); consult [official SDK references](../references/create-mcp/references/URIs.md) and verify the exact pinned SDK version.
-2. If Rust is selected after this workflow was loaded, stop before writing Rust code and route to the sibling workflow at `workflows/create-mcp-rust.md` for its version-specific `rmcp` procedure.
+## Step 3 - Establish the Rust and `rmcp` contract
 
-## Step 4 - Choose one transport
+1. Before implementation, select and pin an exact published `rmcp` version compatible with the repository toolchain and dependency policy.
+2. Read the official crate documentation, feature list, and server examples matching that exact version. The current upstream branch or documentation for another version is not evidence of API compatibility. Use [the official source index](../references/create-mcp/references/URIs.md) to locate matching versioned material.
+3. Record the exact `rmcp` version and the matching documentation/example references used. Do not present uncompiled pseudocode as a verified `rmcp` API.
 
-1. Apply [the shared transport and security rules](../references/create-mcp/common-transport-security.md) and select the transport required by the client and deployment boundary.
+## Step 4 - Choose exactly one transport
 
-## Step 5 - Implement the approved server surface
+1. Apply [the shared transport and security rules](../references/create-mcp/common-transport-security.md). Select `stdio` when the client starts a local child process, or Streamable HTTP when clients require a network transport and the deployment boundary supports it.
+2. Do not enable another transport or protocol extension without an approved use case.
 
-1. Use the selected SDK's official documentation and examples for the pinned version; do not copy an API from a different version.
-2. Implement only the requested tools, resources, prompts, and one transport. Derive published tool names from registrations or `tools/list`; do not invent aliases or expand the protocol surface without approval.
-3. Keep capability logic separate from transport-specific wiring where the SDK permits; start with the smallest implementation that proves the required behavior, then add only the remaining approved capabilities.
+## Step 5 - Select only required `rmcp` features
 
-## Step 6 - Validate protocol behavior
+1. Inspect the feature table for the pinned version. Enable server support and only the feature set needed by the chosen transport and approved capabilities; verify defaults instead of assuming them.
+2. Start from the closest official server example for that exact version. Remove unused transports, macros, protocol extensions, and optional integrations.
 
-1. Build and lint with the repository's pinned toolchain; verify initialization, `tools/list`, valid and invalid calls, serialization, expected failures, and clean shutdown over the selected transport.
-2. Validate the parent package's workflow metadata and contained references with `references/create-skill/scripts/validate.py`; run the [MCP-specific scaffold check](../references/create-mcp/scripts/validate_mcp.sh) with `bash agentic-core/skills/plugin-engineering/references/create-mcp/scripts/validate_mcp.sh`. Neither check replaces tests of the generated server.
-3. If host integration is required, return the exact transport, command, arguments, environment needs, and published tool names to `operations`; do not edit host configuration.
+## Step 6 - Implement the smallest typed MCP server
 
-## Step 7 - Return the implementation handoff
+1. Register only the approved tools, resources, and prompts. Prefer the pinned SDK's typed parameter and schema mechanism; derive or publish schemas from the same Rust types where supported.
+2. Validate constraints at the protocol boundary. Return protocol errors for expected failures; do not panic on malformed input, unavailable state, cancellation, or I/O errors.
+3. Keep state in the narrowest lifetime that satisfies the request. Do not add a database, cache, background task, or shared mutable state until the use case and consistency rules require it.
+4. Bound input size, output size, execution time, and concurrency. Restrict filesystem, process, and network capabilities to the documented operation. Keep credentials out of source, results, command arguments, and logs.
+5. Make startup, cancellation, and graceful shutdown explicit. Use the runtime's documented blocking facility for CPU-heavy or blocking work while preserving cancellation and deadlines.
 
-1. Report the SDK version, transport, registered names, commands, test evidence, changed files, security boundary, and any unverified runtime behavior.
+## Step 7 - Apply shared security and capability boundaries
+
+1. Follow the shared reference for the minimum capability surface, secret handling, and transport-specific security. Security requirements remain independent of Rust and `rmcp`.
+2. For Streamable HTTP, verify authentication and origin protections against the selected deployment boundary. For `stdio`, keep protocol frames on stdout and diagnostics on stderr.
+
+## Step 8 - Validate protocol behavior and failure paths
+
+1. Build and lint with the repository's pinned toolchain. Exercise `initialize`, `tools/list`, valid and invalid `tools/call`, serialization, expected protocol errors, concurrent requests, and clean shutdown over the selected transport.
+2. Test boundary sizes, cancellation, and relevant failure paths. For stateful tools, check isolation, ordering, and cleanup. For HTTP, validate authorization and origin protections.
+3. Validate this workflow package with `references/create-skill/scripts/validate.py --skill-dir agentic-core/skills/plugin-engineering` and run `bash agentic-core/skills/plugin-engineering/references/create-mcp/scripts/validate_mcp.sh`. These checks do not replace tests of the generated server.
+
+## Step 9 - Measure performance only when a performance claim matters
+
+1. If performance is a requirement or a quantitative claim will be made, record a representative workload and baseline. Measure cold startup, steady-state latency, throughput, memory, and payload size as applicable.
+2. Report hardware, toolchain, pinned `rmcp` version and features, and comparison method. Rust alone is not evidence of superior performance. Keep optimization bounded to measured bottlenecks; do not broaden authority or drop validation to improve a metric.
+
+## Step 10 - Return the exact host and deployment handoff
+
+1. Report the selected language (including any approved exception), exact `rmcp` version, enabled features, transport, registered MCP names and schemas, run/build commands, tests and results, security boundary, measured performance evidence if requested, limitations, and official references used.
+2. If host integration is required, give `operations` the exact executable, arguments, environment needs, and published tool names. Do not edit host configuration or install/deploy the server from this workflow.
 </workflow>

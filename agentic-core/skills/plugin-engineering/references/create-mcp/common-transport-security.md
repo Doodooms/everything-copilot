@@ -1,6 +1,6 @@
 # Common MCP transport and security rules
 
-Used by the `create-mcp` and `create-mcp-rust` workflow subskills. Keep these shared rules here; each workflow should add only language- or SDK-specific details.
+Used by the `create-mcp` workflow. Keep transport and security rules here so they remain independent of implementation language and SDK.
 
 ## Keep the server surface bounded
 

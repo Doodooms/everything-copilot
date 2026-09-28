@@ -469,48 +469,40 @@ class AgenticCoreSourceTests(unittest.TestCase):
                     f"{workflow} references a nested workflow",
                 )
 
-    def test_mcp_authoring_workflows_share_transport_security_and_keep_rust_detail(
-        self,
-    ):
+    def test_mcp_authoring_uses_canonical_rust_contract_and_shared_security(self):
         workflow_dir = CORE / "skills/plugin-engineering/workflows"
-        general_path = workflow_dir / "create-mcp.md"
-        rust_path = workflow_dir / "create-mcp-rust.md"
+        workflow_path = workflow_dir / "create-mcp.md"
         shared_path = (
             CORE
             / "skills/plugin-engineering/references/create-mcp/common-transport-security.md"
         )
 
-        general_text = general_path.read_text(encoding="utf-8")
-        rust_text = rust_path.read_text(encoding="utf-8")
+        workflow_text = workflow_path.read_text(encoding="utf-8")
         shared_text = shared_path.read_text(encoding="utf-8")
         general_metadata = yaml.safe_load(
-            re.match(r"\A---\n(.*?)\n---\n", general_text, re.DOTALL).group(1)
-        )
-        rust_metadata = yaml.safe_load(
-            re.match(r"\A---\n(.*?)\n---\n", rust_text, re.DOTALL).group(1)
+            re.match(r"\A---\n(.*?)\n---\n", workflow_text, re.DOTALL).group(1)
         )
         shared_reference = "../references/create-mcp/common-transport-security.md"
 
         self.assertIn(shared_reference, general_metadata["references"])
-        self.assertEqual(rust_metadata["references"], [shared_reference])
+        self.assertIn("MUST implement every new standalone MCP server in Rust", workflow_text)
+        self.assertIn("official `rmcp` SDK", workflow_text)
+        self.assertIn("exact published `rmcp` version", workflow_text)
+        self.assertIn("architectural exception", workflow_text)
+        self.assertIn("Choose exactly one transport", workflow_text)
+        self.assertIn("graceful shutdown", workflow_text)
         self.assertIn("reject invalid origins with HTTP 403", shared_text)
         self.assertIn("write protocol frames to stdout", shared_text)
         self.assertIn("write diagnostics to stderr", shared_text)
         self.assertIn("MCP 2025-11-25 transport specification", shared_text)
-        self.assertIn("workflows/create-mcp-rust.md", general_text)
-        self.assertIn("pinned `rmcp` version", rust_text)
-        self.assertIn("feature table for the pinned `rmcp` version", rust_text)
-        self.assertNotIn("Origin", rust_text)
         create_mcp_references = CORE / "skills/plugin-engineering/references/create-mcp"
         self.assertFalse((create_mcp_references / "method-source.md").exists())
         self.assertFalse((create_mcp_references / "references/manage_mcp.md").exists())
         domain_router = (CORE / "skills/plugin-engineering/SKILL.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("language or transport still needs selection", domain_router)
-        self.assertIn(
-            "directly when the server is already known to use Rust", domain_router
-        )
+        self.assertIn("[create-mcp](./workflows/create-mcp.md)", domain_router)
+        self.assertIn("New standalone MCP servers use Rust", domain_router)
 
     def test_hook_and_frontend_workflows_keep_host_and_version_boundaries(self):
         hook = (CORE / "skills/plugin-engineering/workflows/create-hook.md").read_text(
