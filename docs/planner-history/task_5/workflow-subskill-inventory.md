@@ -1,6 +1,6 @@
 # Workflow subskill inventory
 
-- Scope: the 59 complete subdomain expertise subskills currently nested under their domain packages. Each uses workflow metadata and canonical skill body sections.
+- Scope: the 58 complete subdomain expertise subskills currently nested under their domain packages. Each uses workflow metadata and canonical skill body sections.
 - Topology: `agentic-core/skills/<domain>/SKILL.md` → selected `agentic-core/skills/<domain>/workflows/<id>.md`.
 - Each subskill has the same authored content structure as a skill, but these files are not standalone Agent Skill packages. Only the 11 parent domains are discoverable; their routers disclose the selected nested subskill progressively. The earlier `workflow-skill-source-map.md` peer-package target paths are superseded.
 
@@ -31,7 +31,6 @@
 | plugin-engineering | agent-authoring | `agentic-core/skills/plugin-engineering/workflows/agent-authoring.md` |
 | plugin-engineering | agent-validation | `agentic-core/skills/plugin-engineering/workflows/agent-validation.md` |
 | plugin-engineering | create-hook | `agentic-core/skills/plugin-engineering/workflows/create-hook.md` |
-| plugin-engineering | create-mcp-rust | `agentic-core/skills/plugin-engineering/workflows/create-mcp-rust.md` |
 | plugin-engineering | create-mcp | `agentic-core/skills/plugin-engineering/workflows/create-mcp.md` |
 | plugin-engineering | optimize-skill | `agentic-core/skills/plugin-engineering/workflows/optimize-skill.md` |
 | plugin-engineering | plugin-creation | `agentic-core/skills/plugin-engineering/workflows/plugin-creation.md` |

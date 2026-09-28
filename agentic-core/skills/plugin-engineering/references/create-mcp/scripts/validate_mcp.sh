@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Checks the canonical MCP workflow and its shared transport/security reference.
+# Checks the canonical MCP workflow's required local support and version-aware protocol contract.
 # Usage: ./validate_mcp.sh [--skill-dir <plugin-engineering directory>]
 set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,19 +13,28 @@ fi
 
 WORKFLOW_FILE="$DOMAIN_DIR/workflows/create-mcp.md"
 COMMON_FILE="$DOMAIN_DIR/references/create-mcp/common-transport-security.md"
+PATTERNS_FILE="$DOMAIN_DIR/references/create-mcp/rust-server-patterns.md"
+SOURCES_FILE="$DOMAIN_DIR/references/create-mcp/references/URIs.md"
 [[ -f "$DOMAIN_DIR/SKILL.md" ]] || { echo "plugin-engineering/SKILL.md not found" >&2; exit 1; }
 [[ -f "$WORKFLOW_FILE" ]] || { echo "Canonical MCP workflow not found: $WORKFLOW_FILE" >&2; exit 1; }
-[[ -f "$COMMON_FILE" ]] || { echo "Shared MCP transport/security reference not found: $COMMON_FILE" >&2; exit 1; }
+for file in "$COMMON_FILE" "$PATTERNS_FILE" "$SOURCES_FILE"; do
+  [[ -f "$file" ]] || { echo "Required MCP support not found: $file" >&2; exit 1; }
+done
 [[ -f "$DOMAIN_DIR/references/create-skill/scripts/validate.py" ]] || {
   echo "Canonical workflow validator not found under $DOMAIN_DIR" >&2
   exit 1
 }
 
-COMMON_REFERENCE="../references/create-mcp/common-transport-security.md"
-grep -Fq "$COMMON_REFERENCE" "$WORKFLOW_FILE" || {
-  echo "create-mcp does not reference the shared MCP security guidance" >&2
-  exit 1
-}
+for reference in \
+  '../references/create-mcp/common-transport-security.md' \
+  '../references/create-mcp/rust-server-patterns.md' \
+  '../references/create-mcp/references/URIs.md'; do
+  grep -Fq "$reference" "$WORKFLOW_FILE" || {
+    echo "create-mcp does not declare required support: $reference" >&2
+    exit 1
+  }
+done
+
 grep -Fq 'id: create-mcp' "$WORKFLOW_FILE" || {
   echo "Canonical MCP workflow metadata ID does not match its filename" >&2
   exit 1
@@ -42,11 +51,10 @@ for index in "${!steps[@]}"; do
 done
 
 for required in \
-  'official `rmcp` SDK' \
+  'MUST implement every new standalone MCP server in Rust' \
   'architectural exception' \
   'exact published `rmcp` version' \
-  'Choose exactly one transport' \
-  'initialize' \
+  'target MCP protocol versions' \
   'graceful shutdown'; do
   grep -Fq "$required" "$WORKFLOW_FILE" || {
     echo "create-mcp is missing canonical contract text: $required" >&2
@@ -54,5 +62,18 @@ for required in \
   }
 done
 
-echo "Canonical MCP workflow scaffold checks passed under $DOMAIN_DIR."
-echo "Run references/create-skill/scripts/validate.py --skill-dir $DOMAIN_DIR for canonical package and reference validation."
+grep -Fq '2026-07-28' "$COMMON_FILE" || {
+  echo "Shared MCP guidance does not identify the current stable protocol revision" >&2
+  exit 1
+}
+grep -Fq 'server/discover` is an optional' "$COMMON_FILE" || {
+  echo "Shared MCP guidance must treat server/discover as optional" >&2
+  exit 1
+}
+grep -Fq 'Do not require `initialize` for every server' "$COMMON_FILE" || {
+  echo "Shared MCP guidance does not distinguish modern and legacy lifecycle tests" >&2
+  exit 1
+}
+
+echo "Canonical MCP workflow and support checks passed under $DOMAIN_DIR."
+echo "Run references/create-skill/scripts/validate.py --skill-dir $DOMAIN_DIR for canonical package and link validation."
