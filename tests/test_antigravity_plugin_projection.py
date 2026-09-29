@@ -199,7 +199,7 @@ class AntigravityProjectionTests(unittest.TestCase):
             and path.endswith(".md")
         ]
         self.assertEqual(len(skill_entrypoints), 11)
-        self.assertEqual(len(nested_workflows), 59)
+        self.assertEqual(len(nested_workflows), 58)
         self.assertFalse(any("/e2e-testing/" in path for path in projection.files))
         self.assertFalse(
             any("/test-coverage-review/" in path for path in projection.files)
