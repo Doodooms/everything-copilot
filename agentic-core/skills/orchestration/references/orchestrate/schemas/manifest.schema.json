@@ -178,6 +178,35 @@
       "required": ["branch", "worktree", "commit_shas", "pull_request", "cleanup"],
       "properties": {
         "branch": { "type": ["string", "null"] },
+        "branch_naming": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_source",
+            "policy_version",
+            "policy_sha256",
+            "category",
+            "validation"
+          ],
+          "properties": {
+            "policy_source": { "type": "string", "minLength": 1 },
+            "policy_version": { "type": "string", "minLength": 1 },
+            "policy_sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+            "category": {
+              "enum": [
+                "feature",
+                "bugfix",
+                "refactor",
+                "test",
+                "docs",
+                "maintenance",
+                "release",
+                "hotfix"
+              ]
+            },
+            "validation": { "const": "accepted" }
+          }
+        },
         "worktree": { "type": ["string", "null"] },
         "commit_shas": { "type": "array", "items": { "$ref": "#/$defs/gitSha" }, "uniqueItems": true },
         "pull_request": { "type": ["string", "integer", "null"] },

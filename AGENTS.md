@@ -37,6 +37,7 @@ The Orchestrator records the task level and rationale, then re-evaluates when ev
 ## Git workflow
 
 - Follow [the repository Git workflow](docs/git-workflow.md) for branch names, PR targets, and commit history.
+- New branch names are derived and checked with the orchestration policy in [`.agentic-core/branch-naming.json`](.agentic-core/branch-naming.json); use the orchestration helper's deterministic fallback only when that file is absent.
 - Published or handed-off commit SHAs are immutable: never squash, amend, rebase, force-push, or otherwise rewrite them.
 - Before committing, isolate only the task-owned coherent changes. Preserve other work in the workspace and do not stage it incidentally.
 - Use [the PR template](.github/PULL_REQUEST_TEMPLATE.md) for handoff PRs. Never merge automatically; leave architecture and the next major step to the user.

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "ordinary_prefixes": {
+    "feature": "feat",
+    "bugfix": "fix",
+    "refactor": "refactor",
+    "test": "test",
+    "docs": "docs",
+    "maintenance": "chore"
+  },
+  "special": {
+    "release": true,
+    "hotfix": true
+  }
+}

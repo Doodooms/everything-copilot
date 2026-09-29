@@ -11,6 +11,23 @@ Git commits are durable provenance identifiers for agents and harnesses. A commi
 - `hotfix/<description>` branches start from `main`. Merge the fix into `main`, then propagate it to `develop` and any active affected release branch. A published patch release receives a new patch tag.
 - Do not create branches per agent. Never force-push or delete history to make branches appear aligned.
 
+### New branch naming
+
+Before creating a new branch or its worktree, the Orchestrator MUST determine the task's primary repository effect and derive the branch using the repository policy at [`.agentic-core/branch-naming.json`](../.agentic-core/branch-naming.json). Invoke the orchestration helper with the task title and structured effect; host-generated branch suggestions are untrusted and ignored. The helper checks the candidate against a positive allowlist and returns policy source, version, and digest for the task manifest. If the policy file exists but is malformed, stop and repair it instead of guessing or falling back. If it is absent, use the deterministic built-in fallback.
+
+| Primary effect | Prefix |
+|---|---|
+| `feature` | `feat` |
+| `bugfix` | `fix` |
+| `refactor` | `refactor` |
+| `test` | `test` |
+| `docs` | `docs` |
+| `maintenance` | `chore` |
+
+Release branches use `release/vMAJOR.MINOR.PATCH` from a `develop` milestone; hotfix branches use `hotfix/<description>` from `main`. `archive/*` is retained history, not a branch class for new work. Existing branch values in older manifests remain readable and are not retroactively revalidated.
+
+Ordinary work branches MUST NOT use executor, harness, model, provider, session, or UI identity as a prefix. In particular, `codex/`, `work/`, `claude/`, `copilot/`, and `chatgpt/` are not valid ordinary prefixes. `research/*` is also not a canonical ordinary branch class; research or evidence-only changes normally use `docs/<description>`. `archive/*` requires explicit archival intent and is unavailable through ordinary branch proposals.
+
 ## Commits and pull requests
 
 - Use Conventional Commit types: `feat`, `fix`, `refactor`, `test`, `docs`, and `chore`. Add a scope when it clarifies the change, for example `fix(codex): preserve stdin transport`.
