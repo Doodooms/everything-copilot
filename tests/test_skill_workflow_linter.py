@@ -4,13 +4,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 LINTER_PATH = (
     ROOT
     / "agentic-core/skills/plugin-engineering/references/create-skill/scripts/skill_lint_core.py"
 )
-SPEC = importlib.util.spec_from_file_location("skill_workflow_lint_core_test", LINTER_PATH)
+SPEC = importlib.util.spec_from_file_location(
+    "skill_workflow_lint_core_test", LINTER_PATH
+)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError(f"Unable to load skill linter at {LINTER_PATH}")
 LINTER = importlib.util.module_from_spec(SPEC)
@@ -26,7 +27,7 @@ class SkillWorkflowLinterTests(unittest.TestCase):
         *,
         workflow_id: str = "concurrency",
         references: tuple[str, ...] = ("../references/concurrency-oracle.md",),
-        body: str = "[oracle](../references/concurrency-oracle.md)\n",
+        body: str = "[oracle](../references/concurrency-oracle.md)",
     ) -> Path:
         workflows_dir = skill_dir / "workflows"
         workflows_dir.mkdir(parents=True, exist_ok=True)
@@ -42,9 +43,24 @@ class SkillWorkflowLinterTests(unittest.TestCase):
             "references:\n"
             + "".join(f"  - {reference}\n" for reference in references)
             + "---\n"
-            "## Falsify concurrent behavior\n"
-            "1. Derive an observable concurrency contract.\n"
-            f"{body}",
+            "<critical_rules>\n"
+            "- MUST stay within the selected test scope.\n"
+            "</critical_rules>\n"
+            "<general_rules>\n"
+            "- SHOULD use observable evidence.\n"
+            "</general_rules>\n"
+            "<risk_assessment>\n"
+            "Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade it. "
+            "SHOULD escalate only when new evidence materially increases risk.\n"
+            "</risk_assessment>\n"
+            "<rules>\n"
+            "- Return evidence and unresolved risks.\n"
+            "</rules>\n"
+            "<workflow>\n"
+            "## Step 1 - Falsify concurrent behavior\n"
+            "1. Consume the assigned `risk_level`, then derive an observable concurrency contract.\n"
+            f"2. {body.strip()}\n"
+            "</workflow>\n",
             encoding="utf-8",
         )
         return workflow
@@ -69,7 +85,10 @@ description: Demo workflow.
         result = LINTER.lint_skill_markdown(Path("demo"), skill_text)
 
         self.assertTrue(
-            any("`<critical_rules>` and `</critical_rules>`" in error for error in result.errors),
+            any(
+                "`<critical_rules>` and `</critical_rules>`" in error
+                for error in result.errors
+            ),
             result.errors,
         )
 
@@ -154,7 +173,10 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
             result = LINTER.validate_skill_workflows(skill_dir)
 
         self.assertTrue(
-            any("unknown workflow metadata field(s): subskills" in error for error in result.errors),
+            any(
+                "unknown workflow metadata field(s): subskills" in error
+                for error in result.errors
+            ),
             result.errors,
         )
         self.assertTrue(
@@ -212,10 +234,7 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
 
         self.assertEqual(result.errors, [], result.errors)
         self.assertFalse(
-            any(
-                "./references/detail.md" in warning
-                for warning in result.warnings
-            ),
+            any("./references/detail.md" in warning for warning in result.warnings),
             result.warnings,
         )
 
@@ -255,7 +274,24 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
                 "references:\n"
                 "  - ../references/guides/testing.md\n"
                 "---\n"
-                "Load [supporting guidance](../references/guides/testing.md).\n",
+                "<critical_rules>\n"
+                "- MUST stay within this procedure's test scope.\n"
+                "</critical_rules>\n"
+                "<general_rules>\n"
+                "- SHOULD use observable behavior.\n"
+                "</general_rules>\n"
+                "<risk_assessment>\n"
+                "Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade it. "
+                "SHOULD escalate only when new evidence materially increases risk.\n"
+                "</risk_assessment>\n"
+                "<rules>\n"
+                "- Return evidence and unresolved risks.\n"
+                "</rules>\n"
+                "<workflow>\n"
+                "## Step 1 - Use the support.\n"
+                "1. Consume the assigned `risk_level`, then load "
+                "[supporting guidance](../references/guides/testing.md).\n"
+                "</workflow>\n",
                 encoding="utf-8",
             )
             (reference_dir / "testing.md").write_text(
@@ -303,7 +339,10 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
 
         self.assertEqual([], result.errors, result.errors)
         self.assertFalse(
-            any("Support file is not referenced" in warning for warning in result.warnings),
+            any(
+                "Support file is not referenced" in warning
+                for warning in result.warnings
+            ),
             result.warnings,
         )
 
@@ -366,7 +405,10 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
             result.errors,
         )
         self.assertTrue(
-            any("must match the workflow filename stem" in error for error in result.errors),
+            any(
+                "must match the workflow filename stem" in error
+                for error in result.errors
+            ),
             result.errors,
         )
 
@@ -388,7 +430,10 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
             result.errors,
         )
         self.assertTrue(
-            any("must resolve inside the skill package" in error for error in result.errors),
+            any(
+                "must resolve inside the skill package" in error
+                for error in result.errors
+            ),
             result.errors,
         )
 
@@ -409,7 +454,10 @@ Consume the assigned `risk_level`; MUST NOT downgrade it. SHOULD escalate only w
             result = LINTER.validate_skill_workflows(skill_dir)
 
         self.assertTrue(
-            any("workflow-to-workflow links are not allowed" in error for error in result.errors),
+            any(
+                "workflow-to-workflow links are not allowed" in error
+                for error in result.errors
+            ),
             result.errors,
         )
         self.assertTrue(
@@ -447,15 +495,23 @@ description: Test design and selected testing procedures.
             result = LINTER.lint_skill_markdown(skill_dir, skill_text)
 
         self.assertTrue(
-            any("existing immediate child of `workflows/`" in error for error in result.errors),
+            any(
+                "existing immediate child of `workflows/`" in error
+                for error in result.errors
+            ),
             result.errors,
         )
         self.assertFalse(
-            any("Support file is not referenced" in warning for warning in result.warnings),
+            any(
+                "Support file is not referenced" in warning
+                for warning in result.warnings
+            ),
             result.warnings,
         )
 
-    def test_create_plugin_may_use_the_canonical_expertise_cli_without_local_scripts(self):
+    def test_create_plugin_may_use_the_canonical_expertise_cli_without_local_scripts(
+        self,
+    ):
         skill_dir = Path("create-plugin")
         skill_text = """---
 name: create-plugin
