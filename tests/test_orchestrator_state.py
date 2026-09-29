@@ -355,6 +355,7 @@ class OrchestratorStateTests(unittest.TestCase):
             "claude/control-git-integration",
             "copilot/control-git-integration",
             "chatgpt/control-git-integration",
+            "agent-3/control-git-integration",
             "future-harness/my-feature",
             "codex/fix-login",
             "agent/fix-login",

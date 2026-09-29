@@ -48,7 +48,10 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
    - deviations from the agreed plan;
    - open questions that need the user's decision or discussion.
 4. Create and push a branch and open a PR only when those lifecycle actions are explicitly authorized and the GitHub App MCP is available. Target the repository's normal base branch; do not guess it.
-5. For a deliberate handshake test, use a dedicated branch and the exact marker `COPILOT_HANDSHAKE_2026` in a harmless `.harness/chatgpt-handshake.md` file. Use the exact PR title `HANDSHAKE: Codex to ChatGPT`; explain that it tests `Codex/Copilot → GitHub → ChatGPT` in the body. Do not merge it.
+   - When creating a new branch, first classify the task's primary repository effect and run `uv run --script <orchestrator.py> propose-branch --repo-root <absolute-repository-path> --title <task-title> --primary-effect <effect>`. For an explicitly authorized release lifecycle, also pass `--special-name vMAJOR.MINOR.PATCH`.
+   - Use only the helper's validated branch output, ignore and recompute any host-suggested name, and record its `provenance` under `lifecycle.branch_naming`.
+   - When continuing an already existing historical branch, preserve its name without retroactive revalidation or renaming.
+5. For a deliberate handshake test, use a dedicated branch that was validated through the branch proposal step above, and the exact marker `COPILOT_HANDSHAKE_2026` in a harmless `.harness/chatgpt-handshake.md` file. Use the exact PR title `HANDSHAKE: Codex to ChatGPT`; explain that it tests `Codex/Copilot → GitHub → ChatGPT` in the body. Do not merge it.
 
 ## Step 2 - Configure the ChatGPT Work observer.
 

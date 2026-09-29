@@ -26,7 +26,7 @@ Before creating a new branch or its worktree, the Orchestrator MUST determine th
 
 Release branches use `release/vMAJOR.MINOR.PATCH` from a `develop` milestone; hotfix branches use `hotfix/<description>` from `main`. `archive/*` is retained history, not a branch class for new work. Existing branch values in older manifests remain readable and are not retroactively revalidated.
 
-Ordinary work branches MUST NOT use executor, harness, model, provider, session, or UI identity as a prefix. In particular, `codex/`, `work/`, `claude/`, `copilot/`, and `chatgpt/` are not valid ordinary prefixes. `research/*` is also not a canonical ordinary branch class; research or evidence-only changes normally use `docs/<description>`. `archive/*` requires explicit archival intent and is unavailable through ordinary branch proposals.
+Ordinary work branches MUST NOT use executor, agent, harness, backend, model, provider, session, or UI identity as a prefix. In particular, `codex/`, `work/`, `claude/`, `copilot/`, and `chatgpt/` are not valid ordinary prefixes. `research/*` is also not a canonical ordinary branch class; research or evidence-only changes normally use `docs/<description>`. `archive/*` requires explicit archival intent and is unavailable through ordinary branch proposals.
 
 ## Commits and pull requests
 
