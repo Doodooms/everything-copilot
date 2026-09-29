@@ -1,3 +1,10 @@
+---
+kind: research_input
+status: triaged
+disposition: research_required
+derived_work: []
+---
+
 > **Design/research input — not an approved implementation plan.**
 
 https://github.com/getagentseal/codeburn : token usage tracking

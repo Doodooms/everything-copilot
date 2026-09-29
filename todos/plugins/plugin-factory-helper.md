@@ -1,3 +1,10 @@
+---
+kind: design_input
+status: researched
+disposition: partially_adopted
+derived_work: []
+---
+
 > **Design/research input — not an approved implementation plan.**
 
 You are working in:
