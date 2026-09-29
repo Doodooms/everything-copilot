@@ -1,9 +1,9 @@
 # Plan r1 — SPEC-6 revision 1
 
-Status: approved by Orchestrator  
-Planner handoff: factory_decoupling_planner, final plan return  
-Risk level: L2  
-Base: 662ea3471b9e0a7a0ef34082a1539a8175c668b9  
+- Status: approved by Orchestrator
+- Planner handoff: factory_decoupling_planner, final plan return
+- Risk level: L2
+- Base: 662ea3471b9e0a7a0ef34082a1539a8175c668b9
 Architecture direction: private neutral source for the nine Core agents; explicit Factory inputs; target-specific projection validation; preserve Pack v1 and do not move SWE.
 
 The plan content was authored by the Planner specialist and persisted by the Orchestrator because the Planner role declined direct documentation edits. The initial /tmp checkout attempt failed due the full tmpfs; the isolated worktree was then created under /var/tmp. The shared checkout is not an implementation surface.
@@ -20,7 +20,8 @@ Likely files: neutral Core-agent source files and their generator; agentic-core/
 
 Requirements/AC: REQ-6-1, REQ-6-7; AC-6-1, AC-6-7.
 
-Dependencies: approved private-source direction in SPEC-6.  
+Dependencies: approved private-source direction in SPEC-6.
+
 Exit: all nine roles project deterministically to all three targets; contract checks cover role content and supported metadata; Pack v1 inputs remain accepted.
 
 ### Phase 2 — Explicit Factory inputs and validation boundaries
@@ -33,7 +34,8 @@ Likely files: expertise/validator.py, expertise/parser.py, expertise/registry.py
 
 Requirements/AC: REQ-6-2, REQ-6-3, REQ-6-7; AC-6-2, AC-6-3, AC-6-7.
 
-Dependencies: TASK-6-01 where the neutral source or adapter contract is needed.  
+Dependencies: TASK-6-01 where the neutral source or adapter contract is needed.
+
 Exit: a supplied pack/catalog can resolve and compile without a Core checkout; neutral validation runs without a target; target failures are checked by their target adapter; Pack v1 fixtures retain behavior.
 
 ### Phase 3 — Composition and installed pluginctl runtime
@@ -46,7 +48,8 @@ Likely files: agentic-core/runtime/pluginctl/controller.py, pluginctl runtime-co
 
 Requirements/AC: REQ-6-4, REQ-6-5, REQ-6-7; AC-6-4, AC-6-5, AC-6-7.
 
-Dependencies: TASK-6-01 and TASK-6-02.  
+Dependencies: TASK-6-01 and TASK-6-02.
+
 Exit: record an evidence-based result for each composition; run installed-layout checks on Linux; report Windows as executed only if an actual Windows environment is available. Preserve Option A runtime copy and make no claim beyond observed platform evidence.
 
 ### Phase 4 — Deterministic Copilot repository instructions projection
@@ -60,6 +63,7 @@ Likely files: scripts/project_copilot_instructions.py and a focused test such as
 Requirements/AC: REQ-6-6; AC-6-6.
 
 Dependencies: TASK-6-01 only. Run this small task in parallel with TASK-6-02 or TASK-6-03 when useful.
+
 Exit: repeated generation and --check yield bytes identical to the checked-in projection and exclude content after the unique source marker.
 
 ### Phase 5 — Independent assurance
@@ -68,14 +72,18 @@ Exit: repeated generation and --check yield bytes identical to the checked-in pr
 
 Independently falsify projection determinism/parity, Factory explicit-input composition, validation boundaries, all three runtime composition profiles, arbitrary-CWD/no-checkout/no-PYTHONPATH behavior, Copilot-instructions determinism, and Pack v1 compatibility.
 
-Requirements/AC: REQ-6-1 through REQ-6-7; AC-6-1 through AC-6-7.  
-Dependencies: TASK-6-01 through TASK-6-04.  
+Requirements/AC: REQ-6-1 through REQ-6-7; AC-6-1 through AC-6-7.
+
+Dependencies: TASK-6-01 through TASK-6-04.
+
 Exit: precise PASS/FAIL/BLOCKED evidence per applicable AC and platform, with defects routed to the evidence-indicated owner.
 
 **TASK-6-06 — Reviewer**
 
-Review the final implementation and current QA evidence for correctness, compatibility, source-of-truth ownership, coupling direction, and test adequacy. Do not repeat QA.  
-Dependencies: TASK-6-05.  
+Review the final implementation and current QA evidence for correctness, compatibility, source-of-truth ownership, coupling direction, and test adequacy. Do not repeat QA.
+
+Dependencies: TASK-6-05.
+
 Exit: approve or return concrete findings.
 
 ## Acceptance mapping
