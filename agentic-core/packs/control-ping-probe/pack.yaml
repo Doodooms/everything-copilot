@@ -1,0 +1,32 @@
+schema_version: 1
+id: control-ping-probe
+type: vertical
+name: Control Ping Probe
+version: 0.1.0
+description: One bounded deterministic MCP operation used to validate ChatGPT plugin packaging.
+compatibility:
+  targets:
+    - portable
+  agent_plugins: ">=1.0.0"
+trust:
+  publisher: Doodooms
+  source: Agentic Core feasibility fixture
+  approval_required: true
+capabilities:
+  - id: control.health
+    description: Read the deterministic health status of the Control probe endpoint.
+dependencies: []
+agents:
+  contributions: []
+  extensions: []
+skills: []
+mcp_config: mcp.json
+mcp_servers:
+  - id: control
+    capabilities:
+      - control.health
+    permissions:
+      - read
+    tools:
+      - control_ping
+projections: []

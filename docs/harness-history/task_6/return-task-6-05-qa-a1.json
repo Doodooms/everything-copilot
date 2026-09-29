@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "bf2fc087-51ed-4463-b23b-29744596b11e",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-05-qa-a1",
+  "created_at": "2026-09-28T14:24:31Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "partial",
+  "objective": "Independently falsify SPEC-6 acceptance criteria AC-6-1 through AC-6-7 at implementation HEAD 7df5475cf51d7ed1ed81685e280f6e60016f0a61.",
+  "requested_response": "Report exact per-AC results, reproduction, platform/profile limits, changed-file observations, and whether implementation follow-up is required.",
+  "constraints": [
+    "QA ran read-only in the isolated worktree and made no intentional file changes.",
+    "The Harness Factory failure invalidates the prior PASS for AC-6-2 and AC-6-7; fix and rerun those gates before Reviewer acceptance.",
+    "Core+SWE is untested because no separate SWE pack exists; pluginctl Factory-only is unsupported by the Core-rooted controller; Windows runtime was not executed."
+  ],
+  "evidence": [
+    {"id": "QA-6-05-AC1", "kind": "command", "reference": "test_agentic_core_sources.py: 27 passed; scripts/project_core_agents.py --check reported all nine projections current; test_antigravity_plugin_projection.py: 8 passed."},
+    {"id": "QA-6-05-AC2-FAIL", "kind": "command", "reference": "test_harness_factory.py: 27 passed, 1 error. tests/test_harness_factory.py:962 -> harness_factory/validation.py:89 -> expertise/parser.py:229; PackValidationError reports unknown researcher for extension and projection because parse_pack receives an empty catalog."},
+    {"id": "QA-6-05-AC3", "kind": "observation", "reference": "Target-neutral semantic validation test passed; Codex uses shared validation and Copilot routing-reference checks remain in its adapter."},
+    {"id": "QA-6-05-AC4", "kind": "observation", "reference": "Core-only and generic Core+Pack lifecycle pass; a separate Core+SWE pack is absent; pluginctl Factory-only is unsupported because the controller loads Core; standalone Expertise works without Core."},
+    {"id": "QA-6-05-AC5", "kind": "command", "reference": "test_pluginctl_package_runtime.py: 2 passed for installed arbitrary-CWD execution with PYTHONPATH/PYTHONHOME unset; runtime-copy sync passed on Linux; Windows NOT_EXECUTED."},
+    {"id": "QA-6-05-AC6", "kind": "command", "reference": "test_copilot_instructions_projection.py: 2 passed; two projector --check runs confirmed parity through the unique closing risk_assessment marker."},
+    {"id": "QA-6-05-AC7-FAIL", "kind": "observation", "reference": "Expertise Pack v1 suite passed 39 tests and pluginctl lifecycle passed 7, but the failing Harness Factory caller breaks an existing Pack v1 validation path."},
+    {"id": "IMPLEMENTATION-HEAD-6", "kind": "observation", "reference": "QA ran against 7df5475cf51d7ed1ed81685e280f6e60016f0a61."}
+  ],
+  "changed_paths": [],
+  "validation": [
+    {"check": "AC-6-1 neutral agent projections", "result": "passed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "test_agentic_core_sources.py; project_core_agents.py --check; test_antigravity_plugin_projection.py"},
+    {"check": "AC-6-2 Harness Factory explicit catalog", "result": "failed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_harness_factory.py'"},
+    {"check": "AC-6-3 validation boundary", "result": "passed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"},
+    {"check": "AC-6-4 Core-only and generic Core+Pack composition", "result": "passed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "test_pluginctl_lifecycle.py (7 passed)"},
+    {"check": "AC-6-4 specific Core+SWE profile", "result": "skipped", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "No separate SWE pack exists in the repository"},
+    {"check": "AC-6-4 pluginctl Factory-only profile", "result": "skipped", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "Unsupported by current Core-rooted pluginctl controller; standalone Expertise explicit-catalog API passes"},
+    {"check": "AC-6-5 installed pluginctl runtime on Linux", "result": "passed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "test_pluginctl_package_runtime.py (2 passed); scripts/sync_pluginctl_runtime.py --check"},
+    {"check": "AC-6-5 installed pluginctl runtime on Windows", "result": "skipped", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "No Windows runner available"},
+    {"check": "AC-6-6 Copilot instructions projection", "result": "passed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "test_copilot_instructions_projection.py; projector --check twice"},
+    {"check": "AC-6-7 Pack v1 compatibility", "result": "failed", "observed_at": "2026-09-28T14:24:31Z", "subject": "7df5475cf51d7ed1ed81685e280f6e60016f0a61", "command": "test_expertise_framework.py; test_pluginctl_lifecycle.py; test_harness_factory.py"}
+  ],
+  "commit_status": "not_applicable",
+  "commit_reason": "Independent QA produced no code commit.",
+  "git_commits": [],
+  "artifacts": []
+}

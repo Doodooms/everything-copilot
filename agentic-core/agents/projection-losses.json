@@ -1,0 +1,10 @@
+{
+  "copilot": [],
+  "codex": [
+    "unsupported_fields: user-invocable, disable-model-invocation, tools, agents; reason: Codex host controls invocation and tool access outside this agent file."
+  ],
+  "antigravity": [
+    "unsupported_fields: model, reasoning-effort; reason: Antigravity has no exact equivalent for Copilot model IDs or per-agent reasoning effort.",
+    "unsupported_fields: browser, web tool capabilities; reason: Antigravity exposes no equivalent tools for those actions."
+  ]
+}

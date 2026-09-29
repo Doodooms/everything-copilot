@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "539b03a4-99ee-4863-b6c5-85fc7a0504f0",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-08-qa-a1",
+  "created_at": "2026-09-28T15:05:30Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Independently falsify TASK-6-07 catalog propagation through CLI validation, suite-run preflight, and HarnessAdapter preparation, while checking Pack v1 compatibility.",
+  "requested_response": "Return PASS/FAIL/BLOCKED for AC-6-2 and AC-6-7 with exact commands, patch digest, observed behavior, changed files, blockers, and residual risks. Do not modify files.",
+  "constraints": [
+    "Read-only QA in /var/tmp/agentic-workflow-plugin-factory-decoupling on refactor/plugin-factory-decoupling; no stage, commit, branch, remotes, or cleanup.",
+    "Subject is the combined implementation diff SHA-256 44f1bc89cc38d8297be0ad2f6f9f199b5607203ae4beac97d0dbfaa292527dcf over HEAD 7df5475cf51d7ed1ed81685e280f6e60016f0a61.",
+    "Inspect behavior, not implementation details: explicit catalog succeeds at CLI validate, suite-run preflight, and adapter preparation; omitted/unknown catalog remains rejected without implicit Core lookup.",
+    "Run test_harness_factory.py and test_expertise_framework.py under uv; use PYTHONDONTWRITEBYTECODE=1 and the isolated worktree tmp directory for temporary files.",
+    "Inspect all relevant CLI and adapter callsites, including prepare and smoke, for explicit catalog propagation.",
+    "Do not edit production code, tests, task tracking, stage, commit, or clean generated artifacts."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6-R2", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r2.md"},
+    {"id": "IMPLEMENTATION-6-07", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-07.json"},
+    {"id": "REVIEW-6-01", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-06-review-a1.json"}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Independent QA is read-only and owns no implementation commit.",
+  "git_commits": [],
+  "artifacts": []
+}

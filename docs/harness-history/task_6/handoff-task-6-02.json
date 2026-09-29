@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "9432f447-2751-4997-8510-a6e1e402b7b5",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-02-a1",
+  "created_at": "2026-09-28T12:28:36Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Remove implicit Agentic Core discovery from generic Expertise Factory APIs and separate shared agent semantics from target projection validation.",
+  "requested_response": "Return exact changed paths, explicit catalog/validator API, proof of pack/catalog parsing and compilation without an Agentic Core tree, validation ownership per target, Pack v1 compatibility, commands/results, and remaining dependencies for TASK-6-03.",
+  "constraints": [
+    "Work only on TASK-6-02 and its assigned paths: expertise generic parsing/validation/registry/resolver/scaffold, target validation helpers and adapters, harness_factory validation only where it is demonstrably a Factory input boundary, and focused tests.",
+    "Do not change the pluginctl controller/composition profile implementation assigned to TASK-6-03; report any required controller callsite adaptation before making it.",
+    "Generic expertise code must not discover agentic-core paths or select Core agent ids implicitly. Use an explicit catalog argument or existing minimal equivalent; preserve Pack v1 .agent.md behavior.",
+    "Codex validation must not import a Copilot-named private validator. Extract only rules proven shared and leave target-specific projection checks in target adapters.",
+    "Tests must assert positive observable contracts, including explicit catalog use and successful operation with a fixture that contains no Core tree; do not test for removed implementation details.",
+    "Use uv for Python execution, Ruff for style, preserve unrelated worktree content, and do not stage or commit."
+  ],
+  "evidence": [
+    {
+      "id": "SPEC-6",
+      "kind": "artifact",
+      "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"
+    },
+    {
+      "id": "PLAN-6",
+      "kind": "artifact",
+      "reference": "docs/planner-history/task_6/plan-r1.md"
+    },
+    {
+      "id": "TASK-6-01",
+      "kind": "observation",
+      "reference": "Neutral canonical sources and all three projections are complete and validated."
+    }
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_created",
+  "commit_reason": "The Orchestrator owns final integration and commit after QA and Reviewer gates.",
+  "git_commits": [],
+  "artifacts": []
+}

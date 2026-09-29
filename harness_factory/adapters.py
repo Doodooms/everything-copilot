@@ -111,7 +111,13 @@ class HarnessAdapter(ABC):
     def detect(self) -> HarnessCapabilities:
         raise NotImplementedError
 
-    def prepare(self, run: HarnessRun, source_relative: Path) -> Path:
+    def prepare(
+        self,
+        run: HarnessRun,
+        source_relative: Path,
+        *,
+        known_agents: set[str] | frozenset[str] = frozenset(),
+    ) -> Path:
         if run.harness != self.name:
             raise HarnessFactoryError("run target does not match this harness adapter")
         if run.status is not RunStatus.PREPARED:
@@ -135,9 +141,15 @@ class HarnessAdapter(ABC):
             raise HarnessFactoryError(
                 "plugin source must exist under the pinned run workspace"
             ) from exc
-        return self.materialize(run, resolved_source)
+        return self.materialize(run, resolved_source, known_agents=known_agents)
 
-    def materialize(self, run: HarnessRun, source_root: Path) -> Path:
+    def materialize(
+        self,
+        run: HarnessRun,
+        source_root: Path,
+        *,
+        known_agents: set[str] | frozenset[str] = frozenset(),
+    ) -> Path:
         if run.harness != self.name:
             raise HarnessFactoryError("run target does not match this harness adapter")
         if run.status is not RunStatus.PREPARED:
@@ -147,6 +159,7 @@ class HarnessAdapter(ABC):
             self.name,
             workspace=run.workspace,
             run_id=run.run_id,
+            known_agents=known_agents,
         )
 
     @abstractmethod

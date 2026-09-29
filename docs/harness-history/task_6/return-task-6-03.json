@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "dbe453ad-4646-428c-8e9e-137763125b96",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-03-a1",
+  "created_at": "2026-09-28T14:07:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "partial",
+  "objective": "Integrate the existing Agentic Core 0.3.4 packaged-runtime fix while keeping expertise/ canonical and Factory-neutral, then classify composition support and platform evidence.",
+  "requested_response": "Record preserved commit ancestry, runtime copy synchronization, installed execution evidence, composition profile classifications, and platform limits.",
+  "constraints": [
+    "Preserve immutable commit 3ebbed0ef953019164cb0ae534eb950f641c1cf0 and merge head fe5be0097a835b54ff296e5606adad94c919137d; do not rewrite them.",
+    "Keep one canonical editable expertise source and regenerate runtime/pluginctl copies deterministically.",
+    "Do not introduce Factory-only pluginctl lifecycle support or a new composition ABI without a concrete approved requirement.",
+    "Do not claim a Core+SWE profile when a distinct SWE pack does not exist, or infer Windows behavior from Linux."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r1.md"},
+    {"id": "PLUGINCTL-0.3.4-SOURCE", "kind": "observation", "reference": "Normal local merge 2f68026d237110425de231e0a299997efbbf507d has second parent fe5be0097a835b54ff296e5606adad94c919137d, which retains original runtime fix 3ebbed0ef953019164cb0ae534eb950f641c1cf0."}
+  ],
+  "changed_paths": [
+    "agentic-core/README.md",
+    "agentic-core/plugin.json",
+    "agentic-core/runtime/expertise/",
+    "agentic-core/runtime/pluginctl/controller.py",
+    "agentic-core/runtime/pluginctl_cli.py",
+    "agentic-core/skills/plugin-engineering/references/create-agent/scripts/agent_lint_core.py",
+    "scripts/sync_pluginctl_runtime.py",
+    "tests/test_pluginctl_package_runtime.py"
+  ],
+  "validation": [
+    {"check": "packaged expertise copy", "result": "passed: matches canonical expertise/ source", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "uv run --no-project python scripts/sync_pluginctl_runtime.py --write; uv run --no-project python scripts/sync_pluginctl_runtime.py"},
+    {"check": "installed pluginctl runtime", "result": "passed: 2 tests including arbitrary CWD, PYTHONPATH/PYTHONHOME unset, no checkout import, and no workspace/store writes", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest tests.test_pluginctl_package_runtime"},
+    {"check": "pluginctl lifecycle", "result": "passed: 7 tests", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest tests.test_pluginctl_lifecycle"},
+    {"check": "Factory Pack v1 and explicit catalog", "result": "passed: 39 tests including core-free explicit-catalog resolve/compile", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_expertise_framework.py'"},
+    {"check": "Ruff", "result": "passed on scoped changed code; controller whole-file format check remains excluded because the base controller has unrelated pre-existing format differences; generated mirror retains canonical byte parity", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "uv run --with ruff ruff check --select E4,E7,E9,F,I <scoped changed Python files>; uv run --with ruff ruff format --check <scoped changed Python files except controller.py>"},
+    {"check": "Core-only profile", "result": "passed: CORE_ONLY lifecycle behavior covered", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "tests/test_pluginctl_lifecycle.py::test_core_profile_uses_complete_skills_and_excludes_route_temporaries and deactivation/rollback tests"},
+    {"check": "Core plus pack profile", "result": "passed for a generic Core+Pack v1 fixture; specific Core+SWE profile is untested because no separate SWE pack exists", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "tests/test_pluginctl_lifecycle.py::test_managed_profile_composes_core_pack_and_pending_runtime_without_github"},
+    {"check": "Factory-only profile", "result": "partial: expertise resolves and compiles an explicit pack/catalog without a Core tree; pluginctl itself remains Core-rooted and has no Factory-only installed profile", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "tests/test_expertise_framework.py::test_explicit_agent_catalog_resolves_and_compiles_without_core_tree; PluginController._compose calls _load_core"},
+    {"check": "Windows installed runtime", "result": "not executed: no Windows environment available", "observed_at": "2026-09-28T14:07:00Z", "subject": "TASK-6-03", "command": "No Windows runner in current session"}
+  ],
+  "commit_status": "created",
+  "commit_reason": "Local implementation checkpoints are preserved on refactor/plugin-factory-decoupling; final QA, Reviewer, and tracking convergence remain pending.",
+  "git_commits": [
+    "483017f",
+    "9cb41f2",
+    "2f68026",
+    "7df5475"
+  ],
+  "artifacts": []
+}

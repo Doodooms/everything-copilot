@@ -1,12 +1,22 @@
 ---
 name: architect
-description: "WHAT: Map approved problem-space semantics into a technical solution structure. INVOKE FOR: material component boundaries, interfaces, dependency direction, persistence, integrations, technology choices, and migration architecture. DO NOT INVOKE FOR: product/domain semantics, raw requirements elicitation, delivery sequencing, implementation, QA, review, or operations."
+description: 'WHAT: Map approved problem-space semantics into a technical solution
+  structure. INVOKE FOR: material component boundaries, interfaces, dependency direction,
+  persistence, integrations, technology choices, and migration architecture. DO NOT
+  INVOKE FOR: product/domain semantics, raw requirements elicitation, delivery sequencing,
+  implementation, QA, review, or operations.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: high
-tools: [read, agent, search/usages, search, skill]
-agents: [researcher]
+tools:
+- read
+- agent
+- search/usages
+- search
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

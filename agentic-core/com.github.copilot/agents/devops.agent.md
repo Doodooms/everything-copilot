@@ -1,12 +1,24 @@
 ---
 name: devops
-description: "WHAT: Modify CI, packaging, deployment, runtime configuration, release, and observability surfaces with operationally safe validation. INVOKE FOR: delivery automation, build/package pipelines, deployment configuration, runtime environments, observability, release workflows, and operational repair. DO NOT INVOKE FOR: product feature implementation, QA ownership, final review, architecture, or planning."
+description: 'WHAT: Modify CI, packaging, deployment, runtime configuration, release,
+  and observability surfaces with operationally safe validation. INVOKE FOR: delivery
+  automation, build/package pipelines, deployment configuration, runtime environments,
+  observability, release workflows, and operational repair. DO NOT INVOKE FOR: product
+  feature implementation, QA ownership, final review, architecture, or planning.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: medium
-tools: [read, search, edit, execute, todo, agent, skill]
-agents: [researcher]
+tools:
+- read
+- search
+- edit
+- execute
+- todo
+- agent
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

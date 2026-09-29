@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "c25f1a6f-b537-460f-8b09-527dc4ebc775",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-07-a1",
+  "created_at": "2026-09-28T15:05:10Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "completed",
+  "objective": "Propagate an explicit agent catalog through Harness Factory CLI and adapter preparation paths to close REVIEW-6-01.",
+  "requested_response": "Report changed files, explicit catalog propagation, behavior coverage, validation, and residual limits.",
+  "constraints": [
+    "No implicit Core discovery or built-in Core agent list was added.",
+    "CLI catalogs are repeatable explicit --known-agent values; omitted catalogs remain empty and fail closed.",
+    "No files were staged or committed."
+  ],
+  "evidence": [
+    {"id": "IMPLEMENTATION-DIFF-6-07", "kind": "observation", "reference": "Combined code diff SHA-256 44f1bc89cc38d8297be0ad2f6f9f199b5607203ae4beac97d0dbfaa292527dcf."},
+    {"id": "EVIDENCE-6-07-TESTS", "kind": "command", "reference": "Harness Factory suite: 32 passed; Expertise Pack suite: 39 passed."},
+    {"id": "EVIDENCE-6-07-STYLE", "kind": "command", "reference": "Ruff check and format check passed for harness_factory/cli.py, harness_factory/adapters.py, and tests/test_harness_factory.py."},
+    {"id": "EVIDENCE-6-07-DIFF", "kind": "command", "reference": "git diff --check passed."}
+  ],
+  "changed_paths": [
+    "harness_factory/cli.py",
+    "harness_factory/adapters.py",
+    "tests/test_harness_factory.py"
+  ],
+  "validation": [
+    {"check": "Harness Factory contract suite", "result": "passed", "observed_at": "2026-09-28T15:05:10Z", "subject": "TASK-6-07", "command": "test_harness_factory.py (32 passed)"},
+    {"check": "Expertise Pack v1 regression suite", "result": "passed", "observed_at": "2026-09-28T15:05:10Z", "subject": "TASK-6-07", "command": "test_expertise_framework.py (39 passed)"},
+    {"check": "Ruff lint and format", "result": "passed", "observed_at": "2026-09-28T15:05:10Z", "subject": "TASK-6-07", "command": "ruff check and ruff format --check on three changed task files"},
+    {"check": "Whitespace validation", "result": "passed", "observed_at": "2026-09-28T15:05:10Z", "subject": "TASK-6-07", "command": "git diff --check"}
+  ],
+  "commit_status": "not_created",
+  "commit_reason": "Orchestrator owns the focused commit after independent QA and final review.",
+  "git_commits": [],
+  "artifacts": []
+}

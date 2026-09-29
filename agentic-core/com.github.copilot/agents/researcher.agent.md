@@ -1,12 +1,32 @@
 ---
 name: researcher
-description: "WHAT: Perform isolated, evidence-heavy repository and external technical research, then return a compact decision-ready packet. INVOKE FOR: API/library/version research, compatibility checks, standards, papers, technical comparisons, repository archaeology, and investigations that would otherwise pollute another agent's context. DO NOT INVOKE FOR: implementation, planning ownership, QA, review, or final decisions."
+description: 'WHAT: Perform isolated, evidence-heavy repository and external technical
+  research, then return a compact decision-ready packet. INVOKE FOR: API/library/version
+  research, compatibility checks, standards, papers, technical comparisons, repository
+  archaeology, and investigations that would otherwise pollute another agent''s context.
+  DO NOT INVOKE FOR: implementation, planning ownership, QA, review, or final decisions.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: medium
-tools: [read, browser, search, web, skill, mcp_context7_resolve_library_id, mcp_context7_query_docs, mcp_github_mcp_se_search_repositories, mcp_github_mcp_se_get_commit, mcp_github_mcp_se_list_commits, mcp_github_mcp_se_list_releases, mcp_github_mcp_se_search_code, mcp_github_mcp_se_get_file_contents, mcp_github_mcp_se_search_issues, mcp_github_mcp_se_issue_read, mcp_github_mcp_se_search_pull_requests, mcp_github_mcp_se_pull_request_read]
-
+tools:
+- read
+- browser
+- search
+- web
+- skill
+- mcp_context7_resolve_library_id
+- mcp_context7_query_docs
+- mcp_github_mcp_se_search_repositories
+- mcp_github_mcp_se_get_commit
+- mcp_github_mcp_se_list_commits
+- mcp_github_mcp_se_list_releases
+- mcp_github_mcp_se_search_code
+- mcp_github_mcp_se_get_file_contents
+- mcp_github_mcp_se_search_issues
+- mcp_github_mcp_se_issue_read
+- mcp_github_mcp_se_search_pull_requests
+- mcp_github_mcp_se_pull_request_read
 ---
 
 <definitions>

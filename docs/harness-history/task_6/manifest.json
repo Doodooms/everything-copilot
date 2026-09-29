@@ -1,0 +1,987 @@
+{
+  "manifest": {
+    "architecture": {
+      "decisions": [
+        {
+          "id": "ADR-6-1",
+          "requirements": [
+            "REQ-6-1",
+            "REQ-6-7"
+          ],
+          "statement": "Use a private neutral representation for Core agent authoring while preserving public Pack v1 and external .agent.md pack sources."
+        },
+        {
+          "id": "ADR-6-2",
+          "requirements": [
+            "REQ-6-2",
+            "REQ-6-3"
+          ],
+          "statement": "Factory receives explicit inputs and target-neutral validators; target-specific validation remains in each target adapter."
+        }
+      ],
+      "revision": 1,
+      "spec_revision": 1,
+      "status": "ready"
+    },
+    "architecture_ref": null,
+    "base_revision": "662ea3471b9e0a7a0ef34082a1539a8175c668b9",
+    "convergence": {
+      "status": "gaps_found"
+    },
+    "description": "Create a neutral canonical Core-agent source and remove implicit Factory assumptions about Core while preserving Pack v1 and pluginctl runtime behavior.",
+    "id": "task_6",
+    "implementation": {
+      "current_tasks": [],
+      "evidence": [
+        {
+          "acceptance_criteria": [
+            "AC-6-1",
+            "AC-6-7"
+          ],
+          "implementation_revision": "TASK-6-01",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-6-01",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-01-PROJECTION",
+            "EVIDENCE-6-01-TESTS",
+            "EVIDENCE-6-01-STYLE"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6-2",
+            "AC-6-3",
+            "AC-6-7"
+          ],
+          "implementation_revision": "TASK-6-02",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-6-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-02-TESTS",
+            "EVIDENCE-6-02-QA",
+            "EVIDENCE-6-02-STYLE"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6-2",
+            "AC-6-7"
+          ],
+          "implementation_revision": "TASK-6-02-A2",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-6-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-02-A2-TESTS",
+            "EVIDENCE-6-02-A2-STYLE",
+            "EVIDENCE-6-02-A2-DIFF"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6-6"
+          ],
+          "implementation_revision": "TASK-6-04",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-6-04",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-04-TESTS",
+            "EVIDENCE-6-04-STYLE",
+            "EVIDENCE-6-04-PARITY"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6-4",
+            "AC-6-5",
+            "AC-6-7"
+          ],
+          "implementation_revision": "TASK-6-03",
+          "source": "direct",
+          "spec_revision": 1,
+          "status": "partial",
+          "task_id": "TASK-6-03",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-03-SYNC",
+            "EVIDENCE-6-03-INSTALLED",
+            "EVIDENCE-6-03-CORE-ONLY",
+            "EVIDENCE-6-03-PROFILES",
+            "EVIDENCE-6-03-WINDOWS"
+          ]
+        },
+        {
+          "acceptance_criteria": [
+            "AC-6-2",
+            "AC-6-7"
+          ],
+          "implementation_revision": "TASK-6-07",
+          "spec_revision": 1,
+          "status": "pass",
+          "task_id": "TASK-6-07",
+          "validation_evidence_refs": [
+            "EVIDENCE-6-07-TESTS",
+            "EVIDENCE-6-07-STYLE",
+            "EVIDENCE-6-07-DIFF"
+          ]
+        }
+      ],
+      "revision": "TASK-6-07",
+      "status": "complete"
+    },
+    "lifecycle": {
+      "branch": "refactor/plugin-factory-decoupling",
+      "cleanup": "preserved",
+      "commit_reason": "TASK-6-07 implementation was committed after independent QA and Reviewer approval. Tracking documentation is being committed separately. Remote publication is blocked because the approved Agentic Core GitHub MCP is unavailable in this session.",
+      "commit_shas": [
+        "483017f7436935d07b9f660f0dc6c65a3a6ceabe",
+        "9cb41f219d2a98ce15f476e3cb919506a2eafcae",
+        "3ebbed0ef953019164cb0ae534eb950f641c1cf0",
+        "fe5be0097a835b54ff296e5606adad94c919137d",
+        "2f68026d237110425de231e0a299997efbbf507d",
+        "7df5475cf51d7ed1ed81685e280f6e60016f0a61",
+        "29dcba926bf971718749e54e8c9efed63813a654"
+      ],
+      "commit_status": "created",
+      "pull_request": null,
+      "workspace_note": "The shared checkout remains untouched. The isolated worktree and branch are preserved for GitHub App publication; the current session exposes only the hosted GitHub connector, which repository policy does not authorize for mutations. No remote changes were made.",
+      "worktree": "/var/tmp/agentic-workflow-plugin-factory-decoupling"
+    },
+    "open_blockers": [
+      {
+        "id": "WINDOWS-RUNTIME-6",
+        "owner": "future Windows validation",
+        "reason": "Installed pluginctl runtime was verified on Linux only; no Windows runner was available.",
+        "scope": "AC-6-5",
+        "status": "not_executed"
+      },
+      {
+        "id": "CORE-SWE-PROFILE-6",
+        "owner": "future SWE split",
+        "reason": "A separate SWE pack does not exist in this repository; generic Core-plus-Pack composition is tested, but a real Core-plus-SWE profile is not.",
+        "scope": "AC-6-4",
+        "status": "untested"
+      },
+      {
+        "id": "PLUGINCTL-FACTORY-ONLY-6",
+        "owner": "future packaging boundary decision",
+        "reason": "pluginctl remains Agentic Core lifecycle management and PluginController._compose always loads Core; the standalone expertise Factory explicit-catalog API is tested without Core.",
+        "scope": "AC-6-2, AC-6-4",
+        "status": "unsupported_by_pluginctl"
+      },
+      {
+        "id": "SDD-HISTORY-COVERAGE-6",
+        "owner": "future task-history convergence",
+        "reason": "The SDD coverage validator reports historical implementation revision mismatches and completed prior/gate tasks without current-revision implementation evidence. Historic proofs were preserved without retagging.",
+        "scope": "SDD convergence",
+        "status": "gaps_found"
+      },
+      {
+        "id": "GITHUB-APP-PUBLICATION-6",
+        "owner": "orchestrator / configured GitHub App integration",
+        "reason": "The current tool inventory exposes the hosted GitHub connector but not the approved Agentic Core GitHub MCP. Repository policy forbids using the hosted connector or user credentials for remote mutations; local commits and worktree are preserved.",
+        "scope": "branch publication and PR creation",
+        "status": "blocked"
+      }
+    ],
+    "open_findings": [],
+    "plan": {
+      "approval": "Orchestrator approved Planner plan r2 addendum for TASK-6-07 through TASK-6-09.",
+      "revision": 2,
+      "sha256": "a08652fb5bef372280cbbf6600953f2102b7341d9b527b118b2323309173a40e",
+      "spec_revision": 1,
+      "status": "approved"
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/task_6/plan-r2.md",
+      "revision": 2,
+      "spec_revision": 1,
+      "status": "approved"
+    },
+    "qa": {
+      "acceptance_criteria": [
+        "AC-6-2",
+        "AC-6-7"
+      ],
+      "implementation_revision": "TASK-6-07",
+      "qa_run_id": "QA-RUN-6-08-A1",
+      "spec_revision": 1,
+      "status": "pass",
+      "validation_evidence_refs": [
+        "EVIDENCE-6-08-AC2",
+        "EVIDENCE-6-08-AC7"
+      ]
+    },
+    "required_gates": [
+      "architecture",
+      "plan",
+      "implementation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-6-2",
+        "AC-6-7"
+      ],
+      "implementation_revision": "TASK-6-07",
+      "qa_run_id": "QA-RUN-6-08-A1",
+      "review_id": "REVIEW-6-02",
+      "spec_revision": 1,
+      "status": "approve",
+      "validation_evidence_refs": [
+        "EVIDENCE-6-09-REVIEW"
+      ]
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "specification",
+      "planning",
+      "implementation",
+      "targeted_validation",
+      "independent_qa",
+      "review",
+      "convergence",
+      "commit",
+      "GitHub_App_publication_if_available"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "physical_SWE_split",
+        "reason": "Explicitly excluded by the approved request."
+      },
+      {
+        "phase": "Control-Plane_work",
+        "reason": "Explicitly excluded by the approved request."
+      },
+      {
+        "phase": "separate_security_review",
+        "reason": "No authentication, authorization, secrets, or trust-boundary behavior is changed; technical Reviewer gate remains selected."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-6-1",
+          "requirements": [
+            "REQ-6-1"
+          ],
+          "statement": "All nine agents project deterministically from one neutral canonical source to Copilot, Codex, and Antigravity."
+        },
+        {
+          "id": "AC-6-2",
+          "requirements": [
+            "REQ-6-2"
+          ],
+          "statement": "Factory resolves and compiles a supplied pack/catalog without locating Agentic Core source paths."
+        },
+        {
+          "id": "AC-6-3",
+          "requirements": [
+            "REQ-6-3"
+          ],
+          "statement": "Semantic validation is target-neutral and target projection validation is owned by each adapter."
+        },
+        {
+          "id": "AC-6-4",
+          "requirements": [
+            "REQ-6-4"
+          ],
+          "statement": "Core-only, Core+SWE, and Factory-only composition are accurately supported or explicitly reported partial/blocked, without implicit Core inclusion."
+        },
+        {
+          "id": "AC-6-5",
+          "requirements": [
+            "REQ-6-5"
+          ],
+          "statement": "Installed pluginctl runs from arbitrary CWD without checkout or PYTHONPATH; Linux and Windows evidence is explicit."
+        },
+        {
+          "id": "AC-6-6",
+          "requirements": [
+            "REQ-6-6"
+          ],
+          "statement": "The generator extracts the shared agent-policy portion of AGENTS.md through the closing risk_assessment section; repeated generation is byte-identical to the checked-in .github/copilot-instructions.md."
+        },
+        {
+          "id": "AC-6-7",
+          "requirements": [
+            "REQ-6-7"
+          ],
+          "statement": "Pack schema v1 behavior remains compatible and existing fixtures/lifecycle tests pass."
+        }
+      ],
+      "constraints": [
+        "No repository/workspace rename",
+        "No physical SWE split",
+        "No Control-Plane or Gateway changes",
+        "No public agent ABI or Pack v1 change",
+        "Use only the configured GitHub App MCP for GitHub mutations"
+      ],
+      "id": "SPEC-6",
+      "non_goals": [
+        "Moving SWE expertise",
+        "Adding an expertise Python dependency",
+        "Adding an execution router",
+        "Merging the PR"
+      ],
+      "objective": "Remove Copilot-owned Core-agent sources and implicit Core assumptions from Plugin Factory without a public Pack v1 or agent ABI change.",
+      "path": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md",
+      "requirements": [
+        {
+          "id": "REQ-6-1",
+          "statement": "The nine Agentic Core agents have one harness-neutral canonical source and reproducible Copilot, Codex, and Antigravity projections."
+        },
+        {
+          "id": "REQ-6-2",
+          "statement": "Generic Factory layers consume explicit catalogs, validators, targets, or an existing minimal equivalent rather than discovering Core from repository paths."
+        },
+        {
+          "id": "REQ-6-3",
+          "statement": "Semantic validation is target-neutral and target projection validation remains with each target adapter."
+        },
+        {
+          "id": "REQ-6-4",
+          "statement": "Composition can represent Core-only, Core+SWE, and Factory/plugin-engineering-only without silent Core inclusion, or records the concrete limitation."
+        },
+        {
+          "id": "REQ-6-5",
+          "statement": "Generated installed pluginctl runs from arbitrary CWD without a repository checkout or PYTHONPATH; platform evidence is explicit."
+        },
+        {
+          "id": "REQ-6-6",
+          "statement": "Copilot instructions are generated deterministically from the shared agent-policy portion of AGENTS.md."
+        },
+        {
+          "id": "REQ-6-7",
+          "statement": "Expertise Pack schema v1 and its observable behavior remain compatible."
+        }
+      ],
+      "revision": 1,
+      "status": "ready"
+    },
+    "stale_artifacts": [
+      "docs/harness-history/task_6/return-task-6-05-qa-a2.json",
+      "docs/harness-history/task_6/return-task-6-06-review-a1.json"
+    ],
+    "status": "partial",
+    "task_events_ref": "docs/tasks-history/task_6.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-6-1",
+          "AC-6-7"
+        ],
+        "id": "TASK-6-01",
+        "requirements": [
+          "REQ-6-1",
+          "REQ-6-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-01"
+        ],
+        "id": "TASK-6-02",
+        "requirements": [
+          "REQ-6-2",
+          "REQ-6-3",
+          "REQ-6-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-4",
+          "AC-6-5",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-01",
+          "TASK-6-02"
+        ],
+        "id": "TASK-6-03",
+        "requirements": [
+          "REQ-6-4",
+          "REQ-6-5",
+          "REQ-6-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-6"
+        ],
+        "depends_on": [
+          "TASK-6-01"
+        ],
+        "id": "TASK-6-04",
+        "requirements": [
+          "REQ-6-6"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-1",
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-4",
+          "AC-6-5",
+          "AC-6-6",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-01",
+          "TASK-6-02",
+          "TASK-6-03",
+          "TASK-6-04"
+        ],
+        "id": "TASK-6-05",
+        "requirements": [
+          "REQ-6-1",
+          "REQ-6-2",
+          "REQ-6-3",
+          "REQ-6-4",
+          "REQ-6-5",
+          "REQ-6-6",
+          "REQ-6-7"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-1",
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-4",
+          "AC-6-5",
+          "AC-6-6",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-05"
+        ],
+        "id": "TASK-6-06",
+        "requirements": [
+          "REQ-6-1",
+          "REQ-6-2",
+          "REQ-6-3",
+          "REQ-6-4",
+          "REQ-6-5",
+          "REQ-6-6",
+          "REQ-6-7"
+        ],
+        "status": "blocked"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-02",
+          "TASK-6-06"
+        ],
+        "id": "TASK-6-07",
+        "requirements": [
+          "REQ-6-2",
+          "REQ-6-7"
+        ],
+        "status": "complete"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-07"
+        ],
+        "id": "TASK-6-08",
+        "requirements": [
+          "REQ-6-2",
+          "REQ-6-7"
+        ],
+        "status": "complete"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "depends_on": [
+          "TASK-6-08"
+        ],
+        "id": "TASK-6-09",
+        "requirements": [
+          "REQ-6-2",
+          "REQ-6-7"
+        ],
+        "status": "complete"
+      }
+    ],
+    "title": "Decouple Plugin Factory from Agentic Core",
+    "updated_at": "2026-09-28T15:24:46Z",
+    "validation_evidence": [
+      {
+        "acceptance_criteria": [
+          "AC-6-1"
+        ],
+        "check": "Copilot, Codex, and Antigravity projections",
+        "command": "project_core_agents.py --check; isolated Codex install --check; project_antigravity_plugin.py; agy plugin validate",
+        "environment": "Linux isolated worktree; local Codex and agy tooling",
+        "id": "EVIDENCE-6-01-PROJECTION",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-01"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-1",
+          "AC-6-7"
+        ],
+        "check": "Core agent projections and Pack v1 compatibility",
+        "command": "test_agentic_core_sources.py; test_antigravity_plugin_projection.py; test_expertise_framework.py; test_pluginctl_lifecycle.py",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-01-TESTS",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-01"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-1",
+          "AC-6-7"
+        ],
+        "check": "Python style and whitespace validation",
+        "command": "Ruff check; Ruff format --check; git diff --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-01-STYLE",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-01"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-7"
+        ],
+        "check": "Factory explicit-catalog behavior, shared/target validation, and Pack v1 suites after Copilot compatibility repair",
+        "command": "uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_expertise_framework.py'; test_agent_validation.py; test_pluginctl_lifecycle.py; test_agentic_core_sources.py; test_antigravity_plugin_projection.py",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-02-TESTS",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-7"
+        ],
+        "check": "Independent QA retest of legacy Copilot routing-file reference compatibility using real Pack v1 fixtures",
+        "command": "QA follow-up: direct agents/ source rejected; nested refs missing rejected; nested refs present and in-pack accepted; test_expertise_framework.py 39 passed; test_pluginctl_lifecycle.py 7 passed",
+        "environment": "Linux isolated worktree; uncommitted post-fix implementation",
+        "id": "EVIDENCE-6-02-QA",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-3",
+          "AC-6-7"
+        ],
+        "check": "Scoped Ruff checks, broader new-file lint rules, format check, and whitespace validation",
+        "command": "uv run --no-project ruff check --select E4,E7,E9,F,I <seven phase files>; uv run --no-project ruff check --select RUF007,FURB167 expertise/agent_validation.py; uv run --no-project ruff format --check <seven phase files>; git diff --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-02-STYLE",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-6"
+        ],
+        "check": "Copilot instructions projector byte preservation, marker boundary, repeatability, and checked-in output parity",
+        "command": "uv run --no-project python -m unittest tests.test_copilot_instructions_projection; uv run --no-project python scripts/project_copilot_instructions.py twice; uv run --no-project python scripts/project_copilot_instructions.py --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-04-TESTS",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-04"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-6"
+        ],
+        "check": "Ruff check, Ruff format, and whitespace validation for the new projector and test",
+        "command": "uv run --with ruff ruff check scripts/project_copilot_instructions.py tests/test_copilot_instructions_projection.py; uv run --with ruff ruff format --check scripts/project_copilot_instructions.py tests/test_copilot_instructions_projection.py; git diff --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-04-STYLE",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-04"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-6"
+        ],
+        "check": "Existing checked-in Copilot instructions projection remains byte-identical to AGENTS.md through the unique risk-assessment marker",
+        "command": "scripts/project_copilot_instructions.py generation and --check; output SHA-256 b8b135c4ea658732c600e3474847d2192e07a94210f6332a5517065db0220d1d",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-04-PARITY",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-04"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-5"
+        ],
+        "check": "Generated Expertise runtime copy equals the single canonical expertise source",
+        "command": "uv run --no-project python scripts/sync_pluginctl_runtime.py --write; uv run --no-project python scripts/sync_pluginctl_runtime.py",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-03-SYNC",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-03"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-5",
+          "AC-6-7"
+        ],
+        "check": "Installed package runs pluginctl resolve from arbitrary CWD without PYTHONPATH/PYTHONHOME or repository import, and does not write workspace/store state",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest tests.test_pluginctl_package_runtime",
+        "environment": "Linux isolated worktree; temporary copied marketplace/plugin installation",
+        "id": "EVIDENCE-6-03-INSTALLED",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-03"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-4"
+        ],
+        "check": "Core-only lifecycle profile remains observable and valid",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pyyaml --with typer python -m unittest tests.test_pluginctl_lifecycle",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-03-CORE-ONLY",
+        "producer": "Codex Orchestrator",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-03"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-4"
+        ],
+        "check": "Composition support classified from observable Factory and pluginctl paths",
+        "command": "test_explicit_agent_catalog_resolves_and_compiles_without_core_tree; test_managed_profile_composes_core_pack_and_pending_runtime_without_github; inspect PluginController._compose which calls _load_core",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-03-PROFILES",
+        "producer": "Codex Orchestrator",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-03"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-5"
+        ],
+        "check": "Windows installed-layout runtime was not executed; Linux result is not inferred to cover Windows",
+        "command": "No Windows runner available in current session",
+        "environment": "Linux isolated worktree only",
+        "id": "EVIDENCE-6-03-WINDOWS",
+        "producer": "Codex Orchestrator",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-03"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-1"
+        ],
+        "check": "Neutral agent projections and generated target parity",
+        "command": "test_agentic_core_sources.py (27 passed); project_core_agents.py --check; test_antigravity_plugin_projection.py (8 passed)",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC1",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2"
+        ],
+        "check": "Harness Factory explicit-catalog source validation regression",
+        "command": "test_harness_factory.py: 27 passed, 1 error; parse_pack received an empty catalog and rejected researcher",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC2",
+        "producer": "quality-assurance",
+        "result": "fail",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-3"
+        ],
+        "check": "Target-neutral semantic validation and target-specific validation boundary",
+        "command": "test_agent_validation.py (1 passed); Codex shared validation and Copilot adapter boundary inspected",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC3",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-4"
+        ],
+        "check": "Composition profiles, with Core+SWE and pluginctl Factory-only limitations classified",
+        "command": "test_pluginctl_lifecycle.py (7 passed); separate SWE pack absent; pluginctl controller remains Core-rooted",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC4",
+        "producer": "quality-assurance",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-5"
+        ],
+        "check": "Installed pluginctl runtime and generated expertise copy",
+        "command": "test_pluginctl_package_runtime.py (2 passed); sync_pluginctl_runtime.py --check; Linux only, Windows NOT_EXECUTED",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC5",
+        "producer": "quality-assurance",
+        "result": "partial",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-6"
+        ],
+        "check": "Copilot instructions generator byte parity and determinism",
+        "command": "test_copilot_instructions_projection.py (2 passed); projector --check run twice",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC6",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-7"
+        ],
+        "check": "Pack v1 lifecycle compatibility through Harness Factory",
+        "command": "test_expertise_framework.py (39 passed); test_pluginctl_lifecycle.py (7 passed); test_harness_factory.py: 27 passed, 1 error",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-AC7",
+        "producer": "quality-assurance",
+        "result": "fail",
+        "spec_revision": 1,
+        "subject_revision": "7df5475cf51d7ed1ed81685e280f6e60016f0a61"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Harness Factory honors an explicit agent catalog for Pack v1 validation and materialization",
+        "command": "test_harness_factory.py (29 passed); test_expertise_framework.py (39 passed)",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-02-A2-TESTS",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02-A2"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Ruff check and format check for the Harness Factory catalog correction",
+        "command": "ruff check harness_factory/validation.py tests/test_harness_factory.py; ruff format --check harness_factory/validation.py tests/test_harness_factory.py",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-02-A2-STYLE",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02-A2"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Patch whitespace validation for the Harness Factory catalog correction",
+        "command": "git diff --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-02-A2-DIFF",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02-A2"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2"
+        ],
+        "check": "Independent QA retest of explicit catalog propagation through validation and materialization",
+        "command": "test_harness_factory.py: 29 passed; verified omitted/empty catalog still rejects researcher",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-A2-AC2",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02-A2"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-7"
+        ],
+        "check": "Independent QA Pack v1 compatibility retest",
+        "command": "test_expertise_framework.py: 39 passed",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-05-A2-AC7",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-02-A2"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Harness Factory and Pack v1 behavior tests",
+        "command": "test_harness_factory.py (32 passed); test_expertise_framework.py (39 passed)",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-07-TESTS",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Ruff check and format check for TASK-6-07 files",
+        "command": "ruff check and ruff format --check on harness_factory/cli.py, harness_factory/adapters.py, tests/test_harness_factory.py",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-07-STYLE",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Patch whitespace validation",
+        "command": "git diff --check",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-07-DIFF",
+        "producer": "implementer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2"
+        ],
+        "check": "Independent QA of explicit catalog propagation through Harness Factory CLI and adapter paths",
+        "command": "uv run unittest test_harness_factory.py (32 passed); verified validate, suite-run preflight, adapter prepare, omitted catalog rejection, and prepare/smoke propagation",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-08-AC2",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-7"
+        ],
+        "check": "Independent Pack v1 validation, compilation, and lifecycle regression",
+        "command": "uv run unittest test_expertise_framework.py (39 passed)",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-08-AC7",
+        "producer": "quality-assurance",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-6-2",
+          "AC-6-7"
+        ],
+        "check": "Final static review of explicit catalog propagation and current QA evidence",
+        "command": "Reviewer REVIEW-6-02 approved combined diff after consuming QA-6-08",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-09-REVIEW",
+        "producer": "reviewer",
+        "result": "pass",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      },
+      {
+        "check": "SDD state and acceptance coverage validation",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --script /home/pm/.codex/plugins/cache/agentic-workflow-local/agentic-core/0.3.3/skills/orchestration/references/spec-driven-development/scripts/validate_sdd_state.py /var/tmp/agentic-workflow-plugin-factory-decoupling/docs/harness-history/task_6/manifest.json --coverage",
+        "environment": "Linux isolated worktree",
+        "id": "EVIDENCE-6-SDD-COVERAGE",
+        "producer": "orchestrator",
+        "result": "fail",
+        "spec_revision": 1,
+        "subject_revision": "TASK-6-07"
+      }
+    ]
+  },
+  "status": "partial",
+  "task_id": "task_6",
+  "updated_at": "2026-09-28T15:24:47Z"
+}

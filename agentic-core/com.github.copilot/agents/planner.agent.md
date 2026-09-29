@@ -1,12 +1,22 @@
 ---
 name: planner
-description: "WHAT: Turn approved requirements and architecture decisions into phased, dependency-aware implementation plans without writing code. INVOKE FOR: delivery decomposition, dependency mapping, acceptance-criteria mapping, implementation sequencing, rollout planning, and validation planning. DO NOT INVOKE FOR: architecture decisions, raw requirements elicitation, implementation, QA, review, or operations execution."
+description: 'WHAT: Turn approved requirements and architecture decisions into phased,
+  dependency-aware implementation plans without writing code. INVOKE FOR: delivery
+  decomposition, dependency mapping, acceptance-criteria mapping, implementation sequencing,
+  rollout planning, and validation planning. DO NOT INVOKE FOR: architecture decisions,
+  raw requirements elicitation, implementation, QA, review, or operations execution.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: medium
-tools: [read, search, agent, todo, skill]
-agents: [researcher]
+tools:
+- read
+- search
+- agent
+- todo
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

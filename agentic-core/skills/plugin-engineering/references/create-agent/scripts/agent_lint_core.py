@@ -5,9 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import typer
 import yaml
-
 
 FRONTMATTER_PATTERN = re.compile(r"\A---\n(.*?)\n---\n?(.*)\Z", re.DOTALL)
 STEP_HEADING_PATTERN = re.compile(r"^##\s+Step\s+(\d+)\b", re.IGNORECASE)
@@ -76,6 +74,8 @@ WRONG_LAYER_TOOL_SUGGESTIONS = {
     "send_to_terminal": "execute",
     "vscode_askQuestions": "vscode/askQuestions",
 }
+
+
 def _find_plugin_root() -> Path:
     for parent in Path(__file__).resolve().parents:
         if (
@@ -110,13 +110,13 @@ class LintResult:
 
 def _print_result(result: LintResult) -> None:
     if result.errors:
-        typer.echo("ERRORS:")
+        print("ERRORS:")
         for error in result.errors:
-            typer.echo(f"  - {error}")
+            print(f"  - {error}")
     if result.warnings:
-        typer.echo("WARNINGS:")
+        print("WARNINGS:")
         for warning in result.warnings:
-            typer.echo(f"  - {warning}")
+            print(f"  - {warning}")
 
 
 def split_frontmatter(text: str) -> tuple[dict[str, Any], str]:
@@ -171,7 +171,10 @@ def _projected_pack_mcp_tools(
     raw_servers = manifest.get("mcp_servers")
     raw_projections = manifest.get("projections")
     if not isinstance(raw_servers, list) or not isinstance(raw_projections, list):
-        return set(), "pack manifest must declare MCP servers and agent projections as lists"
+        return (
+            set(),
+            "pack manifest must declare MCP servers and agent projections as lists",
+        )
 
     declared_tools: dict[str, set[str]] = {}
     for index, server in enumerate(raw_servers):
@@ -199,7 +202,10 @@ def _projected_pack_mcp_tools(
         if not isinstance(server_ids, list) or any(
             not isinstance(server_id, str) for server_id in server_ids
         ):
-            return set(), f"projections[{index}].mcp_servers must be a list of server IDs"
+            return (
+                set(),
+                f"projections[{index}].mcp_servers must be a list of server IDs",
+            )
         projected_servers.update(server_ids)
 
     unknown_servers = projected_servers - set(declared_tools)
@@ -229,7 +235,9 @@ def lint_agent_frontmatter(
         result.errors.append("Workspace agents must set `target: vscode`.")
 
     if "infer" in frontmatter:
-        result.errors.append("`infer` is deprecated; use `user-invocable` and `disable-model-invocation`.")
+        result.errors.append(
+            "`infer` is deprecated; use `user-invocable` and `disable-model-invocation`."
+        )
 
     description = frontmatter.get("description")
     if isinstance(description, str) and description.strip():
@@ -420,10 +428,7 @@ def _has_agent_skills_entry(body: str) -> bool:
     )
     if not match:
         return False
-    return any(
-        re.match(r"^\s*-\s+\S", line)
-        for line in match.group(1).splitlines()
-    )
+    return any(re.match(r"^\s*-\s+\S", line) for line in match.group(1).splitlines())
 
 
 def _normalize_agent_heading(text: str) -> str:
@@ -580,7 +585,9 @@ def _validate_canonical_wrapped_agent_body(body: str, agent_file: Path) -> LintR
         )
         return result
     if len(definition_open_positions) > 1 or len(definition_close_positions) > 1:
-        result.errors.append("Canonical wrapped agents may contain only one definitions block.")
+        result.errors.append(
+            "Canonical wrapped agents may contain only one definitions block."
+        )
         return result
 
     rules_open = tag_positions["<rules>"]
@@ -694,15 +701,18 @@ def _validate_canonical_wrapped_agent_body(body: str, agent_file: Path) -> LintR
     accept_lines = routing_lines[accept_position + 1 : reject_position]
     reject_lines = routing_lines[reject_position + 1 :]
     if not any(re.match(r"^-\s+\S", line) for line in accept_lines):
-        result.errors.append("Canonical `<routing>` `## ACCEPT` must contain a non-empty list.")
+        result.errors.append(
+            "Canonical `<routing>` `## ACCEPT` must contain a non-empty list."
+        )
         return result
     reject_items = [line for line in reject_lines if re.match(r"^-\s+\S", line)]
     if not reject_items:
-        result.errors.append("Canonical `<routing>` `## REJECT` must contain a non-empty list.")
+        result.errors.append(
+            "Canonical `<routing>` `## REJECT` must contain a non-empty list."
+        )
         return result
     if any(
-        not re.search(r"→\s*`[a-z0-9]+(?:-[a-z0-9]+)*`", line)
-        for line in reject_items
+        not re.search(r"→\s*`[a-z0-9]+(?:-[a-z0-9]+)*`", line) for line in reject_items
     ):
         result.errors.append(
             "Every canonical `<routing>` `## REJECT` item must route to an exact agent identifier using `→ `agent-id``."
@@ -1006,8 +1016,7 @@ def lint_agent_markdown_contract(
     stripped_lines = [line.strip() for line in body.splitlines() if line.strip()]
     result = LintResult()
     has_step_zero = any(
-        re.match(r"^##\s+Step\s+0\b", line, re.IGNORECASE)
-        for line in stripped_lines
+        re.match(r"^##\s+Step\s+0\b", line, re.IGNORECASE) for line in stripped_lines
     )
     if has_step_zero:
         result.errors.append(

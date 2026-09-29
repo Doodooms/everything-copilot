@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "8b52e560-d20e-4bb9-b965-96e519ecb922",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-06-review-a1",
+  "created_at": "2026-09-28T14:48:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "reviewer",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "completed",
+  "objective": "Final technical acceptance review for SPEC-6 revision 1.",
+  "requested_response": "Approve or reject the implementation with concrete findings and evidence.",
+  "constraints": [
+    "Review was read-only; no files, staging, commits, branch changes, remotes, or cleanup were performed."
+  ],
+  "evidence": [
+    {"id": "REVIEW-6-01", "kind": "observation", "reference": "Verdict: reject. Explicit known_agents reaches direct APIs but not CLI validate/suite-run or HarnessAdapter preparation; a Pack v1 input referencing a valid Core agent therefore fails through supported entry points."},
+    {"id": "REVIEW-6-01-SCOPE", "kind": "observation", "reference": "Reviewed REQ-6-2/REQ-6-7 and AC-6-2/AC-6-7. Other acceptance evidence and documented Windows/SWE limitations had no separate blocking finding."},
+    {"id": "QA-6-05-A2", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-05-qa-a2.json"}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Review is read-only and owns no implementation commit.",
+  "git_commits": [],
+  "artifacts": []
+}

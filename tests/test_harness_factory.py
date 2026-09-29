@@ -135,6 +135,14 @@ def make_run(
     )
 
 
+def write_researcher_pack(root: Path) -> Path:
+    source = write_pack(root, include_mcp=False)
+    manifest = read_pack_manifest(source)
+    manifest["compatibility"]["targets"] = ["portable", "copilot", "codex"]
+    write_pack_manifest(source, manifest)
+    return source
+
+
 def init_git_repo(root: Path) -> tuple[Path, str]:
     root.mkdir(parents=True)
     for arguments in (
@@ -869,6 +877,147 @@ class HarnessProviderTests(unittest.TestCase):
 
 
 class HarnessValidationTests(unittest.TestCase):
+    def test_validate_cli_accepts_repeated_agent_ids_and_rejects_omission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = write_researcher_pack(Path(directory) / "source")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                status = harness_factory_main(
+                    [
+                        "validate",
+                        "--target",
+                        "codex",
+                        "--source-root",
+                        str(source),
+                        "--known-agent",
+                        "architect",
+                        "--known-agent",
+                        "researcher",
+                    ]
+                )
+
+            self.assertEqual(status, 0, output.getvalue())
+            self.assertEqual(json.loads(output.getvalue())["status"], "passed")
+
+            omitted_output = io.StringIO()
+            with contextlib.redirect_stdout(omitted_output):
+                omitted_status = harness_factory_main(
+                    [
+                        "validate",
+                        "--target",
+                        "codex",
+                        "--source-root",
+                        str(source),
+                    ]
+                )
+            self.assertEqual(omitted_status, 2)
+            self.assertIn("unknown agent 'researcher'", omitted_output.getvalue())
+
+    def test_suite_run_preflight_uses_explicit_agent_catalog(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = write_researcher_pack(root / "source")
+            profile_path = root / "profile.json"
+            profile_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "profile_id": "fixture-profile",
+                        "source_path": str(source),
+                        "source_mode": "external",
+                        "metadata": {},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            suite_path = (
+                ROOT / "experiments/harness-evals/agentic-core-v0.2.0/suite.json"
+            )
+            adapter = Mock()
+            adapter.detect.return_value = Mock(cli_installed=False)
+
+            def run_suite_cli(preflight: Path, artifact: Path, known_agent: bool):
+                arguments = [
+                    "suite-run",
+                    "--suite",
+                    str(suite_path),
+                    "--profile",
+                    str(profile_path),
+                    "--harness",
+                    "codex",
+                    "--repo-root",
+                    str(ROOT),
+                    "--state-root",
+                    str(root / "state"),
+                    "--owner",
+                    "fixture-owner",
+                    "--artifact",
+                    str(artifact),
+                    "--preflight-artifact",
+                    str(preflight),
+                    "--max-runs",
+                    "1",
+                    "--max-model-calls",
+                    "1",
+                    "--max-tokens-if-known",
+                    "25000",
+                    "--max-failures-before-stop",
+                    "1",
+                ]
+                if known_agent:
+                    arguments.extend(("--known-agent", "researcher"))
+                output = io.StringIO()
+                with (
+                    contextlib.redirect_stdout(output),
+                    patch(
+                        "harness_factory.cli._adapters", return_value={"codex": adapter}
+                    ),
+                ):
+                    status = harness_factory_main(arguments)
+                return status, json.loads(output.getvalue())
+
+            preflight = root / "preflight.json"
+            status, result = run_suite_cli(preflight, root / "artifact.json", True)
+            self.assertEqual(status, 2)
+            self.assertIn("CLI is unavailable", result["message"])
+            self.assertTrue(preflight.is_file())
+
+            omitted_preflight = root / "omitted-preflight.json"
+            omitted_status, omitted_result = run_suite_cli(
+                omitted_preflight, root / "omitted-artifact.json", False
+            )
+            self.assertEqual(omitted_status, 2)
+            self.assertIn("unknown agent 'researcher'", omitted_result["message"])
+            self.assertFalse(omitted_preflight.exists())
+
+    def test_adapter_prepare_uses_explicit_agent_catalog_and_rejects_omission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = make_run(
+                root,
+                "codex",
+                status=RunStatus.PREPARED,
+            )
+            write_researcher_pack(run.workspace / "source")
+            adapter = CodexHarnessAdapter()
+
+            output = adapter.prepare(
+                run,
+                Path("source"),
+                known_agents=frozenset({"researcher"}),
+            )
+            self.assertTrue((output / "codex-agents/demo-pack-engineer.toml").is_file())
+
+            omitted_root = root / "omitted"
+            omitted_run = make_run(
+                omitted_root,
+                "codex",
+                status=RunStatus.PREPARED,
+            )
+            write_researcher_pack(omitted_run.workspace / "source")
+            with self.assertRaisesRegex(HarnessFactoryError, "unknown agent"):
+                adapter.prepare(omitted_run, Path("source"))
+
     def test_validator_warning_normalization_omits_section_boilerplate(self):
         output = subprocess.CompletedProcess(
             [],
@@ -959,7 +1108,8 @@ class HarnessValidationTests(unittest.TestCase):
             manifest["compatibility"]["targets"] = ["portable", "copilot", "codex"]
             write_pack_manifest(source, manifest)
 
-            validation = validate_source(source, "codex")
+            known_agents = frozenset({"researcher"})
+            validation = validate_source(source, "codex", known_agents=known_agents)
             self.assertEqual(validation.source_kind, "expertise-pack")
             self.assertIn("codex-agents/demo-pack-engineer.toml", validation.files)
 
@@ -968,11 +1118,19 @@ class HarnessValidationTests(unittest.TestCase):
                 "codex",
                 workspace=workspace,
                 run_id=uuid4().hex,
+                known_agents=known_agents,
             )
             self.assertTrue(output.is_dir())
             self.assertEqual(output.name, "codex")
             self.assertEqual(output.parent.parent.name, "harness-factory")
             self.assertTrue((output / "codex-agents/demo-pack-engineer.toml").is_file())
+
+    def test_expertise_pack_rejects_agents_outside_the_explicit_catalog(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = write_pack(Path(directory) / "source", include_mcp=False)
+
+            with self.assertRaisesRegex(HarnessFactoryError, "unknown agent"):
+                validate_source(source, "codex", known_agents=frozenset())
 
     def test_materialization_rejects_unsafe_run_id_and_symlinked_plugin_file(self):
         with tempfile.TemporaryDirectory() as directory:

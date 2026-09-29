@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "f1dffdb6-8015-4c4c-bec8-f4bf211a6924",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-09-review-a1",
+  "created_at": "2026-09-28T15:10:20Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "reviewer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Re-review the resolved REVIEW-6-01 catalog-path finding against TASK-6-07 implementation and current independent QA evidence.",
+  "requested_response": "Return approve/reject/blocked with severity-ordered concrete findings, files and lines, reviewed diff digest, QA evidence consumed, residual risks, and confirmation of read-only scope.",
+  "constraints": [
+    "Risk remains L2. Review only; do not edit, stage, commit, branch, use remotes, rerun the QA campaign, or clean generated files.",
+    "Worktree is /var/tmp/agentic-workflow-plugin-factory-decoupling on refactor/plugin-factory-decoupling; HEAD is 7df5475cf51d7ed1ed81685e280f6e60016f0a61.",
+    "Review the combined implementation diff SHA-256 44f1bc89cc38d8297be0ad2f6f9f199b5607203ae4beac97d0dbfaa292527dcf, including TASK-6-02 validation API changes and TASK-6-07 CLI/adapter propagation.",
+    "Consume REVIEW-6-01 and TASK-6-08 QA evidence; assess CLI validate/suite-run, prepare/smoke, HarnessAdapter.prepare/materialize, Pack v1 compatibility, and absence of implicit Core discovery.",
+    "Reviewer is final technical acceptance and must not repeat full QA."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "PLAN-6-R2", "kind": "artifact", "reference": "docs/planner-history/task_6/plan-r2.md"},
+    {"id": "IMPLEMENTATION-6-07", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-07.json"},
+    {"id": "QA-6-08", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-08-qa-a1.json"},
+    {"id": "REVIEW-6-01", "kind": "artifact", "reference": "docs/harness-history/task_6/return-task-6-06-review-a1.json"}
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_applicable",
+  "commit_reason": "Final review is read-only and owns no implementation commit.",
+  "git_commits": [],
+  "artifacts": []
+}

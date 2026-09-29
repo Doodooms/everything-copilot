@@ -1,12 +1,24 @@
 ---
 name: implementer
-description: "WHAT: Execute approved product changes by writing the smallest complete code and immediate regression tests required by the specification. INVOKE FOR: features, scoped refactors, confirmed defects, test-driven implementation, and repository changes that alter product behavior. DO NOT INVOKE FOR: architecture, planning, adversarial QA, final review, pure research, or infrastructure-only work."
+description: 'WHAT: Execute approved product changes by writing the smallest complete
+  code and immediate regression tests required by the specification. INVOKE FOR: features,
+  scoped refactors, confirmed defects, test-driven implementation, and repository
+  changes that alter product behavior. DO NOT INVOKE FOR: architecture, planning,
+  adversarial QA, final review, pure research, or infrastructure-only work.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: high
-tools: [read, search, edit, execute, todo, agent, skill]
-agents: [researcher]
+tools:
+- read
+- search
+- edit
+- execute
+- todo
+- agent
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

@@ -69,7 +69,12 @@ class ValidationResult:
         }
 
 
-def validate_source(source_root: Path, target: str) -> ValidationResult:
+def validate_source(
+    source_root: Path,
+    target: str,
+    *,
+    known_agents: set[str] | frozenset[str] = frozenset(),
+) -> ValidationResult:
     if target not in HARNESS_NAMES:
         raise HarnessFactoryError(f"unsupported harness target: {target!r}")
     root = Path(source_root)
@@ -86,7 +91,7 @@ def validate_source(source_root: Path, target: str) -> ValidationResult:
 
     if (root / "pack.yaml").is_file():
         try:
-            source = parse_pack(root)
+            source = parse_pack(root, known_agents=known_agents)
             artifact = compile_target(source, target)
         except ExpertiseError as exc:
             raise HarnessFactoryError(
@@ -114,6 +119,7 @@ def materialize_source(
     *,
     workspace: Path,
     run_id: str,
+    known_agents: set[str] | frozenset[str] = frozenset(),
 ) -> Path:
     if re.fullmatch(r"[0-9a-f]{32}", run_id) is None:
         raise HarnessFactoryError("run_id must be a lowercase 32-character UUID")
@@ -129,11 +135,11 @@ def materialize_source(
             "smoke source must come from the pinned run workspace"
         ) from exc
 
-    result = validate_source(root, target)
+    result = validate_source(root, target, known_agents=known_agents)
     if result.source_kind == "agent-plugin":
         return root
 
-    source = parse_pack(root)
+    source = parse_pack(root, known_agents=known_agents)
     artifact = compile_target(source, target)
     dist_root = workspace_root / "dist"
     output_root = dist_root / "harness-factory" / run_id / target

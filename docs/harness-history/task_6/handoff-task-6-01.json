@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "868a0453-6704-4221-9ed7-772e2be7741d",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-01-a1",
+  "created_at": "2026-09-28T11:53:14Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "outcome": "ready",
+  "objective": "Complete TASK-6-01: create one private neutral canonical source for the nine Core agents and deterministically generate Copilot, Codex, and Antigravity projections while preserving external Pack v1 .agent.md inputs.",
+  "requested_response": "Return exact changed files; source representation and portable versus target-specific field mapping; projection generation and validation commands/results; Pack v1 compatibility evidence; lossiness, risks, and exact next owner. Do not stage or commit.",
+  "constraints": [
+    "Use SPEC-6 revision 1 and approved plan-r1; satisfy AC-6-1 and preserve AC-6-7.",
+    "Keep the neutral representation private to this repository; do not create a public agent ABI.",
+    "Do not change Pack v1 or external .agent.md source support.",
+    "Do not move SWE agents or skills.",
+    "Do not edit Factory generic modules, pluginctl controller, task records, AGENTS.md, or .github/copilot-instructions.md.",
+    "Tests assert positive observable behavior and must not lock in deleted implementation details.",
+    "Use uv for Python and Ruff for Python style checks.",
+    "Shared worktree only; inspect status before editing and preserve unrelated changes."
+  ],
+  "evidence": [
+    {
+      "id": "SPEC-6",
+      "kind": "artifact",
+      "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"
+    },
+    {
+      "id": "PLAN-6",
+      "kind": "artifact",
+      "reference": "docs/planner-history/task_6/plan-r1.md"
+    }
+  ],
+  "changed_paths": [],
+  "validation": [],
+  "commit_status": "not_created",
+  "commit_reason": "The Orchestrator owns staging and commits after implementation, QA, and Reviewer gates.",
+  "git_commits": [],
+  "artifacts": []
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "f825053e-68aa-4c42-9c0b-001a32241fd5",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-08-qa-a1",
+  "created_at": "2026-09-28T15:10:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "completed",
+  "objective": "Independently falsify TASK-6-07 catalog propagation through Harness Factory CLI and adapter paths and preserve Pack v1 compatibility.",
+  "requested_response": "Return PASS/FAIL/BLOCKED per affected acceptance criterion with exact commands, subject digest, observations, and residual limitations.",
+  "constraints": [
+    "QA was read-only; no files were edited, staged, committed, or cleaned."
+  ],
+  "evidence": [
+    {"id": "QA-6-08-AC2", "kind": "observation", "reference": "PASS. CLI validate accepts repeated --known-agent values and rejects omission; suite-run preflight accepts explicit catalog and rejects omission; HarnessAdapter.prepare forwards the catalog. No implicit Core lookup observed."},
+    {"id": "QA-6-08-AC7", "kind": "observation", "reference": "PASS. Expertise Pack v1 validation, compilation, and lifecycle tests passed."},
+    {"id": "IMPLEMENTATION-DIFF-6-07", "kind": "observation", "reference": "Subject combined diff SHA-256 44f1bc89cc38d8297be0ad2f6f9f199b5607203ae4beac97d0dbfaa292527dcf over HEAD 7df5475cf51d7ed1ed81685e280f6e60016f0a61."}
+  ],
+  "changed_paths": [],
+  "validation": [
+    {"check": "Harness Factory CLI and adapter behavior", "result": "passed", "observed_at": "2026-09-28T15:10:00Z", "subject": "TASK-6-07", "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=/var/tmp/agentic-workflow-plugin-factory-decoupling/tmp uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_harness_factory.py' (32 passed)"},
+    {"check": "Pack v1 regression", "result": "passed", "observed_at": "2026-09-28T15:10:00Z", "subject": "TASK-6-07", "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=/var/tmp/agentic-workflow-plugin-factory-decoupling/tmp uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_expertise_framework.py' (39 passed)"}
+  ],
+  "commit_status": "not_applicable",
+  "commit_reason": "Independent QA is read-only and owns no implementation commit.",
+  "git_commits": [],
+  "artifacts": []
+}
