@@ -42,14 +42,15 @@ def validate_target_files(files: Mapping[str, bytes]) -> Mapping[str, bytes]:
             "\\" in path
             or ":" in path
             or any(
-                part in {"", ".", ".."}
-                or part.rstrip(" .") in {"", ".", ".."}
+                part in {"", ".", ".."} or part.rstrip(" .") in {"", ".", ".."}
                 for part in parts
             )
         ):
             raise TargetError(f"target file path is not safe: {path!r}")
         if ".github" in path.split("/"):
-            raise TargetError("target output must not materialize consumer .github content")
+            raise TargetError(
+                "target output must not materialize consumer .github content"
+            )
         if not isinstance(content, bytes):
             raise TargetError(f"target file content must be bytes: {path}")
         if path in normalized:
@@ -69,9 +70,13 @@ class CompiledTarget:
         if (
             not isinstance(self.source_digest, str)
             or len(self.source_digest) != 64
-            or any(character not in "0123456789abcdef" for character in self.source_digest)
+            or any(
+                character not in "0123456789abcdef" for character in self.source_digest
+            )
         ):
-            raise TargetError("target source digest must be a lowercase SHA-256 hex digest")
+            raise TargetError(
+                "target source digest must be a lowercase SHA-256 hex digest"
+            )
         object.__setattr__(self, "files", validate_target_files(self.files))
 
     @classmethod
@@ -82,7 +87,7 @@ class CompiledTarget:
         files: Mapping[str, bytes],
         *,
         source_digest: str,
-    ) -> "CompiledTarget":
+    ) -> CompiledTarget:
         return cls(target, pack, source_digest, files)
 
     @property

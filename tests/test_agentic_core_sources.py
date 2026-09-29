@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / "agentic-core"
 sys.path.insert(0, str(CORE))
 
-from core_agents import load_core_agents, load_core_projection_losses  # noqa: E402
+from core_agents import load_core_agents, load_core_projection_losses
 
-from expertise.targets.antigravity_plugin import project_core_plugin  # noqa: E402
-from scripts.install_codex_agents import _projected_agents  # noqa: E402
-from scripts.project_core_agents import project_copilot_agents  # noqa: E402
+from expertise.targets.antigravity_plugin import project_core_plugin
+from scripts.install_codex_agents import _projected_agents
+from scripts.project_core_agents import project_copilot_agents
 
 CANONICAL_AGENTS = {
     "architect.agent.md",

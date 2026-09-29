@@ -10,7 +10,7 @@ if str(ROOT) not in sys.path:
 if str(ROOT / "agentic-core") not in sys.path:
     sys.path.insert(0, str(ROOT / "agentic-core"))
 
-from core_agents import (  # noqa: E402
+from core_agents import (
     CORE_AGENT_ROOT,
     load_core_agents,
     render_copilot_agent,

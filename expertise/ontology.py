@@ -6,7 +6,6 @@ import re
 from enum import Enum
 from typing import Any
 
-
 PACK_SCHEMA_VERSION = 1
 AGENT_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
@@ -57,7 +56,9 @@ def parse_agent_plugins_requirement(
     value: str,
 ) -> tuple[str, tuple[int, int, int]]:
     if not isinstance(value, str) or value != value.strip():
-        raise ValueError("Agent Plugins minimum-version constraint must not have whitespace")
+        raise ValueError(
+            "Agent Plugins minimum-version constraint must not have whitespace"
+        )
     match = AGENT_PLUGINS_REQUIREMENT_PATTERN.fullmatch(value)
     if match is None:
         raise ValueError(f"invalid Agent Plugins minimum-version constraint: {value!r}")
@@ -65,5 +66,7 @@ def parse_agent_plugins_requirement(
         major, minor = (int(match.group(index)) for index in (1, 2))
         patch = int(match.group(3) or 0)
     except ValueError as exc:
-        raise ValueError("Agent Plugins minimum-version component is too large") from exc
+        raise ValueError(
+            "Agent Plugins minimum-version component is too large"
+        ) from exc
     return f">={major}.{minor}.{patch}", (major, minor, patch)

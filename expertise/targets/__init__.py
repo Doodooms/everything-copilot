@@ -5,8 +5,8 @@ from pathlib import Path
 from ..errors import TargetError
 from ..ir import PackSource
 from ..ontology import SUPPORTED_TARGETS
-from .common import CompiledTarget, validate_target_files
 from .codex import compile_codex
+from .common import CompiledTarget, validate_target_files
 from .copilot import compile_copilot
 from .portable import compile_portable
 from .validation import validate_mcp_manifest, validate_plugin_manifest
@@ -47,9 +47,13 @@ def materialize_target(
     except ValueError as exc:
         raise TargetError("generated output path must remain under dist") from exc
     if raw_dist.name != "dist" or not relative_output.parts:
-        raise TargetError("generated artifacts must be materialized below a dist directory")
+        raise TargetError(
+            "generated artifacts must be materialized below a dist directory"
+        )
     if ".github" in relative_output.parts:
-        raise TargetError("generated output must not materialize consumer .github content")
+        raise TargetError(
+            "generated output must not materialize consumer .github content"
+        )
     if raw_output.exists() or raw_output.is_symlink():
         raise TargetError(
             f"generated output already exists; refusing to overwrite: {raw_output}"
@@ -67,7 +71,9 @@ def materialize_target(
             f"generated output already exists; refusing to overwrite: {raw_output}"
         ) from exc
     except OSError as exc:
-        raise TargetError(f"could not materialize generated target under dist: {exc}") from exc
+        raise TargetError(
+            f"could not materialize generated target under dist: {exc}"
+        ) from exc
     return raw_output
 
 

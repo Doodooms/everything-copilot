@@ -7,7 +7,6 @@ from ..errors import TargetError
 from ..ontology import AGENT_PLUGIN_SCHEMA
 from ..validator import validate_mcp_config
 
-
 _PLUGIN_NAME = re.compile(r"^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
 _AUTHOR_FIELDS = {"name", "email", "url"}
 _PLUGIN_FIELDS = {
@@ -45,7 +44,9 @@ def validate_plugin_manifest(manifest: Any) -> None:
         or not 1 <= len(name) <= 64
         or _PLUGIN_NAME.fullmatch(name) is None
     ):
-        errors.append("plugin.json name must satisfy the Agent Plugins 1.0 name constraint")
+        errors.append(
+            "plugin.json name must satisfy the Agent Plugins 1.0 name constraint"
+        )
 
     for field in ("version", "description", "homepage", "repository", "license"):
         if field in manifest and not isinstance(manifest[field], str):

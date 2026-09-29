@@ -1,7 +1,7 @@
 """Client-neutral Expertise Pack framework and target adapters."""
 
 from .errors import ExpertiseError, PackValidationError, ResolutionError, TargetError
-from .ir import PackReference, PackSource, PackIR
+from .ir import PackIR, PackReference, PackSource
 from .parser import parse_pack
 
 __all__ = [

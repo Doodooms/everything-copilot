@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Any, Mapping
+from typing import Any
 
 import yaml
 
@@ -262,12 +263,8 @@ def _safe_relative_path(
 def _is_bounded_plugin_cwd(value: Any) -> bool:
     if not isinstance(value, str) or "\\" in value:
         return False
-    supported_root = (
-        value.startswith("./")
-        or value == "${PLUGIN_ROOT}"
-        or value.startswith("${PLUGIN_ROOT}/")
-        or value == "${PLUGIN_DATA}"
-        or value.startswith("${PLUGIN_DATA}/")
+    supported_root = value in {"${PLUGIN_ROOT}", "${PLUGIN_DATA}"} or value.startswith(
+        ("./", "${PLUGIN_ROOT}/", "${PLUGIN_DATA}/")
     )
     if not supported_root:
         return False
@@ -425,13 +422,12 @@ def _validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str
                         f"{server_path}.env",
                         "must not override reserved plugin variables",
                     )
-            if "cwd" in server:
-                if not _is_bounded_plugin_cwd(server["cwd"]):
-                    _diagnostic(
-                        errors,
-                        f"{server_path}.cwd",
-                        "must be a bounded plugin-relative or supported-root path",
-                    )
+            if "cwd" in server and not _is_bounded_plugin_cwd(server["cwd"]):
+                _diagnostic(
+                    errors,
+                    f"{server_path}.cwd",
+                    "must be a bounded plugin-relative or supported-root path",
+                )
         elif server_type in {"streamable-http", "sse"}:
             allowed = {"type", "url", "headers"}
             server = _mapping(
@@ -669,11 +665,14 @@ def validate_pack_document(
             expected="file",
             source_files=source_files,
         )
-        if source is not None and agent_id is not None:
-            if source.name != f"{agent_id}.agent.md":
-                _diagnostic(
-                    errors, f"{location}.source", "filename must match the agent ID"
-                )
+        if (
+            source is not None
+            and agent_id is not None
+            and source.name != f"{agent_id}.agent.md"
+        ):
+            _diagnostic(
+                errors, f"{location}.source", "filename must match the agent ID"
+            )
         provider_capabilities.update(
             _validate_reference_list(
                 contribution.get("capabilities"),
@@ -1095,13 +1094,12 @@ def validate_mcp_config(data: Any, location: str, errors: list[str]) -> set[str]
                         f"{server_path}.env",
                         "must not override reserved plugin variables",
                     )
-            if "cwd" in server:
-                if not _is_bounded_plugin_cwd(server["cwd"]):
-                    _diagnostic(
-                        errors,
-                        f"{server_path}.cwd",
-                        "must be a bounded plugin-relative or supported-root path",
-                    )
+            if "cwd" in server and not _is_bounded_plugin_cwd(server["cwd"]):
+                _diagnostic(
+                    errors,
+                    f"{server_path}.cwd",
+                    "must be a bounded plugin-relative or supported-root path",
+                )
         elif server_type in {"streamable-http", "sse"}:
             allowed = {"type", "url", "headers"}
             if set(server) - allowed:

@@ -103,7 +103,7 @@ class LintResult:
     warnings: list[str] = field(default_factory=list)
     data: dict[str, Any] = field(default_factory=dict)
 
-    def extend(self, other: "LintResult") -> None:
+    def extend(self, other: LintResult) -> None:
         self.errors.extend(other.errors)
         self.warnings.extend(other.warnings)
 

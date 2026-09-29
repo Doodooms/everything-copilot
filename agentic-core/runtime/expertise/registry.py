@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from types import MappingProxyType
-from typing import Iterable, Mapping
 
 from .errors import RegistryError
 from .ir import PackReference, PackSource

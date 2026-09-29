@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Mapping
 
 import yaml
 
@@ -31,7 +31,9 @@ def _read_source_file(source: PackSource, relative: str) -> bytes:
             raise TargetError(f"source path is not a regular file: {relative}")
         return resolved.read_bytes()
     except (OSError, ValueError) as exc:
-        raise TargetError(f"source file is unavailable or outside the pack: {relative}") from exc
+        raise TargetError(
+            f"source file is unavailable or outside the pack: {relative}"
+        ) from exc
 
 
 def _read_source_snapshot(source: PackSource) -> Mapping[str, bytes]:
@@ -40,7 +42,9 @@ def _read_source_snapshot(source: PackSource) -> Mapping[str, bytes]:
         raise TargetError("pack source snapshot does not match the parsed file list")
     validated_digest = source_content_digest(validated_snapshot)
     if validated_digest != source.ir.content_digest:
-        raise TargetError("parsed pack source snapshot does not match its content digest")
+        raise TargetError(
+            "parsed pack source snapshot does not match its content digest"
+        )
 
     live_snapshot = {
         relative: _read_source_file(source, relative)
@@ -58,7 +62,9 @@ def _read_source_snapshot(source: PackSource) -> Mapping[str, bytes]:
 def _plugin_manifest(source: PackSource) -> dict[str, object]:
     if "plugin.json" in source.source_snapshot:
         try:
-            manifest = load_json_no_duplicate_keys(source.source_snapshot["plugin.json"])
+            manifest = load_json_no_duplicate_keys(
+                source.source_snapshot["plugin.json"]
+            )
         except (UnicodeError, json.JSONDecodeError, ValueError) as exc:
             raise TargetError("source plugin.json is not valid JSON") from exc
         if not isinstance(manifest, dict):
@@ -98,19 +104,30 @@ def _compile_portable_core(
         try:
             integration = load_pack_yaml_bytes(source_snapshot["pack.yaml"])
         except (KeyError, TargetError) as exc:
-            raise TargetError("source pack.yaml is missing from the validated snapshot") from exc
+            raise TargetError(
+                "source pack.yaml is missing from the validated snapshot"
+            ) from exc
         if not isinstance(integration, dict):
             raise TargetError("source integration metadata must be an object")
         agent_section = integration.get("agents")
-        contributions = agent_section.get("contributions") if isinstance(agent_section, dict) else None
+        contributions = (
+            agent_section.get("contributions")
+            if isinstance(agent_section, dict)
+            else None
+        )
         if not isinstance(contributions, list):
-            raise TargetError("source integration metadata has invalid agent contributions")
+            raise TargetError(
+                "source integration metadata has invalid agent contributions"
+            )
         for contribution in contributions:
-            if not isinstance(contribution, dict) or not isinstance(contribution.get("id"), str):
-                raise TargetError("source integration metadata has an invalid agent contribution")
+            if not isinstance(contribution, dict) or not isinstance(
+                contribution.get("id"), str
+            ):
+                raise TargetError(
+                    "source integration metadata has an invalid agent contribution"
+                )
             contribution["source"] = (
-                "com.doodooms.agentic-workflow/agents/"
-                f"{contribution['id']}.agent.md"
+                f"com.doodooms.agentic-workflow/agents/{contribution['id']}.agent.md"
             )
         integration_path = "com.doodooms.agentic-workflow/integration.yaml"
         integration_bytes = yaml.safe_dump(
@@ -131,8 +148,7 @@ def _compile_portable_core(
         if source.manifest_path == "pack.yaml":
             source_path = contribution.source
             output_path = (
-                "com.doodooms.agentic-workflow/agents/"
-                f"{contribution.id}.agent.md"
+                f"com.doodooms.agentic-workflow/agents/{contribution.id}.agent.md"
             )
         else:
             source_path = contribution.source
@@ -150,9 +166,7 @@ def _compile_portable_core(
     for skill in pack.skills:
         prefix = f"{skill.path.rstrip('/')}/"
         package_files = [
-            relative
-            for relative in source.source_files
-            if relative.startswith(prefix)
+            relative for relative in source.source_files if relative.startswith(prefix)
         ]
         if not package_files:
             raise TargetError(f"skill package has no source files: {skill.id}")
@@ -178,7 +192,9 @@ def _compile_portable_core(
         try:
             mcp_manifest = load_json_no_duplicate_keys(raw_mcp)
         except DuplicateJSONKeyError as exc:
-            raise TargetError(f"source mcp.json contains duplicate JSON key {exc.key!r}") from exc
+            raise TargetError(
+                f"source mcp.json contains duplicate JSON key {exc.key!r}"
+            ) from exc
         except (UnicodeError, json.JSONDecodeError) as exc:
             raise TargetError("source mcp.json is not valid UTF-8 JSON") from exc
         errors: list[str] = []
@@ -186,7 +202,9 @@ def _compile_portable_core(
         if errors:
             raise TargetError("; ".join(sorted(errors)))
         if server_ids != {server.id for server in pack.mcp_servers}:
-            raise TargetError("source mcp.json server IDs changed after pack validation")
+            raise TargetError(
+                "source mcp.json server IDs changed after pack validation"
+            )
         files["mcp.json"] = raw_mcp
 
     return CompiledTarget.create(

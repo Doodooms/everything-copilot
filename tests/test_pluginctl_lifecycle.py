@@ -14,16 +14,16 @@ if str(PLUGINCTL_RUNTIME) not in sys.path:
 if str(ROOT / "tests") not in sys.path:
     sys.path.insert(0, str(ROOT / "tests"))
 
-from pluginctl import (  # noqa: E402
+from pluginctl import (
     PluginControlError,
     PluginController,
     TrustedRegistry,
     TrustedSource,
 )
-from pluginctl.cli import main as pluginctl_main  # noqa: E402
-from test_expertise_framework import write_pack  # noqa: E402
+from pluginctl.cli import main as pluginctl_main
+from test_expertise_framework import write_pack
 
-from expertise.parser import parse_pack  # noqa: E402
+from expertise.parser import parse_pack
 
 
 def parse_fixture_pack(source_root):
