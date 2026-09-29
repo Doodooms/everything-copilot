@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import importlib.util
 import json
 import re
 import shutil
@@ -455,6 +457,48 @@ def _add_file(files: dict[str, bytes], path: str, content: bytes) -> None:
     files[path] = content
 
 
+def _load_core_agent_sources(
+    plugin_root: Path, source_agents: Path
+) -> tuple[dict[str, Any], dict[str, tuple[str, ...]]]:
+    module_path = plugin_root / "core_agents.py"
+    if module_path.is_symlink():
+        raise TargetError("Agentic Core source core_agents.py must not be a symlink")
+    if not module_path.is_file():
+        module_path = next(
+            (
+                parent / "core_agents.py"
+                for parent in Path(__file__).resolve().parents
+                if not (parent / "core_agents.py").is_symlink()
+                and (parent / "core_agents.py").is_file()
+                and (parent / "plugin.json").is_file()
+            ),
+            Path(__file__).resolve().parents[2] / "agentic-core" / "core_agents.py",
+        )
+    if module_path.is_symlink() or not module_path.is_file():
+        raise TargetError("Agentic Core projector package is missing core_agents.py")
+    module_name = (
+        "_agentic_core_projection_source_"
+        + hashlib.sha256(str(module_path.resolve()).encode("utf-8")).hexdigest()
+    )
+    module = sys.modules.get(module_name)
+    try:
+        if module is None:
+            spec = importlib.util.spec_from_file_location(module_name, module_path)
+            if spec is None or spec.loader is None:
+                raise ImportError("could not load core_agents.py")
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = module
+            spec.loader.exec_module(module)
+        agents = module.load_core_agents(source_agents)
+        losses = module.load_core_projection_losses(source_agents)
+    except (ImportError, OSError, TypeError, ValueError, yaml.YAMLError) as exc:
+        sys.modules.pop(module_name, None)
+        raise TargetError(
+            f"Agentic Core neutral agent source is invalid: {exc}"
+        ) from exc
+    return agents, losses
+
+
 def project_core_plugin(source_root: Path) -> AntigravityProjection:
     """Project the canonical Agentic Core plugin into Antigravity's package shape."""
     root = _source_plugin_root(source_root)
@@ -498,18 +542,7 @@ def project_core_plugin(source_root: Path) -> AntigravityProjection:
     source_agents = root / "agents"
     if source_agents.is_symlink() or not source_agents.is_dir():
         raise TargetError("Agentic Core neutral agent source directory is missing")
-    core_source_path = Path(__file__).resolve().parents[2] / "agentic-core"
-    if str(core_source_path) not in sys.path:
-        sys.path.insert(0, str(core_source_path))
-    try:
-        from core_agents import load_core_agents, load_core_projection_losses
-
-        agents = load_core_agents(source_agents)
-        core_losses = load_core_projection_losses(source_agents)
-    except (OSError, ValueError) as exc:
-        raise TargetError(
-            f"Agentic Core neutral agent source is invalid: {exc}"
-        ) from exc
+    agents, core_losses = _load_core_agent_sources(root, source_agents)
     agent_ids = set(agents)
     reported_losses = " ".join(core_losses["antigravity"]).casefold()
     for agent in agents.values():

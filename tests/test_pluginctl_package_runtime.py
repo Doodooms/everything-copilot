@@ -56,7 +56,7 @@ class PluginctlPackageRuntimeTests(unittest.TestCase):
                 (source_path / "plugin.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["name"], "agentic-core")
-            self.assertEqual(manifest["version"], "0.3.4")
+            self.assertEqual(manifest["version"], "0.3.5")
             self.assertTrue(
                 (source_path / "skills" / "orchestration" / "SKILL.md").is_file()
             )

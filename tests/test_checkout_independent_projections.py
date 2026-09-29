@@ -114,6 +114,10 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             (CORE / "plugin.json").read_bytes(),
         )
         self.assertFalse((self.plugin / ".git").exists())
+        second_copy = self.root / "installed-second" / "agentic-core"
+        second_copy.parent.mkdir()
+        _copy_installed_plugin(second_copy)
+        self.assertEqual(_tree_digest(self.plugin), _tree_digest(second_copy))
 
     def test_codex_projection_runs_from_installed_plugin_and_is_reproducible(self):
         script = self.plugin / "runtime" / "project_codex_agents.py"
@@ -137,10 +141,8 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             first_names, {path.name for path in agent_files[1].glob("*.toml")}
         )
         self.assertFalse(list(agent_files[0].glob("*.md")))
-        for home, output in zip(homes, agent_files, strict=True):
-            self.assertEqual(
-                _tree_digest(output), summaries[homes.index(home)]["artifact_sha256"]
-            )
+        for summary, output in zip(summaries, agent_files, strict=True):
+            self.assertEqual(_tree_digest(output), summary["artifact_sha256"])
             for path in output.glob("*.toml"):
                 role = tomllib.loads(path.read_text(encoding="utf-8"))
                 self.assertEqual(role["name"], path.stem)
@@ -156,6 +158,7 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             summaries[0]["artifact_sha256"], summaries[1]["artifact_sha256"]
         )
         self.assertEqual(summaries[0]["source_sha256"], summaries[1]["source_sha256"])
+        self.assertEqual(summaries[0]["source_sha256"], source_digest_before)
         self.assertEqual(source_digest_before, _tree_digest(self.plugin))
 
         check = _run_script(
@@ -191,6 +194,8 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             summaries[0]["artifact_sha256"], summaries[1]["artifact_sha256"]
         )
         self.assertEqual(summaries[0]["source_sha256"], summaries[1]["source_sha256"])
+        self.assertEqual(summaries[0]["source_sha256"], source_digest_before)
+        self.assertEqual(summaries[0]["projector_package_sha256"], source_digest_before)
         self.assertEqual(source_digest_before, _tree_digest(self.plugin))
         source_manifest = json.loads(
             (self.plugin / "plugin.json").read_text(encoding="utf-8")
