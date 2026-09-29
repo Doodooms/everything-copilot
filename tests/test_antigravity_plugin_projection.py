@@ -33,19 +33,10 @@ def _agent(
     agents: list[str] | None = None,
     disable_model_invocation: bool = False,
 ) -> str:
-    metadata: dict[str, object] = {
+    metadata = {
         "name": name,
         "description": f"WHAT: {name}. INVOKE FOR: test. DO NOT INVOKE FOR: other work.",
-        "target": "vscode",
-        "user-invocable": user_invocable,
-        "model": "GPT-6 Luna (copilot)",
-        "reasoning-effort": "high",
-        "tools": tools,
     }
-    if agents is not None:
-        metadata["agents"] = agents
-    if disable_model_invocation:
-        metadata["disable-model-invocation"] = True
     return (
         "---\n"
         + yaml.safe_dump(metadata, sort_keys=False)
@@ -83,7 +74,7 @@ def _minimal_source(root: Path) -> None:
     )
     (root / "skills/empty-domain").mkdir(parents=True)
     _write(
-        root / "com.github.copilot/agents/orchestrator.agent.md",
+        root / "agents/orchestrator.md",
         _agent(
             name="orchestrator",
             user_invocable=True,
@@ -93,11 +84,79 @@ def _minimal_source(root: Path) -> None:
         ),
     )
     _write(
-        root / "com.github.copilot/agents/helper.agent.md",
+        root / "agents/helper.md",
         _agent(
             name="helper",
             user_invocable=False,
             tools=["read", "search", "edit", "execute", "skill", "web"],
+        ),
+    )
+    _write(
+        root / "agents/projections.json",
+        json.dumps(
+            {
+                "copilot": {
+                    "orchestrator": {
+                        "target": "vscode",
+                        "user-invocable": True,
+                        "disable-model-invocation": True,
+                        "tools": [
+                            "vscode/askQuestions",
+                            "read",
+                            "agent",
+                            "skill",
+                            "todo",
+                        ],
+                        "agents": ["helper"],
+                    },
+                    "helper": {
+                        "target": "vscode",
+                        "user-invocable": False,
+                        "tools": ["read", "search", "edit", "execute", "skill", "web"],
+                    },
+                },
+                "codex": {
+                    "orchestrator": {"model": "gpt-6-luna", "reasoning-effort": "high"},
+                    "helper": {"model": "gpt-6-luna", "reasoning-effort": "high"},
+                },
+                "antigravity": {
+                    "orchestrator": {
+                        "tools": [
+                            "ask_question",
+                            "list_directory",
+                            "view_file",
+                            "invoke_subagent",
+                        ],
+                        "mainAgent": True,
+                        "subagent": False,
+                        "agents": ["helper"],
+                    },
+                    "helper": {
+                        "tools": [
+                            "list_directory",
+                            "view_file",
+                            "find_file",
+                            "grep_search",
+                            "search_directory",
+                            "write_to_file",
+                            "run_command",
+                        ],
+                        "mainAgent": False,
+                        "subagent": True,
+                    },
+                },
+            },
+            indent=2,
+        ),
+    )
+    _write(
+        root / "agents/projection-losses.json",
+        json.dumps(
+            {
+                "copilot": [],
+                "codex": ["Codex test loss."],
+                "antigravity": ["Antigravity test loss."],
+            }
         ),
     )
     _write(
@@ -140,7 +199,7 @@ class AntigravityProjectionTests(unittest.TestCase):
             and path.endswith(".md")
         ]
         self.assertEqual(len(skill_entrypoints), 11)
-        self.assertEqual(len(nested_workflows), 59)
+        self.assertEqual(len(nested_workflows), 58)
         self.assertFalse(any("/e2e-testing/" in path for path in projection.files))
         self.assertFalse(
             any("/test-coverage-review/" in path for path in projection.files)

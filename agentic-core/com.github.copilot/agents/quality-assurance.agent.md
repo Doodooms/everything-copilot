@@ -1,12 +1,26 @@
 ---
 name: quality-assurance
-description: "WHAT: Diagnose unknown runtime failures and adversarially falsify completed behavior and test adequacy without fixing production code. INVOKE FOR: unclear runtime failures or regressions, flaky or swallowed failures, post-implementation QA, edge cases, property/fuzz/mutation testing, integration checks, dynamic security testing, performance testing, and test-surface weakness. DO NOT INVOKE FOR: production fixes, architecture, delivery planning, dedicated static/design security audits, or final acceptance."
+description: 'WHAT: Diagnose unknown runtime failures and adversarially falsify completed
+  behavior and test adequacy without fixing production code. INVOKE FOR: unclear runtime
+  failures or regressions, flaky or swallowed failures, post-implementation QA, edge
+  cases, property/fuzz/mutation testing, integration checks, dynamic security testing,
+  performance testing, and test-surface weakness. DO NOT INVOKE FOR: production fixes,
+  architecture, delivery planning, dedicated static/design security audits, or final
+  acceptance.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: high
-tools: [read, search, edit, execute, todo, agent, skill]
-agents: [researcher]
+tools:
+- read
+- search
+- edit
+- execute
+- todo
+- agent
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

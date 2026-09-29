@@ -13,6 +13,7 @@ references:
   - ../references/create-skill/references/latest-docs.md
   - ../references/create-skill/references/final-checklist.md
   - ../references/create-skill/references/skill-composition.md
+  - ../references/create-skill/references/authoring-patterns.md
   - ../references/create-skill/references/original-spec.md
 ---
 <critical_rules>
@@ -38,14 +39,16 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 <workflow>
 ## Step 1 - Inspect the current package and approved scope.
 
-1. DO consume the assigned `risk_level`; read the target `SKILL.md`, its provenance, selected workflows, and only relevant support files.
+1. DO consume the assigned `risk_level`; read the target `SKILL.md`, relevant provenance, selected workflows, and only relevant support files. Inspect history or source material when a refactor may have discarded useful expertise.
    - Read this package's [original specification](../references/create-skill/references/original-spec.md) only when maintaining `create-skill` itself.
 2. Preserve established behavior outside scope; DO NOT scaffold over the package or rewrite `references/original-spec.md` without an approved intent change.
 
 ## Step 2 - Make the smallest coherent package change.
 
-1. Keep critical invariants, general preferences, risk policy, and admission in `SKILL.md`; put each distinct procedure directly into an immediate `workflows/[id].md` child.
-2. Replace square-bracketed fillable values, link each workflow from the parent, and add support files only when a selected step consumes them.
+1. Apply [the authoring patterns](../references/create-skill/references/authoring-patterns.md) to classify changes as admission/routing, procedure, domain expertise, reusable artifact, or deterministic validation.
+2. Keep critical invariants, general preferences, risk policy, and admission in `SKILL.md`; put each distinct procedure directly into an immediate `workflows/[id].md` child.
+3. Preserve useful knowledge, examples, assets, and scripts unless they are obsolete, incorrect, duplicated, or demonstrably unnecessary. Revalidate versioned material before moving it into active support.
+4. Replace square-bracketed fillable values, link each workflow from the parent, and add support files only when a selected step consumes them.
    - Each immediate subskill keeps its `id`, `description`, `invoke_for`, `avoid_for`, and `references` metadata plus the canonical skill body structure. Do not create another workflow level, a peer `SKILL.md` package, or a global route for that subskill. Put the complete procedure in its `<workflow>` block; references contain supporting knowledge only.
    - For composed skills, use the [composition contract](../references/create-skill/references/skill-composition.md); MUST NOT turn a workflow into an MCP tool.
 

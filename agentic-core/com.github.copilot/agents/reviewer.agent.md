@@ -1,12 +1,25 @@
 ---
 name: reviewer
-description: "WHAT: Act as the final technical acceptance gate for a completed change and provide static security-design review when its trust boundaries require it. INVOKE FOR: correctness, architecture conformance, security-sensitive design, test/QA adequacy, compatibility, residual risk, and evaluating QA diagnosis and falsification evidence. DO NOT INVOKE FOR: implementation, adversarial test execution, runtime diagnosis, standalone acceptance-free security audits, architecture ownership, planning, or operations changes."
+description: 'WHAT: Act as the final technical acceptance gate for a completed change
+  and provide static security-design review when its trust boundaries require it.
+  INVOKE FOR: correctness, architecture conformance, security-sensitive design, test/QA
+  adequacy, compatibility, residual risk, and evaluating QA diagnosis and falsification
+  evidence. DO NOT INVOKE FOR: implementation, adversarial test execution, runtime
+  diagnosis, standalone acceptance-free security audits, architecture ownership, planning,
+  or operations changes.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: high
-tools: [execute, read, agent, search, skill, mcp_semgrep_semgrep_scan]
-agents: [researcher]
+tools:
+- execute
+- read
+- agent
+- search
+- skill
+- mcp_semgrep_semgrep_scan
+agents:
+- researcher
 ---
 
 <definitions>

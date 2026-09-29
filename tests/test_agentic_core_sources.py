@@ -2,14 +2,23 @@ import json
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+import tomllib
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / "agentic-core"
+sys.path.insert(0, str(CORE))
+
+from core_agents import load_core_agents, load_core_projection_losses
+
+from expertise.targets.antigravity_plugin import project_core_plugin
+from scripts.install_codex_agents import _projected_agents
+from scripts.project_core_agents import project_copilot_agents
 
 CANONICAL_AGENTS = {
     "architect.agent.md",
@@ -41,6 +50,22 @@ PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 
 
 class AgenticCoreSourceTests(unittest.TestCase):
+    def test_core_agent_projections_are_generated_from_neutral_sources(self):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts/project_core_agents.py"),
+                "--check",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_core_is_a_standalone_agent_plugin(self):
         manifest_path = CORE / "plugin.json"
         self.assertTrue(
@@ -57,17 +82,20 @@ class AgenticCoreSourceTests(unittest.TestCase):
         self.assertTrue((CORE / "skills").is_dir())
         self.assertTrue((CORE / "com.github.copilot/agents").is_dir())
 
-    def test_all_nine_agents_have_only_the_plugin_source(self):
+    def test_all_nine_agents_are_generated_copilot_projections(self):
         plugin_agents = CORE / "com.github.copilot/agents"
         self.assertEqual(
             {path.name for path in plugin_agents.glob("*.agent.md")},
             CANONICAL_AGENTS,
         )
-        for filename in CANONICAL_AGENTS:
-            self.assertFalse(
-                (ROOT / ".github/agents" / filename).is_file(),
-                f"{filename} must not have an editable workspace duplicate",
-            )
+        self.assertEqual(
+            {path.name for path in (CORE / "agents").glob("*.md")},
+            {
+                filename.removesuffix(".agent.md") + ".md"
+                for filename in CANONICAL_AGENTS
+            },
+        )
+        self.assertEqual(set(project_copilot_agents()), CANONICAL_AGENTS)
 
         self.assertTrue(
             (ROOT / ".github/copilot-instructions.md").is_file(),
@@ -79,6 +107,92 @@ class AgenticCoreSourceTests(unittest.TestCase):
         self.assertIn("agentic-core", instructions)
         self.assertIn(".github/agents/", instructions)
         self.assertIn(".github/skills/", instructions)
+
+    def test_all_nine_targets_preserve_role_text_metadata_and_determinism(self):
+        agents = load_core_agents()
+        copilot = project_copilot_agents()
+        copilot_again = project_copilot_agents()
+        codex = _projected_agents()
+        codex_again = _projected_agents()
+        antigravity = project_core_plugin(CORE)
+        antigravity_again = project_core_plugin(CORE)
+
+        self.assertEqual(
+            set(agents), {name.removesuffix(".agent.md") for name in CANONICAL_AGENTS}
+        )
+        self.assertEqual(set(copilot), CANONICAL_AGENTS)
+        self.assertEqual(copilot, copilot_again)
+        self.assertEqual(
+            set(codex),
+            {name.removesuffix(".agent.md") + ".toml" for name in CANONICAL_AGENTS},
+        )
+        self.assertEqual(codex, codex_again)
+        self.assertEqual(
+            {
+                path.removeprefix("agents/")
+                for path in antigravity.files
+                if path.startswith("agents/")
+            },
+            {name.removesuffix(".agent.md") + ".md" for name in CANONICAL_AGENTS},
+        )
+        self.assertEqual(dict(antigravity.files), dict(antigravity_again.files))
+
+        for name, agent in agents.items():
+            copilot_text = copilot[f"{name}.agent.md"].decode("utf-8")
+            copilot_metadata = yaml.safe_load(copilot_text.split("---", 2)[1])
+            copilot_body = copilot_text.split("---", 2)[2][1:]
+            self.assertEqual(copilot_metadata["description"], agent.description)
+            self.assertEqual(copilot_body, agent.instructions_for("copilot"))
+            self.assertEqual(
+                {key: copilot_metadata[key] for key in agent.projection("copilot")},
+                agent.projection("copilot"),
+            )
+
+            codex_document = tomllib.loads(codex[f"{name}.toml"].decode("utf-8"))
+            codex_profile = agent.projection("codex")
+            self.assertEqual(codex_document["name"], name)
+            self.assertEqual(codex_document["description"], agent.description)
+            if codex_profile["model"] is None:
+                self.assertNotIn("model", codex_document)
+            else:
+                self.assertEqual(codex_document["model"], codex_profile["model"])
+            if codex_profile["reasoning-effort"] is None:
+                self.assertNotIn("model_reasoning_effort", codex_document)
+            else:
+                self.assertEqual(
+                    codex_document["model_reasoning_effort"],
+                    codex_profile["reasoning-effort"],
+                )
+            self.assertEqual(
+                codex_document["developer_instructions"],
+                agent.instructions_for("codex").strip(),
+            )
+
+            antigravity_text = antigravity.files[f"agents/{name}.md"].decode("utf-8")
+            antigravity_metadata = yaml.safe_load(antigravity_text.split("---", 2)[1])
+            antigravity_body = antigravity_text.split("---", 2)[2][1:]
+            antigravity_profile = agent.projection("antigravity")
+            self.assertEqual(antigravity_metadata["description"], agent.description)
+            self.assertEqual(
+                antigravity_metadata["tools"], antigravity_profile["tools"]
+            )
+            self.assertEqual(
+                antigravity_metadata["mainAgent"], antigravity_profile["mainAgent"]
+            )
+            self.assertEqual(
+                antigravity_metadata["subagent"], antigravity_profile["subagent"]
+            )
+            self.assertEqual(antigravity_body, agent.instructions_for("antigravity"))
+
+        losses = load_core_projection_losses()
+        self.assertEqual(losses["copilot"], ())
+        self.assertTrue(any("tools" in item for item in losses["codex"]))
+        self.assertTrue(
+            any(
+                "browser" in item and "web" in item
+                for item in antigravity.mapping_losses
+            )
+        )
 
     def test_agent_skill_policies_resolve_locally_and_reference_installed_skills(self):
         agents = CORE / "com.github.copilot/agents"
@@ -285,7 +399,33 @@ class AgenticCoreSourceTests(unittest.TestCase):
         self.assertIn("Each immediate subskill keeps its `id`", skill_maintenance)
         self.assertIn("canonical skill body structure", skill_maintenance)
         self.assertIn("peer `SKILL.md` package", skill_maintenance)
+        self.assertIn("authoring-patterns.md", skill_maintenance)
+        self.assertIn(
+            "Preserve useful knowledge, examples, assets, and scripts",
+            skill_maintenance,
+        )
         self.assertNotIn("Do not add nested workflow metadata", skill_maintenance)
+
+        authoring_patterns = (
+            plugin_skills
+            / "plugin-engineering/references/create-skill/references/authoring-patterns.md"
+        ).read_text(encoding="utf-8")
+        skill_authoring = (
+            plugin_skills / "plugin-engineering/workflows/skill-authoring.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "Agent → Skill → Workflow → Reference / Asset / Script", authoring_patterns
+        )
+        self.assertIn(
+            "Refactoring a skill into workflows MUST preserve useful domain knowledge",
+            authoring_patterns,
+        )
+        self.assertIn("GOOD/BAD", authoring_patterns)
+        self.assertIn(
+            "Do not impose example counts, reference counts", authoring_patterns
+        )
+        self.assertIn("Apply [authoring patterns]", skill_authoring)
+        self.assertIn("revalidate versioned material", skill_authoring)
 
         current_plan = (ROOT / "docs/planner-history/task_5/plan-r10.md").read_text(
             encoding="utf-8"
@@ -316,7 +456,6 @@ class AgenticCoreSourceTests(unittest.TestCase):
             "nested method sources must not be discovered as standalone skills",
         )
         workflow_files = sorted(plugin_skills.rglob("workflows/*.md"))
-        self.assertEqual(len(workflow_files), 59)
         inventory_path = (
             ROOT / "docs/planner-history/task_5/workflow-subskill-inventory.md"
         )
@@ -469,48 +608,59 @@ class AgenticCoreSourceTests(unittest.TestCase):
                     f"{workflow} references a nested workflow",
                 )
 
-    def test_mcp_authoring_workflows_share_transport_security_and_keep_rust_detail(
-        self,
-    ):
+    def test_mcp_authoring_uses_canonical_rust_contract_and_shared_security(self):
         workflow_dir = CORE / "skills/plugin-engineering/workflows"
-        general_path = workflow_dir / "create-mcp.md"
-        rust_path = workflow_dir / "create-mcp-rust.md"
+        workflow_path = workflow_dir / "create-mcp.md"
         shared_path = (
             CORE
             / "skills/plugin-engineering/references/create-mcp/common-transport-security.md"
         )
-
-        general_text = general_path.read_text(encoding="utf-8")
-        rust_text = rust_path.read_text(encoding="utf-8")
-        shared_text = shared_path.read_text(encoding="utf-8")
-        general_metadata = yaml.safe_load(
-            re.match(r"\A---\n(.*?)\n---\n", general_text, re.DOTALL).group(1)
+        patterns_path = (
+            CORE
+            / "skills/plugin-engineering/references/create-mcp/rust-server-patterns.md"
         )
-        rust_metadata = yaml.safe_load(
-            re.match(r"\A---\n(.*?)\n---\n", rust_text, re.DOTALL).group(1)
+        sources_path = (
+            CORE / "skills/plugin-engineering/references/create-mcp/references/URIs.md"
+        )
+
+        workflow_text = workflow_path.read_text(encoding="utf-8")
+        shared_text = shared_path.read_text(encoding="utf-8")
+        patterns_text = patterns_path.read_text(encoding="utf-8")
+        sources_text = sources_path.read_text(encoding="utf-8")
+        general_metadata = yaml.safe_load(
+            re.match(r"\A---\n(.*?)\n---\n", workflow_text, re.DOTALL).group(1)
         )
         shared_reference = "../references/create-mcp/common-transport-security.md"
+        patterns_reference = "../references/create-mcp/rust-server-patterns.md"
+        sources_reference = "../references/create-mcp/references/URIs.md"
 
         self.assertIn(shared_reference, general_metadata["references"])
-        self.assertEqual(rust_metadata["references"], [shared_reference])
+        self.assertIn(patterns_reference, general_metadata["references"])
+        self.assertIn(sources_reference, general_metadata["references"])
+        self.assertIn(
+            "MUST implement every new standalone MCP server in Rust", workflow_text
+        )
+        self.assertIn("official `rmcp` SDK", workflow_text)
+        self.assertIn("exact published `rmcp` version", workflow_text)
+        self.assertIn("architectural exception", workflow_text)
+        self.assertIn("Choose one transport", workflow_text)
+        self.assertIn("graceful shutdown", workflow_text)
+        self.assertIn("load [Rust server patterns]", workflow_text)
         self.assertIn("reject invalid origins with HTTP 403", shared_text)
         self.assertIn("write protocol frames to stdout", shared_text)
         self.assertIn("write diagnostics to stderr", shared_text)
-        self.assertIn("MCP 2025-11-25 transport specification", shared_text)
-        self.assertIn("workflows/create-mcp-rust.md", general_text)
-        self.assertIn("pinned `rmcp` version", rust_text)
-        self.assertIn("feature table for the pinned `rmcp` version", rust_text)
-        self.assertNotIn("Origin", rust_text)
-        create_mcp_references = CORE / "skills/plugin-engineering/references/create-mcp"
-        self.assertFalse((create_mcp_references / "method-source.md").exists())
-        self.assertFalse((create_mcp_references / "references/manage_mcp.md").exists())
+        self.assertIn("MCP 2026-07-28 transport specification", shared_text)
+        self.assertIn("`server/discover` is an optional", shared_text)
+        self.assertIn("Do not require `initialize` for every server", shared_text)
+        self.assertIn("GOOD", patterns_text)
+        self.assertIn("BAD", patterns_text)
+        self.assertIn("<PINNED_VERSION>", sources_text)
+        self.assertIn("https://docs.rs/rmcp/<PINNED_VERSION>/rmcp/", sources_text)
         domain_router = (CORE / "skills/plugin-engineering/SKILL.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("language or transport still needs selection", domain_router)
-        self.assertIn(
-            "directly when the server is already known to use Rust", domain_router
-        )
+        self.assertIn("[create-mcp](./workflows/create-mcp.md)", domain_router)
+        self.assertIn("New standalone MCP servers use Rust", domain_router)
 
     def test_hook_and_frontend_workflows_keep_host_and_version_boundaries(self):
         hook = (CORE / "skills/plugin-engineering/workflows/create-hook.md").read_text(
@@ -769,16 +919,36 @@ class AgenticCoreSourceTests(unittest.TestCase):
         self.assertIn("If the handoff explicitly authorizes an ADR", semantic_workflow)
         self.assertIn("established ADR location and format", semantic_workflow)
 
-    def test_security_review_preserves_contextual_cors_controls(self):
-        security_review = (
-            CORE / "skills/security/workflows/security-review.md"
+    def test_security_controls_reference_preserves_review_coverage(self):
+        security_controls = (
+            CORE / "skills/security/references/security-review/security-controls.md"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("Cross-Origin Resource Sharing (CORS)", security_review)
-        self.assertIn("public, non-credentialed access", security_review)
-        self.assertIn("wildcard origin MUST NOT be combined", security_review)
-        self.assertIn("`Vary: Origin`", security_review)
-        self.assertIn("CORS is not authorization", security_review)
+        for review_area in (
+            "## Identity and authorization",
+            "## Input, injection, and uploads",
+            "## Secrets, data exposure, and errors",
+            "## Browser-facing controls",
+            "## Outbound requests and SSRF",
+            "## Abuse limits and dependency evidence",
+            "## Evidence and disposition",
+        ):
+            with self.subTest(review_area=review_area):
+                self.assertIn(review_area, security_controls)
+
+        self.assertIn("specific object and action", security_controls)
+        self.assertIn("- XSS:", security_controls)
+        self.assertIn("- CSRF:", security_controls)
+        self.assertIn("Session cookies", security_controls)
+        self.assertIn("Cross-Origin Resource Sharing (CORS)", security_controls)
+        self.assertIn("public, non-credentialed access", security_controls)
+        self.assertIn("wildcard origin MUST NOT be combined", security_controls)
+        self.assertIn("`Vary: Origin`", security_controls)
+        self.assertIn("CORS is not authentication or authorization", security_controls)
+        self.assertIn(
+            "validate the resolved address and every redirect", security_controls
+        )
+        self.assertIn("not proof that all dependencies are safe", security_controls)
 
     def test_operations_workflows_preserve_removed_method_source_contracts(self):
         operations_skill = (CORE / "skills/operations/SKILL.md").read_text(

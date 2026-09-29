@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "d02f63c7-a687-42d9-85ad-fd43e652b074",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-02-a2",
+  "created_at": "2026-09-28T14:35:18Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "implementer",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "completed",
+  "objective": "Honor a caller-supplied explicit agent catalog in Harness Factory Pack validation and materialization to resolve the QA-reproduced researcher rejection.",
+  "requested_response": "Report exact changed files, catalog propagation, tests and style checks, and any residual limitation.",
+  "constraints": [
+    "No implicit Agentic Core discovery or hardcoded researcher production default was added.",
+    "The default catalog remains empty so callers must provide permitted external agent IDs explicitly.",
+    "No files were staged or committed."
+  ],
+  "evidence": [
+    {"id": "IMPLEMENTATION-HEAD-6", "kind": "observation", "reference": "Implementation correction is based on 7df5475cf51d7ed1ed81685e280f6e60016f0a61."},
+    {"id": "EVIDENCE-6-02-A2-TESTS", "kind": "command", "reference": "Harness Factory 29 passed; Expertise Pack suite 39 passed."},
+    {"id": "EVIDENCE-6-02-A2-STYLE", "kind": "command", "reference": "Ruff check and format check passed on harness_factory/validation.py and tests/test_harness_factory.py."},
+    {"id": "EVIDENCE-6-02-A2-DIFF", "kind": "command", "reference": "git diff --check passed."}
+  ],
+  "changed_paths": [
+    "harness_factory/validation.py",
+    "tests/test_harness_factory.py"
+  ],
+  "validation": [
+    {"check": "Harness Factory explicit-catalog validation and materialization", "result": "passed", "observed_at": "2026-09-28T14:35:18Z", "subject": "TASK-6-02-A2", "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=/var/tmp/agentic-workflow-plugin-factory-decoupling/tmp uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_harness_factory.py'"},
+    {"check": "Expertise Pack v1 regression suite", "result": "passed", "observed_at": "2026-09-28T14:35:18Z", "subject": "TASK-6-02-A2", "command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=/var/tmp/agentic-workflow-plugin-factory-decoupling/tmp uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_expertise_framework.py'"},
+    {"check": "Ruff lint and format", "result": "passed", "observed_at": "2026-09-28T14:35:18Z", "subject": "TASK-6-02-A2", "command": "uv run --with ruff ruff check harness_factory/validation.py tests/test_harness_factory.py; uv run --with ruff ruff format --check harness_factory/validation.py tests/test_harness_factory.py"},
+    {"check": "Whitespace validation", "result": "passed", "observed_at": "2026-09-28T14:35:18Z", "subject": "TASK-6-02-A2", "command": "git diff --check"}
+  ],
+  "commit_status": "not_created",
+  "commit_reason": "Orchestrator owns the focused final commit after QA and Reviewer gates.",
+  "git_commits": [],
+  "artifacts": []
+}

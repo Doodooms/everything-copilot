@@ -7,7 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PLUGINCTL_RUNTIME = ROOT / "agentic-core" / "runtime"
 if str(PLUGINCTL_RUNTIME) not in sys.path:
@@ -15,15 +14,20 @@ if str(PLUGINCTL_RUNTIME) not in sys.path:
 if str(ROOT / "tests") not in sys.path:
     sys.path.insert(0, str(ROOT / "tests"))
 
-from expertise.parser import parse_pack  # noqa: E402
-from pluginctl import (  # noqa: E402
+from pluginctl import (
     PluginControlError,
     PluginController,
     TrustedRegistry,
     TrustedSource,
 )
-from pluginctl.cli import main as pluginctl_main  # noqa: E402
-from test_expertise_framework import write_pack  # noqa: E402
+from pluginctl.cli import main as pluginctl_main
+from test_expertise_framework import write_pack
+
+from expertise.parser import parse_pack
+
+
+def parse_fixture_pack(source_root):
+    return parse_pack(source_root, known_agents={"researcher"})
 
 
 def trusted_registry_for(source):
@@ -69,16 +73,14 @@ class PluginctlLifecycleTests(unittest.TestCase):
             published_skill_manifests,
             {f"skills/{skill_id}/SKILL.md" for skill_id in skill_ids},
         )
-        self.assertFalse(
-            any(path.endswith("/.workflow-routes.tmp") for path in files)
-        )
+        self.assertFalse(any(path.endswith("/.workflow-routes.tmp") for path in files))
 
     def test_store_root_is_required_and_install_needs_trust_digest_and_approval(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workspace = root / "workspace"
             workspace.mkdir()
-            source = parse_pack(write_pack(root / "source"))
+            source = parse_fixture_pack(write_pack(root / "source"))
             store = root / "private-store"
             controller = PluginController(
                 store,
@@ -109,7 +111,7 @@ class PluginctlLifecycleTests(unittest.TestCase):
             installed_root = (
                 store / "packs" / source.ir.id / source.ir.version / "source"
             )
-            installed = parse_pack(installed_root)
+            installed = parse_fixture_pack(installed_root)
             installed_skill = (
                 installed_root / "skills/demo-pack-skill/SKILL.md"
             ).read_bytes()
@@ -121,13 +123,15 @@ class PluginctlLifecycleTests(unittest.TestCase):
         self.assertEqual(result["state"], "INSTALLED")
         self.assertEqual(installed.ir.content_digest, source.ir.content_digest)
 
-    def test_managed_profile_composes_core_pack_and_pending_runtime_without_github(self):
+    def test_managed_profile_composes_core_pack_and_pending_runtime_without_github(
+        self,
+    ):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workspace = root / "workspace"
             workspace.mkdir()
             store = root / "private-store"
-            source = parse_pack(write_pack(root / "source"))
+            source = parse_fixture_pack(write_pack(root / "source"))
             controller = PluginController(
                 store,
                 workspace_root=workspace,
@@ -158,12 +162,9 @@ class PluginctlLifecycleTests(unittest.TestCase):
             )
             profile = Path(materialized["profile_path"])
             profile_has_plugin = (profile / "plugin.json").is_file()
-            profile_has_skill = (
-                profile / "skills/demo-pack-skill/SKILL.md"
-            ).is_file()
+            profile_has_skill = (profile / "skills/demo-pack-skill/SKILL.md").is_file()
             profile_has_agent = (
-                profile
-                / "com.github.copilot/agents/demo-pack-engineer.agent.md"
+                profile / "com.github.copilot/agents/demo-pack-engineer.agent.md"
             ).is_file()
             profile_has_no_github = not (profile / ".github").exists()
             profile_is_outside_workspace = ".github" not in profile.parts
@@ -203,14 +204,14 @@ class PluginctlLifecycleTests(unittest.TestCase):
             workspace = root / "workspace"
             workspace.mkdir()
             store = root / "private-store"
-            first = parse_pack(
+            first = parse_fixture_pack(
                 write_pack(
                     root / "first",
                     pack_id="first-pack",
                     capability_id="first.read",
                 )
             )
-            missing_capability = parse_pack(
+            missing_capability = parse_fixture_pack(
                 write_pack(
                     root / "missing",
                     pack_id="missing-pack",
@@ -270,14 +271,14 @@ class PluginctlLifecycleTests(unittest.TestCase):
             root = Path(directory)
             workspace = root / "workspace"
             workspace.mkdir()
-            first = parse_pack(
+            first = parse_fixture_pack(
                 write_pack(
                     root / "first",
                     pack_id="first-pack",
                     capability_id="first.read",
                 )
             )
-            second = parse_pack(
+            second = parse_fixture_pack(
                 write_pack(
                     root / "second",
                     pack_id="second-pack",
@@ -339,7 +340,7 @@ class PluginctlLifecycleTests(unittest.TestCase):
             root = Path(directory)
             workspace = root / "workspace"
             workspace.mkdir()
-            source = parse_pack(write_pack(root / "source"))
+            source = parse_fixture_pack(write_pack(root / "source"))
             controller = PluginController(
                 root / "private-store",
                 workspace_root=workspace,
@@ -370,7 +371,7 @@ class PluginctlLifecycleTests(unittest.TestCase):
             workspace = root / "workspace"
             workspace.mkdir()
             store = root / "private-store"
-            source = parse_pack(write_pack(root / "source"))
+            source = parse_fixture_pack(write_pack(root / "source"))
             store.mkdir()
             (store / "trusted-registry.json").write_text(
                 json.dumps(

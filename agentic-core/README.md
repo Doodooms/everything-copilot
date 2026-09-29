@@ -6,6 +6,10 @@ The `multi-harness` skill coordinates bounded Copilot/Codex handoffs. Its two ho
 
 The Orchestrator can also use `skills/orchestration/workflows/chatgpt-work-handoff.md` to prepare a verified GitHub PR for a ChatGPT Work event-triggered status report. Codex/Copilot retain implementation and validation ownership; the Work task is read-only and returns a discussion summary.
 
+## Packaged lifecycle CLI
+
+Run `uv run --script /absolute/path/to/agentic-core/runtime/pluginctl_cli.py` from any working directory, passing explicit `--store-root` and (when needed) `--workspace-root` paths. The script declares Python 3.10+ and PyYAML 6.x; a direct `python` invocation works when PyYAML is already installed. The runtime includes the canonical `expertise` package; keep it synchronized with the repository source by running `python scripts/sync_pluginctl_runtime.py --write` after changing `expertise/`.
+
 ## GitHub App MCP
 
 The `github-mcp-server` MCP is started by the plugin host as a dedicated Docker container using stdio. GitHub App authentication is supported by the official server in stdio mode; the HTTP mode does not support this authentication flow.

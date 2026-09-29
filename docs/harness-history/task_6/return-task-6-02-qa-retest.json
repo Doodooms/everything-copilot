@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "agent_handoff",
+  "handoff_id": "aa953122-4125-48e3-a095-343bff5c87ec",
+  "task_id": "task_6",
+  "attempt_id": "attempt-6-02-qa-b1",
+  "created_at": "2026-09-28T13:36:00Z",
+  "producer": {
+    "harness": "codex",
+    "agent_id": "quality-assurance",
+    "session_id": null
+  },
+  "recipient": {
+    "harness": "codex",
+    "agent_id": "orchestrator",
+    "session_id": null
+  },
+  "outcome": "completed",
+  "objective": "Independently retest the Copilot Pack v1 routing-file reference compatibility defect after the adapter repair.",
+  "requested_response": "Return PASS/FAIL per scenario and exact validation evidence without changing files.",
+  "constraints": [
+    "Use real Pack v1 filesystem fixtures and public parse_pack/compile_copilot paths.",
+    "Do not edit, stage, or commit files."
+  ],
+  "evidence": [
+    {"id": "SPEC-6", "kind": "artifact", "reference": "todos/in_progress/2026-09-28/plugin-factory-decoupling.md"},
+    {"id": "TASK-6-02-FIX", "kind": "observation", "reference": "Copilot adapter validates legacy routing references against the Pack root without changing neutral semantics."}
+  ],
+  "changed_paths": [],
+  "validation": [
+    {"check": "direct agents/ source with #file:./references/USEFOR.md", "result": "passed: rejected because per-agent package directory is required", "observed_at": "2026-09-28T13:36:00Z", "subject": "TASK-6-02", "command": "QA real Pack v1 fixture via parse_pack and compile_copilot"},
+    {"check": "nested agent with missing sibling references", "result": "passed: rejected because required routing reference is unavailable", "observed_at": "2026-09-28T13:36:00Z", "subject": "TASK-6-02", "command": "QA real Pack v1 fixture via parse_pack and compile_copilot"},
+    {"check": "nested agent with both regular in-pack sibling references", "result": "passed: Copilot projection compiled with six files", "observed_at": "2026-09-28T13:36:00Z", "subject": "TASK-6-02", "command": "QA real Pack v1 fixture via parse_pack and compile_copilot"},
+    {"check": "test_expertise_framework.py", "result": "passed: 39 tests", "observed_at": "2026-09-28T13:36:00Z", "subject": "TASK-6-02", "command": "uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_expertise_framework.py'"},
+    {"check": "test_pluginctl_lifecycle.py", "result": "passed: 7 tests", "observed_at": "2026-09-28T13:36:00Z", "subject": "TASK-6-02", "command": "uv run --no-project --with pyyaml --with typer python -m unittest discover -s tests -p 'test_pluginctl_lifecycle.py'"}
+  ],
+  "commit_status": "not_applicable",
+  "commit_reason": "QA ran read-only and made no file changes.",
+  "git_commits": [],
+  "artifacts": []
+}

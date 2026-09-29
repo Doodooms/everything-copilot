@@ -1,3 +1,10 @@
+---
+kind: research_input
+status: triaged
+disposition: research_required
+derived_work: []
+---
+
 > **Design/research input — not an approved implementation plan.**
 
 How to Stop Claude Code From Reading Your API Keys, SSH Keys, and Passwords (Exact Deny Rules)

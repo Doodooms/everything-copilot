@@ -1,3 +1,19 @@
+---
+kind: work_brief
+status: researched
+disposition: partially_adopted
+derived_work:
+  - docs/harness-history/task_3/manifest.json
+  - docs/tasks-history/task_3.jsonl
+  - harness_factory/
+  - tests/test_harness_factory.py
+  - experiments/harness-evals/
+  - experiments/routing/
+  - outputs/evals/baseline-inventory-r7.json
+  - todos/backlog/2026-09-27/cost-eval-opt-followups.md
+  - docs/harness-history/task_5/events.jsonl
+---
+
 # Phase 2
 
 La phase précédente a établi une infrastructure multi-harness Copilot/Codex avec isolation des runs et cross-validation contrôlée.

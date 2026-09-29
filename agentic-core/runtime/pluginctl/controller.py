@@ -4,42 +4,52 @@ import base64
 import json
 import os
 import shutil
+import sys
 import uuid
 from collections.abc import Iterable, Mapping
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import Any
 
-from expertise.errors import ExpertiseError, ResolutionError, TargetError
+from expertise.errors import ExpertiseError
 from expertise.ir import EffectiveIR, PackReference, PackSource
 from expertise.ontology import (
-    AGENT_PLUGINS_VERSION,
     CAPABILITY_ID_PATTERN,
     MCP_SCHEMA,
     PACK_ID_PATTERN,
     VERSION_PATTERN,
     canonical_digest,
-    parse_agent_plugins_requirement,
     parse_version,
 )
 from expertise.parser import parse_pack, source_content_digest
 from expertise.registry import LocalPackRegistry
 from expertise.resolver import _version_key, resolve_effective_ir
-from expertise.targets import compile_target, validate_mcp_manifest, validate_plugin_manifest
+from expertise.targets import (
+    compile_target,
+    validate_mcp_manifest,
+    validate_plugin_manifest,
+)
 from expertise.targets.common import (
     CompiledTarget,
     ensure_supported_agent_plugins,
     validate_target_files,
 )
 from expertise.targets.copilot import _validate_agent
-from expertise.validator import (
-    core_agent_ids,
-    load_json_no_duplicate_keys,
-    load_pack_yaml_bytes,
+from expertise.validator import load_json_no_duplicate_keys, load_pack_yaml_bytes
+
+from .models import (
+    ActiveSet,
+    EffectiveProfile,
+    ManagedEffectiveIR,
+    PluginControlError,
+    TrustedRegistry,
+    TrustedSource,
 )
 
-from .models import ActiveSet, EffectiveProfile, ManagedEffectiveIR, PluginControlError, TrustedRegistry, TrustedSource
-
+_CORE_PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_CORE_PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_CORE_PACKAGE_ROOT))
+from core_agents import load_core_agents
 
 _HEX_DIGEST = frozenset("0123456789abcdef")
 _INSTALL_RECORD_FIELDS = {
@@ -55,6 +65,16 @@ _INSTALL_RECORD_FIELDS = {
 _PROFILE_FIELDS = {"schema_version", "active_packs", "capabilities"}
 
 
+def _core_package_root() -> Path:
+    """Find the packaged Agentic Core root relative to this runtime module."""
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "plugin.json").is_file() and (parent / "skills").is_dir():
+            return parent
+    raise PluginControlError(
+        "agentic-core package root is unavailable relative to pluginctl"
+    )
+
+
 def _digest_is_valid(value: Any) -> bool:
     return (
         isinstance(value, str)
@@ -64,9 +84,10 @@ def _digest_is_valid(value: Any) -> bool:
 
 
 def _json_bytes(value: Any) -> bytes:
-    return (json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode(
-        "utf-8"
-    )
+    return (
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        + "\n"
+    ).encode("utf-8")
 
 
 def _safe_relative_path(relative: str) -> Path:
@@ -100,7 +121,9 @@ def _read_regular_file(path: Path, root: Path, description: str) -> bytes:
     except PluginControlError:
         raise
     except (OSError, RuntimeError, ValueError) as exc:
-        raise PluginControlError(f"{description} is unavailable or outside its root: {path}") from exc
+        raise PluginControlError(
+            f"{description} is unavailable or outside its root: {path}"
+        ) from exc
 
 
 def _write_bytes_exclusive(path: Path, content: bytes) -> None:
@@ -112,7 +135,9 @@ def _write_bytes_exclusive(path: Path, content: bytes) -> None:
             stream.flush()
             os.fsync(stream.fileno())
     except FileExistsError as exc:
-        raise PluginControlError(f"refusing to overwrite existing file: {path}") from exc
+        raise PluginControlError(
+            f"refusing to overwrite existing file: {path}"
+        ) from exc
 
 
 def _atomic_write(path: Path, content: bytes) -> None:
@@ -147,15 +172,21 @@ class PluginController:
         _ensure_no_symlink(raw_store_root, "store_root")
         self.store_root = raw_store_root.resolve(strict=False)
         if self.store_root == Path("/") or ".github" in self.store_root.parts:
-            raise PluginControlError("store_root is not an allowed private store location")
+            raise PluginControlError(
+                "store_root is not an allowed private store location"
+            )
 
         raw_workspace = Path(workspace_root or Path.cwd())
         try:
             self.workspace_root = raw_workspace.resolve(strict=True)
         except OSError as exc:
-            raise PluginControlError(f"workspace root is unavailable: {raw_workspace}") from exc
+            raise PluginControlError(
+                f"workspace root is unavailable: {raw_workspace}"
+            ) from exc
         if not self.workspace_root.is_dir():
-            raise PluginControlError(f"workspace root is not a directory: {self.workspace_root}")
+            raise PluginControlError(
+                f"workspace root is not a directory: {self.workspace_root}"
+            )
         if self.store_root == self.workspace_root:
             raise PluginControlError("store_root and workspace_root must be distinct")
 
@@ -179,9 +210,8 @@ class PluginController:
             raise PluginControlError("host_capabilities must be non-empty strings")
         self.host_capabilities = tuple(sorted(set(supplied_host_capabilities)))
 
-        self.repository_root = Path(__file__).resolve().parents[3]
-        self.core_root = self.repository_root / "agentic-core"
-        self.core_agent_ids = core_agent_ids(self.repository_root)
+        self.core_root = _core_package_root()
+        self.core_agent_ids = frozenset(load_core_agents(self.core_root / "agents"))
 
     @property
     def workspace_state_dir(self) -> Path:
@@ -190,7 +220,9 @@ class PluginController:
         try:
             state_dir.resolve(strict=False).relative_to(self.workspace_root)
         except ValueError as exc:
-            raise PluginControlError("workspace state path escapes the workspace") from exc
+            raise PluginControlError(
+                "workspace state path escapes the workspace"
+            ) from exc
         return state_dir
 
     def _ensure_store_root(self) -> None:
@@ -198,7 +230,9 @@ class PluginController:
         try:
             self.store_root.mkdir(parents=True, exist_ok=True)
         except OSError as exc:
-            raise PluginControlError(f"could not create private store root: {exc}") from exc
+            raise PluginControlError(
+                f"could not create private store root: {exc}"
+            ) from exc
         if not self.store_root.is_dir():
             raise PluginControlError("store_root is not a directory")
 
@@ -207,10 +241,14 @@ class PluginController:
         for part in parts:
             safe = _safe_relative_path(part)
             if len(safe.parts) != 1:
-                raise PluginControlError(f"store path component is not a single name: {part!r}")
+                raise PluginControlError(
+                    f"store path component is not a single name: {part!r}"
+                )
             path = path / safe
             if path.is_symlink():
-                raise PluginControlError(f"private store path contains a symlink: {path}")
+                raise PluginControlError(
+                    f"private store path contains a symlink: {path}"
+                )
         try:
             path.resolve(strict=False).relative_to(self.store_root)
         except ValueError as exc:
@@ -231,20 +269,28 @@ class PluginController:
                 f"trusted source is unavailable: {entry.source_root}"
             ) from exc
         if expected_root != source.root:
-            raise PluginControlError("pack source path does not match the trusted registry entry")
+            raise PluginControlError(
+                "pack source path does not match the trusted registry entry"
+            )
         if entry.digest != source.ir.content_digest:
-            raise PluginControlError("pack content digest does not match the trusted registry")
+            raise PluginControlError(
+                "pack content digest does not match the trusted registry"
+            )
         if entry.publisher != source.ir.trust.publisher:
-            raise PluginControlError("pack publisher does not match the trusted registry")
+            raise PluginControlError(
+                "pack publisher does not match the trusted registry"
+            )
         if entry.source != source.ir.trust.source:
-            raise PluginControlError("pack source identity does not match the trusted registry")
+            raise PluginControlError(
+                "pack source identity does not match the trusted registry"
+            )
         return entry
 
     def check(self, source_root: Path) -> dict[str, Any]:
         raw_root = Path(source_root)
         if raw_root.is_symlink():
             raise PluginControlError("trusted source root must not be a symlink")
-        source = parse_pack(raw_root)
+        source = parse_pack(raw_root, known_agents=self.core_agent_ids)
         ensure_supported_agent_plugins(source)
         compile_target(source, "copilot")
         entry = self.trusted_registry.get(source.ir.reference)
@@ -282,24 +328,33 @@ class PluginController:
             )
         if expected_digest is not None:
             requested_digest = expected_digest.removeprefix("sha256:")
-            if not _digest_is_valid(requested_digest) or requested_digest != entry.digest:
-                raise PluginControlError("requested digest does not match trusted registry pin")
+            if (
+                not _digest_is_valid(requested_digest)
+                or requested_digest != entry.digest
+            ):
+                raise PluginControlError(
+                    "requested digest does not match trusted registry pin"
+                )
 
         raw_source = entry.source_root
         if raw_source.is_symlink():
             raise PluginControlError("trusted source root must not be a symlink")
-        source = parse_pack(raw_source)
+        source = parse_pack(raw_source, known_agents=self.core_agent_ids)
         self._trusted_source_for(source)
         ensure_supported_agent_plugins(source)
         if "copilot" not in source.ir.compatibility.targets:
-            raise PluginControlError("pack is not compatible with the Copilot managed target")
+            raise PluginControlError(
+                "pack is not compatible with the Copilot managed target"
+            )
         compile_target(source, "copilot")
 
         installed = self._load_installed_sources()
         existing = installed.get(reference)
         if existing is not None:
             if existing.ir.content_digest != source.ir.content_digest:
-                raise PluginControlError("installed version has a different content digest")
+                raise PluginControlError(
+                    "installed version has a different content digest"
+                )
             return {
                 "status": "installed",
                 "state": "INSTALLED",
@@ -325,9 +380,11 @@ class PluginController:
         try:
             stage_root.mkdir(parents=True, exist_ok=False)
             self._write_source_snapshot(stage_source, source)
-            staged_source = parse_pack(stage_source)
+            staged_source = parse_pack(stage_source, known_agents=self.core_agent_ids)
             if staged_source.ir.content_digest != source.ir.content_digest:
-                raise PluginControlError("staged pack digest differs from trusted source")
+                raise PluginControlError(
+                    "staged pack digest differs from trusted source"
+                )
             self._validate_dependency_closure(staged_source, installed)
             record = {
                 "schema_version": 1,
@@ -342,7 +399,10 @@ class PluginController:
             _write_bytes_exclusive(stage_root / "install.json", _json_bytes(record))
             self._make_read_only(
                 [
-                    *(stage_source / _safe_relative_path(relative) for relative in source.source_snapshot),
+                    *(
+                        stage_source / _safe_relative_path(relative)
+                        for relative in source.source_snapshot
+                    ),
                     stage_root / "install.json",
                 ]
             )
@@ -410,9 +470,7 @@ class PluginController:
             return self._status_result("deactivate", previous)
         missing = sorted(set(packs) - set(installed))
         if missing:
-            rendered = ", ".join(
-                f"{item.id}@{item.version}" for item in missing
-            )
+            rendered = ", ".join(f"{item.id}@{item.version}" for item in missing)
             raise PluginControlError(
                 f"Active Set contains packs that are not installed: {rendered}"
             )
@@ -533,10 +591,16 @@ class PluginController:
         }:
             raise PluginControlError("rollback snapshot is invalid")
         previous_yaml = self._decode_optional_snapshot(snapshot["profile_yaml"])
-        previous_set = self._parse_active_set_bytes(previous_yaml) if previous_yaml else ActiveSet()
+        previous_set = (
+            self._parse_active_set_bytes(previous_yaml)
+            if previous_yaml
+            else ActiveSet()
+        )
         managed, artifact, profile_hash = self._compose(previous_set)
         if artifact is None:
-            lock = self._make_profile_lock(previous_set, managed, None, None, "CORE_ONLY")
+            lock = self._make_profile_lock(
+                previous_set, managed, None, None, "CORE_ONLY"
+            )
         else:
             profile_path = self._store_path("profiles", profile_hash)
             self._materialize_artifact(artifact, profile_path)
@@ -557,7 +621,9 @@ class PluginController:
             "effective_ir": managed.as_dict(),
         }
 
-    def _activate_candidate(self, candidate: ActiveSet, *, action: str) -> dict[str, Any]:
+    def _activate_candidate(
+        self, candidate: ActiveSet, *, action: str
+    ) -> dict[str, Any]:
         managed, artifact, profile_hash = self._compose(candidate)
         if artifact is None:
             lock = self._make_profile_lock(candidate, managed, None, None, "CORE_ONLY")
@@ -581,7 +647,9 @@ class PluginController:
                 effective_ir=managed,
                 runtime_state="MATERIALIZED_PENDING_ACTIVATION",
             )
-            if artifact is not None and profile_hash is not None and profile_path is not None
+            if artifact is not None
+            and profile_hash is not None
+            and profile_path is not None
             else None
         )
         return {
@@ -589,13 +657,15 @@ class PluginController:
             "desired_state": "ACTIVE" if candidate.packs else "CORE_ONLY",
             "state": lock["runtime_state"],
             "runtime_visible": False,
-            **(profile.as_dict() if profile is not None else {
-                "profile_hash": None,
-                "effective_ir": managed.as_dict(),
-            }),
-            "profile_path": (
-                str(profile.store_path) if profile is not None else None
+            **(
+                profile.as_dict()
+                if profile is not None
+                else {
+                    "profile_hash": None,
+                    "effective_ir": managed.as_dict(),
+                }
             ),
+            "profile_path": (str(profile.store_path) if profile is not None else None),
         }
 
     def _compose(
@@ -611,7 +681,9 @@ class PluginController:
         }
         for reference, digest in active_set.packs:
             if reference not in installed:
-                raise PluginControlError(f"active pack is not installed: {reference.id}@{reference.version}")
+                raise PluginControlError(
+                    f"active pack is not installed: {reference.id}@{reference.version}"
+                )
             if installed[reference].ir.content_digest != digest:
                 raise PluginControlError(
                     f"active pack digest changed: {reference.id}@{reference.version}"
@@ -619,7 +691,7 @@ class PluginController:
 
         registry = LocalPackRegistry(
             installed.values(),
-            known_core_agents=self.core_agent_ids,
+            known_agents=self.core_agent_ids,
         )
         try:
             effective_packs = resolve_effective_ir(
@@ -760,14 +832,18 @@ class PluginController:
                 declared_ids = {server.id for server in source.ir.mcp_servers}
                 allowed_ids = allowed_servers[reference]
                 if not allowed_ids <= declared_ids:
-                    raise PluginControlError("MCP projection references an undeclared server")
+                    raise PluginControlError(
+                        "MCP projection references an undeclared server"
+                    )
                 for server_id in sorted(allowed_ids):
                     if server_id not in pack_mcp.get("mcpServers", {}):
                         raise PluginControlError(
                             f"projected MCP server is missing from package: {server_id}"
                         )
                     if server_id in mcp_servers:
-                        raise PluginControlError(f"duplicate MCP server ID: {server_id}")
+                        raise PluginControlError(
+                            f"duplicate MCP server ID: {server_id}"
+                        )
                     mcp_servers[server_id] = pack_mcp["mcpServers"][server_id]
 
         if mcp_servers:
@@ -795,8 +871,13 @@ class PluginController:
                 possible = [
                     (reference, source)
                     for reference, source in available.items()
-                    if any(item.id == dependency.capability for item in source.ir.capabilities)
-                    and (dependency.pack_id is None or reference.id == dependency.pack_id)
+                    if any(
+                        item.id == dependency.capability
+                        for item in source.ir.capabilities
+                    )
+                    and (
+                        dependency.pack_id is None or reference.id == dependency.pack_id
+                    )
                     and (
                         dependency.minimum_version is None
                         or _version_key(reference.version)
@@ -826,7 +907,7 @@ class PluginController:
         refs = tuple(sorted(selected))
         registry = LocalPackRegistry(
             selected.values(),
-            known_core_agents=self.core_agent_ids,
+            known_agents=self.core_agent_ids,
         )
         try:
             resolve_effective_ir(
@@ -838,7 +919,9 @@ class PluginController:
                 host_capabilities=self.host_capabilities,
             )
         except ExpertiseError as exc:
-            raise PluginControlError(f"pack dependency resolution failed: {exc}") from exc
+            raise PluginControlError(
+                f"pack dependency resolution failed: {exc}"
+            ) from exc
 
     def _load_installed_sources(self) -> dict[PackReference, PackSource]:
         packs_root = self.store_root / "packs"
@@ -853,17 +936,31 @@ class PluginController:
         for id_dir in sorted(packs_root.iterdir(), key=lambda path: path.name):
             _ensure_no_symlink(id_dir, "installed pack entry")
             if not id_dir.is_dir():
-                raise PluginControlError(f"unexpected file in installed pack store: {id_dir.name}")
+                raise PluginControlError(
+                    f"unexpected file in installed pack store: {id_dir.name}"
+                )
             if not PACK_ID_PATTERN.fullmatch(id_dir.name) or len(id_dir.name) > 64:
-                raise PluginControlError(f"invalid installed pack ID directory: {id_dir.name}")
+                raise PluginControlError(
+                    f"invalid installed pack ID directory: {id_dir.name}"
+                )
             for version_dir in sorted(id_dir.iterdir(), key=lambda path: path.name):
                 _ensure_no_symlink(version_dir, "installed version entry")
-                if not version_dir.is_dir() or VERSION_PATTERN.fullmatch(version_dir.name) is None:
-                    raise PluginControlError(f"invalid installed pack version path: {version_dir}")
+                if (
+                    not version_dir.is_dir()
+                    or VERSION_PATTERN.fullmatch(version_dir.name) is None
+                ):
+                    raise PluginControlError(
+                        f"invalid installed pack version path: {version_dir}"
+                    )
                 record_path = version_dir / "install.json"
                 record = self._read_json_file(record_path, version_dir)
-                if not isinstance(record, dict) or set(record) != _INSTALL_RECORD_FIELDS:
-                    raise PluginControlError(f"install record is invalid: {record_path}")
+                if (
+                    not isinstance(record, dict)
+                    or set(record) != _INSTALL_RECORD_FIELDS
+                ):
+                    raise PluginControlError(
+                        f"install record is invalid: {record_path}"
+                    )
                 string_fields = (
                     "id",
                     "version",
@@ -872,8 +969,12 @@ class PluginController:
                     "source",
                     "trusted_source_path",
                 )
-                if any(not isinstance(record.get(field), str) for field in string_fields):
-                    raise PluginControlError(f"install record fields are invalid: {record_path}")
+                if any(
+                    not isinstance(record.get(field), str) for field in string_fields
+                ):
+                    raise PluginControlError(
+                        f"install record fields are invalid: {record_path}"
+                    )
                 reference = PackReference(record.get("id"), record.get("version"))
                 if (
                     reference.id != id_dir.name
@@ -884,13 +985,22 @@ class PluginController:
                     or record.get("approved") is not True
                     or not _digest_is_valid(record.get("digest"))
                 ):
-                    raise PluginControlError(f"install record is inconsistent: {record_path}")
+                    raise PluginControlError(
+                        f"install record is inconsistent: {record_path}"
+                    )
                 source_root = version_dir / "source"
                 if source_root.is_symlink() or not source_root.is_dir():
-                    raise PluginControlError(f"installed source is unavailable: {source_root}")
-                source = parse_pack(source_root)
-                if source.ir.reference != reference or source.ir.content_digest != record["digest"]:
-                    raise PluginControlError(f"installed source digest mismatch: {reference.id}@{reference.version}")
+                    raise PluginControlError(
+                        f"installed source is unavailable: {source_root}"
+                    )
+                source = parse_pack(source_root, known_agents=self.core_agent_ids)
+                if (
+                    source.ir.reference != reference
+                    or source.ir.content_digest != record["digest"]
+                ):
+                    raise PluginControlError(
+                        f"installed source digest mismatch: {reference.id}@{reference.version}"
+                    )
                 ensure_supported_agent_plugins(source)
                 if "copilot" not in source.ir.compatibility.targets:
                     raise PluginControlError(
@@ -905,7 +1015,8 @@ class PluginController:
                     entry.digest != record["digest"]
                     or entry.publisher != record["publisher"]
                     or entry.source != record["source"]
-                    or str(entry.source_root.resolve(strict=False)) != record["trusted_source_path"]
+                    or str(entry.source_root.resolve(strict=False))
+                    != record["trusted_source_path"]
                     or source.ir.trust.publisher != record["publisher"]
                     or source.ir.trust.source != record["source"]
                 ):
@@ -916,7 +1027,9 @@ class PluginController:
         return installed
 
     def _load_install_record(self, reference: PackReference) -> dict[str, Any]:
-        path = self._store_path("packs", reference.id, reference.version, "install.json")
+        path = self._store_path(
+            "packs", reference.id, reference.version, "install.json"
+        )
         record = self._read_json_file(path, self.store_root)
         if not isinstance(record, dict):
             raise PluginControlError(f"install record is invalid: {path}")
@@ -938,8 +1051,13 @@ class PluginController:
 
     def _parse_active_set(self, document: Any) -> ActiveSet:
         if not isinstance(document, dict) or set(document) != _PROFILE_FIELDS:
-            raise PluginControlError("profile.yaml must contain schema_version, active_packs, capabilities")
-        if type(document.get("schema_version")) is not int or document["schema_version"] != 1:
+            raise PluginControlError(
+                "profile.yaml must contain schema_version, active_packs, capabilities"
+            )
+        if (
+            type(document.get("schema_version")) is not int
+            or document["schema_version"] != 1
+        ):
             raise PluginControlError("profile.yaml schema_version must be integer 1")
         raw_packs = document.get("active_packs")
         if not isinstance(raw_packs, list):
@@ -949,9 +1067,15 @@ class PluginController:
         seen_ids: set[str] = set()
         for index, item in enumerate(raw_packs):
             if not isinstance(item, dict) or set(item) != {"id", "version", "digest"}:
-                raise PluginControlError(f"profile.yaml active_packs[{index}] is invalid")
-            if not all(isinstance(item[key], str) for key in ("id", "version", "digest")):
-                raise PluginControlError(f"profile.yaml active_packs[{index}] fields must be strings")
+                raise PluginControlError(
+                    f"profile.yaml active_packs[{index}] is invalid"
+                )
+            if not all(
+                isinstance(item[key], str) for key in ("id", "version", "digest")
+            ):
+                raise PluginControlError(
+                    f"profile.yaml active_packs[{index}] fields must be strings"
+                )
             reference = PackReference(item["id"], item["version"])
             if (
                 not PACK_ID_PATTERN.fullmatch(reference.id)
@@ -959,9 +1083,13 @@ class PluginController:
                 or VERSION_PATTERN.fullmatch(reference.version) is None
                 or not _digest_is_valid(item["digest"])
             ):
-                raise PluginControlError(f"profile.yaml active_packs[{index}] has invalid identity/digest")
+                raise PluginControlError(
+                    f"profile.yaml active_packs[{index}] has invalid identity/digest"
+                )
             if reference in seen or reference.id in seen_ids:
-                raise PluginControlError(f"profile.yaml has duplicate active pack {reference.id!r}")
+                raise PluginControlError(
+                    f"profile.yaml has duplicate active pack {reference.id!r}"
+                )
             seen.add(reference)
             seen_ids.add(reference.id)
             packs.append((reference, item["digest"]))
@@ -970,7 +1098,9 @@ class PluginController:
             not isinstance(item, str) or not CAPABILITY_ID_PATTERN.fullmatch(item)
             for item in raw_capabilities
         ):
-            raise PluginControlError("profile.yaml capabilities must be valid capability IDs")
+            raise PluginControlError(
+                "profile.yaml capabilities must be valid capability IDs"
+            )
         if len(raw_capabilities) != len(set(raw_capabilities)):
             raise PluginControlError("profile.yaml capabilities must be unique")
         return ActiveSet(
@@ -991,7 +1121,9 @@ class PluginController:
 
     def _read_json_file(self, path: Path, root: Path) -> Any:
         try:
-            return load_json_no_duplicate_keys(_read_regular_file(path, root, "JSON state"))
+            return load_json_no_duplicate_keys(
+                _read_regular_file(path, root, "JSON state")
+            )
         except ExpertiseError as exc:
             raise PluginControlError(f"invalid JSON state at {path}: {exc}") from exc
         except Exception as exc:
@@ -1013,7 +1145,7 @@ class PluginController:
         if raw.is_symlink():
             raise PluginControlError("pack source root must not be a symlink")
         try:
-            return parse_pack(raw)
+            return parse_pack(raw, known_agents=self.core_agent_ids)
         except ExpertiseError as exc:
             raise PluginControlError(f"pack source check failed: {exc}") from exc
 
@@ -1025,25 +1157,42 @@ class PluginController:
         try:
             expected_root = entry.source_root.resolve(strict=True)
         except OSError as exc:
-            raise PluginControlError(f"trusted source is unavailable: {entry.source_root}") from exc
+            raise PluginControlError(
+                f"trusted source is unavailable: {entry.source_root}"
+            ) from exc
         if source.root != expected_root:
-            raise PluginControlError("source path does not match the trusted registry entry")
+            raise PluginControlError(
+                "source path does not match the trusted registry entry"
+            )
         if source.ir.content_digest != entry.digest:
-            raise PluginControlError("source digest does not match the trusted registry entry")
-        if source.ir.trust.publisher != entry.publisher or source.ir.trust.source != entry.source:
-            raise PluginControlError("source trust metadata does not match the trusted registry entry")
+            raise PluginControlError(
+                "source digest does not match the trusted registry entry"
+            )
+        if (
+            source.ir.trust.publisher != entry.publisher
+            or source.ir.trust.source != entry.source
+        ):
+            raise PluginControlError(
+                "source trust metadata does not match the trusted registry entry"
+            )
 
     def _load_core(
         self,
     ) -> tuple[PackReference, str, Mapping[str, bytes], frozenset[str]]:
         plugin_path = self.core_root / "plugin.json"
-        raw_plugin = _read_regular_file(plugin_path, self.core_root, "agentic-core plugin.json")
+        raw_plugin = _read_regular_file(
+            plugin_path, self.core_root, "agentic-core plugin.json"
+        )
         try:
             plugin = load_json_no_duplicate_keys(raw_plugin)
             validate_plugin_manifest(plugin)
         except Exception as exc:
             raise PluginControlError("agentic-core plugin.json is invalid") from exc
-        if not isinstance(plugin, dict) or not isinstance(plugin.get("name"), str) or not isinstance(plugin.get("version"), str):
+        if (
+            not isinstance(plugin, dict)
+            or not isinstance(plugin.get("name"), str)
+            or not isinstance(plugin.get("version"), str)
+        ):
             raise PluginControlError("agentic-core plugin identity is invalid")
         core_reference = PackReference(plugin["name"], plugin["version"])
         try:
@@ -1066,7 +1215,9 @@ class PluginController:
             skill_ids.add(skill_root.name)
             for path in sorted(skill_root.rglob("*"), key=lambda item: item.as_posix()):
                 if path.is_symlink():
-                    raise PluginControlError(f"agentic-core skill contains a symlink: {path}")
+                    raise PluginControlError(
+                        f"agentic-core skill contains a symlink: {path}"
+                    )
                 if (
                     not path.is_file()
                     or _is_generated_cache(path)
@@ -1081,23 +1232,29 @@ class PluginController:
         agent_dir = self.core_root / "com.github.copilot" / "agents"
         _ensure_no_symlink(agent_dir, "agentic-core agent directory")
         if not agent_dir.is_dir():
-            raise PluginControlError("agentic-core Copilot agent directory is unavailable")
+            raise PluginControlError(
+                "agentic-core Copilot agent directory is unavailable"
+            )
         agent_ids: set[str] = set()
         for path in sorted(agent_dir.glob("*.agent.md"), key=lambda item: item.name):
             if path.is_symlink():
                 raise PluginControlError(f"agentic-core agent is a symlink: {path}")
             content = _read_regular_file(path, self.core_root, "agentic-core agent")
-            _validate_agent(content, path, self.repository_root)
+            _validate_agent(content, path, self.core_agent_ids)
             agent_ids.add(path.name.removesuffix(".agent.md"))
             files[f"com.github.copilot/agents/{path.name}"] = content
         if agent_ids != set(self.core_agent_ids):
-            raise PluginControlError("agentic-core agent catalog changed during composition")
+            raise PluginControlError(
+                "agentic-core agent catalog changed during composition"
+            )
 
         mcp_path = self.core_root / "mcp.json"
         if mcp_path.exists() or mcp_path.is_symlink():
             if mcp_path.is_symlink():
                 raise PluginControlError("agentic-core mcp.json must not be a symlink")
-            raw_mcp = _read_regular_file(mcp_path, self.core_root, "agentic-core mcp.json")
+            raw_mcp = _read_regular_file(
+                mcp_path, self.core_root, "agentic-core mcp.json"
+            )
             try:
                 validate_mcp_manifest(load_json_no_duplicate_keys(raw_mcp))
             except Exception as exc:
@@ -1127,7 +1284,9 @@ class PluginController:
             or final.parent != profiles_root
             or not _digest_is_valid(final.name)
         ):
-            raise PluginControlError("profile path must be a hash-addressed child of profiles")
+            raise PluginControlError(
+                "profile path must be a hash-addressed child of profiles"
+            )
         _ensure_no_symlink(final, "profile path")
         if final.exists() or final.is_symlink():
             if final.is_symlink() or not final.is_dir():
@@ -1159,15 +1318,25 @@ class PluginController:
 
     def _validate_profile_tree(self, root: Path) -> None:
         manifest_path = root / "plugin.json"
-        manifest = load_json_no_duplicate_keys(_read_regular_file(manifest_path, root, "profile plugin.json"))
+        manifest = load_json_no_duplicate_keys(
+            _read_regular_file(manifest_path, root, "profile plugin.json")
+        )
         validate_plugin_manifest(manifest)
         mcp_path = root / "mcp.json"
         if mcp_path.exists():
-            validate_mcp_manifest(load_json_no_duplicate_keys(_read_regular_file(mcp_path, root, "profile mcp.json")))
-        for skill_root in sorted((root / "skills").glob("*")) if (root / "skills").exists() else ():
+            validate_mcp_manifest(
+                load_json_no_duplicate_keys(
+                    _read_regular_file(mcp_path, root, "profile mcp.json")
+                )
+            )
+        for skill_root in (
+            sorted((root / "skills").glob("*")) if (root / "skills").exists() else ()
+        ):
             _ensure_no_symlink(skill_root, "materialized skill")
             if skill_root.is_dir() and not (skill_root / "SKILL.md").is_file():
-                raise PluginControlError(f"materialized skill is missing SKILL.md: {skill_root.name}")
+                raise PluginControlError(
+                    f"materialized skill is missing SKILL.md: {skill_root.name}"
+                )
 
     def _verify_profile_files(self, root: Path, expected: Mapping[str, bytes]) -> None:
         actual_paths: set[str] = set()
@@ -1177,12 +1346,18 @@ class PluginController:
             if entry.is_file():
                 relative = entry.relative_to(root).as_posix()
                 if ".github" in Path(relative).parts:
-                    raise PluginControlError("stored profile contains consumer .github content")
+                    raise PluginControlError(
+                        "stored profile contains consumer .github content"
+                    )
                 actual_paths.add(relative)
             elif not entry.is_dir():
-                raise PluginControlError(f"stored profile contains an unsupported entry: {entry}")
+                raise PluginControlError(
+                    f"stored profile contains an unsupported entry: {entry}"
+                )
         if actual_paths != set(expected):
-            raise PluginControlError("stored profile file set does not match the materialized profile")
+            raise PluginControlError(
+                "stored profile file set does not match the materialized profile"
+            )
         for relative, expected_bytes in expected.items():
             path = root / _safe_relative_path(relative)
             actual = _read_regular_file(path, root, "stored profile file")
@@ -1219,7 +1394,9 @@ class PluginController:
             "runtime_state": runtime_state,
             "runtime_visible": False,
             "target": "copilot",
-            "profile_hash": effective_profile["profile_hash"] if effective_profile else None,
+            "profile_hash": effective_profile["profile_hash"]
+            if effective_profile
+            else None,
             "profile_path": str(profile_path) if profile_path is not None else None,
             "artifact_digest": artifact.digest if artifact is not None else None,
             "source_digest": artifact.source_digest if artifact is not None else None,
@@ -1254,16 +1431,30 @@ class PluginController:
             self._restore_file(lock_path, old_lock)
             raise
 
-    def _push_history(self, profile_yaml: bytes | None, profile_lock: bytes | None) -> None:
+    def _push_history(
+        self, profile_yaml: bytes | None, profile_lock: bytes | None
+    ) -> None:
         history_dir = self._workspace_store_path("history")
         history_dir.mkdir(parents=True, exist_ok=True)
         index_path = history_dir / "index.json"
-        index = self._read_json_file(index_path, history_dir) if index_path.exists() else {"entries": []}
-        if not isinstance(index, dict) or set(index) != {"entries"} or not isinstance(index["entries"], list):
+        index = (
+            self._read_json_file(index_path, history_dir)
+            if index_path.exists()
+            else {"entries": []}
+        )
+        if (
+            not isinstance(index, dict)
+            or set(index) != {"entries"}
+            or not isinstance(index["entries"], list)
+        ):
             raise PluginControlError("workspace history index is invalid")
         snapshot = {
-            "profile_yaml": base64.b64encode(profile_yaml).decode("ascii") if profile_yaml is not None else None,
-            "profile_lock": base64.b64encode(profile_lock).decode("ascii") if profile_lock is not None else None,
+            "profile_yaml": base64.b64encode(profile_yaml).decode("ascii")
+            if profile_yaml is not None
+            else None,
+            "profile_lock": base64.b64encode(profile_lock).decode("ascii")
+            if profile_lock is not None
+            else None,
         }
         snapshot_id = canonical_digest(snapshot)
         snapshot_path = history_dir / f"{snapshot_id}.json"
@@ -1303,7 +1494,9 @@ class PluginController:
             try:
                 path.chmod(0o444)
             except OSError as exc:
-                raise PluginControlError(f"could not make immutable copy read-only: {path}") from exc
+                raise PluginControlError(
+                    f"could not make immutable copy read-only: {path}"
+                ) from exc
 
     def _parse_active_set_bytes(self, content: bytes) -> ActiveSet:
         try:
@@ -1321,7 +1514,9 @@ class PluginController:
         try:
             return base64.b64decode(value, validate=True)
         except ValueError as exc:
-            raise PluginControlError("rollback snapshot contains invalid base64") from exc
+            raise PluginControlError(
+                "rollback snapshot contains invalid base64"
+            ) from exc
 
     def _status_result(self, operation: str, active_set: ActiveSet) -> dict[str, Any]:
         lock = self._read_profile_lock()

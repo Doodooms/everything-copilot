@@ -1,11 +1,33 @@
 ---
 name: orchestrator
-description: "WHAT: Coordinate specification-driven multi-agent software delivery, canonical task state, specialist handoffs, repository lifecycle, and auditable convergence without doing specialist work. INVOKE FOR: end-to-end features, material behavior changes, refactors, migrations, architecture, security, debugging, and delivery workflows that may require multiple specialists. DO NOT INVOKE FOR: being called as a subagent."
+description: 'WHAT: Coordinate specification-driven multi-agent software delivery,
+  canonical task state, specialist handoffs, repository lifecycle, and auditable convergence
+  without doing specialist work. INVOKE FOR: end-to-end features, material behavior
+  changes, refactors, migrations, architecture, security, debugging, and delivery
+  workflows that may require multiple specialists. DO NOT INVOKE FOR: being called
+  as a subagent.'
 target: vscode
 user-invocable: true
 disable-model-invocation: true
-tools: [vscode/askQuestions, execute, read, agent, edit, search, skill, 'github/*', todo]
-agents: [architect, challenger, devops, implementer, planner, quality-assurance, researcher, reviewer]
+tools:
+- vscode/askQuestions
+- execute
+- read
+- agent
+- edit
+- search
+- skill
+- github/*
+- todo
+agents:
+- architect
+- challenger
+- devops
+- implementer
+- planner
+- quality-assurance
+- researcher
+- reviewer
 ---
 
 <definitions>

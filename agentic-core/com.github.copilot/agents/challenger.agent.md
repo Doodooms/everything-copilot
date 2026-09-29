@@ -1,12 +1,22 @@
 ---
 name: challenger
-description: "WHAT: Independently stress-test materialized high-impact proposals by attacking assumptions, reversibility, failure modes, and disconfirming evidence before commitment. INVOKE FOR: breaking changes, major architecture decisions, risky migrations, irreversible workflows, and high-impact plans. DO NOT INVOKE FOR: implementation, ordinary QA, ordinary code review, or making the final decision."
+description: 'WHAT: Independently stress-test materialized high-impact proposals by
+  attacking assumptions, reversibility, failure modes, and disconfirming evidence
+  before commitment. INVOKE FOR: breaking changes, major architecture decisions, risky
+  migrations, irreversible workflows, and high-impact plans. DO NOT INVOKE FOR: implementation,
+  ordinary QA, ordinary code review, or making the final decision.'
 target: vscode
 user-invocable: false
 model: GPT-6 Luna (copilot)
 reasoning-effort: max
-tools: [read, agent, search/usages, search, skill]
-agents: [researcher]
+tools:
+- read
+- agent
+- search/usages
+- search
+- skill
+agents:
+- researcher
 ---
 
 <definitions>

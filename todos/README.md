@@ -1,6 +1,10 @@
 # Todo and idea index
 
-Use this index to find raw ideas, active work, completed reports, and deferred follow-ups. The canonical task ledger in `docs/` records active work. Unfinished or unassigned records belong in `backlog/`, never `done/`.
+Use this index to find source inputs, active work, completed reports, and deferred follow-ups. The [TODO lifecycle](../docs/todo-lifecycle.md) defines the boundary between an input and authorized work. Unfinished or unassigned records belong in `backlog/`, never `done/`.
+
+## Lifecycle and implementation authority
+
+Documents under `todos/` preserve ideas, research, briefs, and follow-ups; their presence does not authorize implementation. `backlog/` is not FIFO and is not a substitute for an approved task. A bounded slice must be recorded in the canonical task manifest and task ledger before implementation begins. See [`docs/todo-lifecycle.md`](../docs/todo-lifecycle.md) for the states, metadata, and evidence path.
 
 ## Active work
 
@@ -19,15 +23,11 @@ and unassigned follow-up gates are recorded below.
 - [`backlog/2026-09-27/cost-eval-opt-followups.md`](./backlog/2026-09-27/cost-eval-opt-followups.md) — released partial `task_3` checkpoint; remaining budget, baseline, smoke, QA, and Reviewer gates.
 - [`backlog/2026-09-27/agentic-core-enhancements-followups.md`](./backlog/2026-09-27/agentic-core-enhancements-followups.md) — blocked host checks and evidence-triggered future work from task_4.
 - [`backlog/2026-09-27/agentic-core-normalization-review-gates.md`](./backlog/2026-09-27/agentic-core-normalization-review-gates.md) — independent task_5 QA and Reviewer handoffs unavailable in this host.
-- [`backlog/2026-09-26/`](./backlog/2026-09-26/) — earlier unassigned work records, preserved without claiming completion.
 
 ## Idea intake
 
-- [`harness/`](./harness/) — harness routing, cost, session communication, and safety inputs. [`cost-eval-opt.md`](./harness/cost-eval-opt.md) is the source brief for the released partial task_3 checkpoint; [`codex-session-communication.md`](./harness/codex-session-communication.md) is a research input for `task_5` and does not authorize contacting another session.
+- [`harness/`](./harness/) — harness routing, cost, and safety inputs. [`cost-eval-opt.md`](./harness/cost-eval-opt.md) is the source brief for the released partial task_3 checkpoint. The [Codex session communication source](../docs/harness-history/task_5/inputs/codex-session-communication.md) is preserved in task_5 history and does not authorize contacting another session.
 - [`plugins/`](./plugins/) — plugin proposals.
-- [`skills/`](./skills/) — skill ideas and optimization.
-- [`mcp/`](./mcp/) — MCP authoring and server ideas.
-- [`agents/`](./agents/) — agent and architecture inputs.
 - [`gh-repos/`](./gh-repos/) — external projects for feasibility review.
 
 Reviewed task_4 inputs are preserved beside their reports:
@@ -35,10 +35,6 @@ Reviewed task_4 inputs are preserved beside their reports:
 - [`create-mcp-rust.md`](./done/2026-09-27/create-mcp-rust.md) → Rust MCP authoring workflow in the completion report.
 - [`agent_architect_ideas.md`](./done/2026-09-27/agent_architect_ideas.md) → [architecture review disposition](./done/2026-09-27/architecture-ideas-disposition.md). The source is a review brief, not an idea list.
 - [`gpt-confirmed.md`](./done/2026-09-27/gpt-confirmed.md) → [integration feasibility report](./done/2026-09-27/integration-feasibility.md).
-
-## Other completed reports
-
-- [`done/2026-09-26/`](./done/2026-09-26/) — earlier completion reports and source inputs.
 
 ## Status rule
 
