@@ -41,7 +41,7 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
 1. DO consume the assigned `risk_level`, then choose only a matching immediate workflow:
    - [agent-authoring](./workflows/agent-authoring.md) or [agent-validation](./workflows/agent-validation.md) for agent definitions.
    - [skill-authoring](./workflows/skill-authoring.md) or [skill-maintenance](./workflows/skill-maintenance.md) for skill packages and internal workflows.
-   - [create-mcp](./workflows/create-mcp.md) for new or existing MCP server implementation and repair. New standalone MCP servers use Rust with the official `rmcp` SDK; the workflow documents the narrow architectural exception. MCP server source belongs to Implementer; host configuration and deployment belong to `operations`.
+   - [create-mcp](./workflows/create-mcp.md) when MCP language or transport still needs selection; [create-mcp-rust](./workflows/create-mcp-rust.md) directly when the server is already known to use Rust/`rmcp`. Both share one transport/security reference. MCP server source belongs to Implementer; host configuration and deployment belong to `operations`.
    - [plugin-creation](./workflows/plugin-creation.md) or [plugin-update](./workflows/plugin-update.md) for Expertise Packs.
    - [create-hook](./workflows/create-hook.md) for deterministic lifecycle hooks.
    - [optimize-skill](./workflows/optimize-skill.md) only when an explicit skill-optimization or evaluation task requires it.

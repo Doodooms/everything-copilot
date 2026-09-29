@@ -184,7 +184,7 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             self.assertEqual(summary["status"], "projected")
             self.assertEqual(summary["target"], "antigravity")
             self.assertEqual(len(summary["skills"]), 11)
-            self.assertEqual(summary["nested_workflows"], 58)
+            self.assertEqual(summary["nested_workflows"], 59)
             self.assertEqual(len(summary["agents"]), 9)
             self.assertEqual(len(summary["mcp_servers"]), 3)
             self.assertEqual(_tree_digest(output), summary["artifact_sha256"])

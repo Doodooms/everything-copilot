@@ -51,8 +51,7 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
    - Consult the [package shape](../references/create-skill/assets/folder-template.md) only when deciding which support directories the accepted workflow needs.
    - Keep `<critical_rules>`, `<general_rules>`, and `<risk_assessment>` separate. Use `MUST`/`MUST NOT` for invariants, `SHOULD`/`SHOULD NOT` for preferences, `MAY` for optional behavior, and `DO`/`DO NOT` for local actions.
    - Step 1 consumes the assigned level; risk changes evidence depth, never authority or approval requirements.
-   - Apply [authoring patterns](../references/create-skill/references/authoring-patterns.md) to classify each piece of content as routing, procedure, expertise, reusable artifact, or deterministic check. Keep `SKILL.md` and the procedure small by linking the selected step to rich lazy-loaded support where needed.
-   - Use compact GOOD/BAD examples when they resolve a plausible ambiguity; do not impose example or reference counts. Preserve useful expertise from existing sources and revalidate versioned material before carrying it forward.
+   - Consult [authoring patterns](../references/create-skill/references/authoring-patterns.md) only when workflow structure, support-file placement, or composition remains unclear.
 3. For composition, follow `skill-composition`.
 
 ## Step 3 - Validate and return.
