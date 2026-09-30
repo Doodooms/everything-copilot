@@ -41,6 +41,10 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
    - Use the [plan-index example](../references/orchestrate/assets/plan_index_example.md) and [index helper](../references/orchestrate/scripts/generate_plan_index.py) only when a large plan needs a concise file/section locator; a `plan_index` is optional.
    - Read the [context](../references/orchestrate/references/context.md) or [tool](../references/orchestrate/references/tools.md) reference only when deciding what context or host tools a handoff can use.
 5. Before any dispatch, confirm the task state, base revision, scope, and user-required approvals; stop if a required decision or lifecycle prerequisite is blocked.
+6. Before creating a new branch or worktree:
+   1. Determine the primary repository effect (`feature`, `bugfix`, `refactor`, `test`, `docs`, or `maintenance`; `release`/`hotfix` only for those explicit lifecycles).
+   2. Run `uv run --script <orchestrator.py> propose-branch --repo-root <absolute-repository-path> --title <task-title> --primary-effect <effect>`. For a release, include `--special-name vMAJOR.MINOR.PATCH`.
+   3. Use only the positively validated proposal; ignore and recompute host suggestions. Record returned policy provenance in `lifecycle.branch_naming`. Stop if the policy file is malformed or the proposal is rejected. Historical manifest branch values remain readable and are not checked against current policy.
 
 ## Step 2 - Dispatch and reconcile bounded attempts.
 

@@ -21,7 +21,7 @@ selected_phases: [architecture, implementation, qa, review]
 skipped_phases: []
 open_blockers: []
 lifecycle:
-  branch: orchestrator/refactor-models
+  branch: refactor/models
   worktree: null
   commit_shas: []
   pull_request: null

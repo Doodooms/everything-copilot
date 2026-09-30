@@ -58,6 +58,8 @@ New manifest payloads, persisted manifest records, events, task transitions, and
 
 `status` is `planned | in_progress | success | partial | failed | blocked`. `lifecycle.commit_shas` contains Git object IDs only; `lifecycle.commit_status` and `commit_reason` explain why no commit exists. Omit other fields that do not apply; never fabricate a branch, worktree, PR, commit, or validation result. Include detailed SDD requirement objects in the manifest only when required; otherwise reference an approved source document by path/revision. When `base_revision` or lifecycle commits are present, pass the local repository to the validator so those references resolve to commit objects.
 
+For newly proposed branches, the Orchestrator may add `lifecycle.branch_naming` with the accepted semantic category and policy source/version/digest. This provenance is optional and additive; existing manifest branch strings remain valid historical data and are not retroactively checked against current policy.
+
 The persisted `manifest.json` wrapper has its own `manifest-record.schema.json`: `task_id` and `status` must match the enclosed manifest. The validator accepts the wrapper with `--kind manifest` for convenience or `--kind manifest-record` to validate the storage envelope explicitly.
 
 ## Orchestration event
