@@ -1,0 +1,313 @@
+{
+  "manifest": {
+    "architecture": {
+      "revision": null,
+      "spec_revision": 2,
+      "status": "not_required"
+    },
+    "architecture_ref": "docs/architecture/CHECKOUT_INDEPENDENT_PROJECTIONS.md",
+    "base_revision": "af1fd1d849a1c42c9052a6ab929bca7d4a220ef7",
+    "convergence": {
+      "status": "pending"
+    },
+    "description": "Update only active canonical product identity and future repository locator references in preparation for a later human-performed GitHub repository rename.",
+    "id": "task_7",
+    "implementation": {
+      "current_tasks": [
+        "TASK-7-05"
+      ],
+      "evidence": [
+        {
+          "acceptance_criteria": [
+            "AC-RENAME-PROJECTION",
+            "AC-RENAME-VALIDATION"
+          ],
+          "implementation_revision": "5c95e2d5415c8719432faf37620c12931b21831dcf76b354e319191fc0ee9bc8",
+          "source": "direct",
+          "spec_revision": 2,
+          "status": "pass",
+          "task_id": "TASK-7-02",
+          "validation_evidence_refs": [
+            "EVIDENCE-7-TESTS",
+            "EVIDENCE-7-PROJECTION",
+            "EVIDENCE-7-PACKAGE",
+            "EVIDENCE-7-RUFF",
+            "EVIDENCE-7-DIFF"
+          ]
+        }
+      ],
+      "revision": "5c95e2d5415c8719432faf37620c12931b21831dcf76b354e319191fc0ee9bc8",
+      "status": "in_progress"
+    },
+    "lifecycle": {
+      "branch": "chore/plugin-factory-repository-rename",
+      "branch_naming": {
+        "category": "maintenance",
+        "policy_sha256": "cd37677aa83827b21dc0c82afe12fc629070e28fca679ffad7dee3203599163c",
+        "policy_source": ".agentic-core/branch-naming.json",
+        "policy_version": "1",
+        "validation": "accepted"
+      },
+      "cleanup": "preserved",
+      "commit_reason": "The local commit will be created only after implementation, focused validation, independent QA, and Reviewer approval.",
+      "commit_shas": [],
+      "commit_status": "not_created",
+      "pull_request": null,
+      "worktree": "/tmp/agentic-workflow-plugin-factory-rename"
+    },
+    "open_blockers": [],
+    "plan": {
+      "revision": 3,
+      "sha256": "9686d5af85e2d2fc5306b988439a807ef85be1b10f537720bf383e7af3d9be37",
+      "spec_revision": 2,
+      "status": "ready",
+      "supersedes": 2
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/task_7/plan-r3.md",
+      "revision": 3,
+      "spec_revision": 2,
+      "status": "ready"
+    },
+    "qa": {
+      "acceptance_criteria": [
+        "AC-RENAME-IDENTITY",
+        "AC-RENAME-PROVENANCE",
+        "AC-RENAME-PROJECTION",
+        "AC-RENAME-VALIDATION"
+      ],
+      "implementation_revision": "5c95e2d5415c8719432faf37620c12931b21831dcf76b354e319191fc0ee9bc8",
+      "qa_run_id": "QA-RUN-PF-RENAME-20260930",
+      "spec_revision": 2,
+      "status": "pass",
+      "validation_evidence_refs": [
+        "EVIDENCE-7-QA"
+      ]
+    },
+    "required_gates": [
+      "focused source and projection validation",
+      "independent quality assurance",
+      "independent Reviewer approval",
+      "local commit after all gates pass"
+    ],
+    "review": {
+      "acceptance_criteria": [
+        "AC-RENAME-IDENTITY",
+        "AC-RENAME-PROVENANCE",
+        "AC-RENAME-PROJECTION",
+        "AC-RENAME-VALIDATION",
+        "AC-RENAME-LOCAL-COMMIT"
+      ],
+      "implementation_revision": "5c95e2d5415c8719432faf37620c12931b21831dcf76b354e319191fc0ee9bc8",
+      "qa_run_id": "QA-RUN-PF-RENAME-20260930",
+      "review_id": "REVIEW-PF-RENAME-20260930",
+      "spec_revision": 2,
+      "status": "approve",
+      "validation_evidence_refs": [
+        "EVIDENCE-7-TESTS",
+        "EVIDENCE-7-PROJECTION",
+        "EVIDENCE-7-PACKAGE",
+        "EVIDENCE-7-RUFF",
+        "EVIDENCE-7-DIFF",
+        "EVIDENCE-7-QA"
+      ]
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "specification",
+      "planning",
+      "implementation",
+      "validation",
+      "qa",
+      "review",
+      "local_commit"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "architecture",
+        "reason": "The product/package identity boundary and file scope are explicitly frozen by the user; no new component boundary or interface decision is required."
+      },
+      {
+        "phase": "challenger",
+        "reason": "This reversible, documentation-and-projection identity patch has bounded impact and no unresolved high-impact design choice."
+      },
+      {
+        "phase": "security_review",
+        "reason": "The patch changes product labels and a documentation locator without changing a trust boundary or security behavior."
+      },
+      {
+        "phase": "native_todo_sync",
+        "reason": "No host-native todo interface is exposed in this session; the repository task ledger and orchestration manifest are authoritative."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-RENAME-IDENTITY",
+          "requirements": [
+            "REQ-RENAME-IDENTITY"
+          ],
+          "statement": "The root README names Plugin Factory, the active ChatGPT Work handoff locator is Doodooms/plugin-factory, the Agentic Core description identifies Plugin Factory as the enclosing product where applicable, and the direct plugin-authoring repository-root instruction uses Plugin Factory."
+        },
+        {
+          "id": "AC-RENAME-PROVENANCE",
+          "requirements": [
+            "REQ-RENAME-BOUNDARY"
+          ],
+          "statement": "Historical references to Doodooms/everything-copilot remain where they record prior repository identity or evidence; the Agentic Core package ID and directory remain unchanged."
+        },
+        {
+          "id": "AC-RENAME-PROJECTION",
+          "requirements": [
+            "REQ-RENAME-PROJECTION"
+          ],
+          "statement": "The Antigravity projection generated from the canonical skill contains the intended future locator, and existing deterministic projection checks pass."
+        },
+        {
+          "id": "AC-RENAME-VALIDATION",
+          "requirements": [
+            "REQ-RENAME-IDENTITY",
+            "REQ-RENAME-BOUNDARY",
+            "REQ-RENAME-PROJECTION"
+          ],
+          "statement": "Focused Agentic Core source, checkout-independent projection, Antigravity projection, package validation, Ruff/format, and diff checks pass as applicable."
+        },
+        {
+          "id": "AC-RENAME-LOCAL-COMMIT",
+          "requirements": [
+            "REQ-RENAME-LIFECYCLE"
+          ],
+          "statement": "The local branch begins at af1fd1d849a1c42c9052a6ab929bca7d4a220ef7 and contains a reviewed local commit; no push, PR, origin update, GitHub rename, or settings change occurs."
+        }
+      ],
+      "constraints": [
+        "Repository/product identity is Plugin Factory; desired GitHub slug is plugin-factory.",
+        "Agentic Core remains the canonical internal cognition/plugin layer and package ID agentic-core remains unchanged.",
+        "Do not mass-rename agentic-core or agentic-workflow.",
+        "Preserve historical evidence, old PR provenance, archived histories, immutable commit metadata, and published SHAs.",
+        "Regenerate projections through canonical projection paths; do not hand-edit generated outputs.",
+        "Commit locally only on chore/plugin-factory-repository-rename; do not publish or rename the GitHub repository."
+      ],
+      "id": "SPEC-PLUGIN-FACTORY-RENAME",
+      "non_goals": [
+        "GitHub repository rename",
+        "push or pull request creation",
+        "origin URL update",
+        "GitHub settings or ruleset changes",
+        "Substrat changes",
+        "mass replacement of agentic-workflow or agentic-core"
+      ],
+      "objective": "Prepare the minimal active canonical identity migration from Doodooms/everything-copilot to Doodooms/plugin-factory without renaming the remote repository or publishing changes.",
+      "requirements": [
+        {
+          "id": "REQ-RENAME-IDENTITY",
+          "statement": "Active product-facing metadata, direct repository-root instructions, and future handoff instructions identify Plugin Factory and use Doodooms/plugin-factory as the intended repository locator where applicable."
+        },
+        {
+          "id": "REQ-RENAME-BOUNDARY",
+          "statement": "Agentic Core remains the canonical internal cognition/plugin layer with package ID and directory unchanged; historical evidence and old repository provenance remain truthful."
+        },
+        {
+          "id": "REQ-RENAME-PROJECTION",
+          "statement": "Any projection affected by canonical source changes is generated through the existing projector and remains reproducible."
+        },
+        {
+          "id": "REQ-RENAME-LIFECYCLE",
+          "statement": "The reviewed patch is committed locally on the requested semantic branch from the exact canonical base, with no publication or remote repository mutation."
+        }
+      ],
+      "revision": 2,
+      "source_request": "PLUGIN_FACTORY_REPOSITORY_RENAME_PREPARATION_RESUME user request",
+      "status": "ready"
+    },
+    "status": "in_progress",
+    "task_events_ref": "docs/tasks-history/task_7.jsonl",
+    "tasks": [
+      {
+        "acceptance_criteria": [
+          "AC-RENAME-IDENTITY",
+          "AC-RENAME-PROVENANCE",
+          "AC-RENAME-PROJECTION"
+        ],
+        "id": "TASK-7-01",
+        "requirements": [
+          "REQ-RENAME-IDENTITY",
+          "REQ-RENAME-BOUNDARY",
+          "REQ-RENAME-PROJECTION"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-RENAME-PROJECTION",
+          "AC-RENAME-VALIDATION"
+        ],
+        "depends_on": [
+          "TASK-7-01"
+        ],
+        "id": "TASK-7-02",
+        "requirements": [
+          "REQ-RENAME-IDENTITY",
+          "REQ-RENAME-BOUNDARY",
+          "REQ-RENAME-PROJECTION"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-RENAME-IDENTITY",
+          "AC-RENAME-PROVENANCE",
+          "AC-RENAME-PROJECTION",
+          "AC-RENAME-VALIDATION"
+        ],
+        "depends_on": [
+          "TASK-7-02"
+        ],
+        "id": "TASK-7-03",
+        "requirements": [
+          "REQ-RENAME-IDENTITY",
+          "REQ-RENAME-BOUNDARY",
+          "REQ-RENAME-PROJECTION"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-RENAME-IDENTITY",
+          "AC-RENAME-PROVENANCE",
+          "AC-RENAME-PROJECTION",
+          "AC-RENAME-VALIDATION",
+          "AC-RENAME-LOCAL-COMMIT"
+        ],
+        "depends_on": [
+          "TASK-7-03"
+        ],
+        "id": "TASK-7-04",
+        "requirements": [
+          "REQ-RENAME-IDENTITY",
+          "REQ-RENAME-BOUNDARY",
+          "REQ-RENAME-PROJECTION"
+        ],
+        "status": "completed"
+      },
+      {
+        "acceptance_criteria": [
+          "AC-RENAME-LOCAL-COMMIT"
+        ],
+        "depends_on": [
+          "TASK-7-04"
+        ],
+        "id": "TASK-7-05",
+        "requirements": [
+          "REQ-RENAME-LIFECYCLE"
+        ],
+        "status": "in_progress"
+      }
+    ],
+    "title": "Prepare Plugin Factory repository identity rename",
+    "updated_at": "2026-09-30T14:18:45Z"
+  },
+  "status": "in_progress",
+  "task_id": "task_7",
+  "updated_at": "2026-09-30T14:18:46Z"
+}

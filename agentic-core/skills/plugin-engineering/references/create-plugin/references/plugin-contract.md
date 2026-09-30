@@ -54,7 +54,7 @@ Codex agent sidecars are generated exports, not active agents merely because the
 
 ## Authoring and validation commands
 
-Run from the Agentic Workflow repository root with its configured environment:
+Run from the Plugin Factory repository root with its configured environment:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 ./.venv/bin/python -m expertise scaffold [pack-id] [authoring options]

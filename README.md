@@ -1,6 +1,6 @@
-# Agentic Workflow
+# Plugin Factory
 
-This repository packages a reusable agent workflow as an Agent Plugin and provides the tooling to manage Expertise Packs. The current direction is plugin-first: reusable agents and skills belong to `agentic-core`; project-specific customizations remain workspace-local.
+Plugin Factory packages reusable agent cognition as plugins and provides tooling to manage Expertise Packs. Its canonical internal agent and skill layer is `agentic-core`; project-specific customizations remain workspace-local.
 
 ## Repository milestones
 

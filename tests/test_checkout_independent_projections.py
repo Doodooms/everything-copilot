@@ -190,6 +190,11 @@ class CheckoutIndependentProjectionTests(unittest.TestCase):
             self.assertEqual(_tree_digest(output), summary["artifact_sha256"])
             summaries.append(summary)
 
+        projected_handoff = (
+            outputs[0] / "skills/orchestration/workflows/chatgpt-work-handoff.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Doodooms/plugin-factory", projected_handoff)
+
         self.assertEqual(
             summaries[0]["artifact_sha256"], summaries[1]["artifact_sha256"]
         )
