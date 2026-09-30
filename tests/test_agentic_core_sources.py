@@ -77,10 +77,19 @@ class AgenticCoreSourceTests(unittest.TestCase):
         self.assertEqual(manifest["$schema"], PLUGIN_SCHEMA)
         self.assertEqual(manifest["name"], "agentic-core")
         self.assertTrue(manifest["description"])
+        self.assertIn("Plugin Factory", manifest["description"])
         self.assertRegex(manifest["version"], re.compile(r"^\d+\.\d+\.\d+$"))
         self.assertEqual(manifest["author"]["name"], "Doodooms")
         self.assertTrue((CORE / "skills").is_dir())
         self.assertTrue((CORE / "com.github.copilot/agents").is_dir())
+
+    def test_plugin_authoring_commands_name_the_product_repository_root(self):
+        contract = (
+            CORE
+            / "skills/plugin-engineering/references/create-plugin/references/plugin-contract.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("Run from the Plugin Factory repository root", contract)
 
     def test_all_nine_agents_are_generated_copilot_projections(self):
         plugin_agents = CORE / "com.github.copilot/agents"

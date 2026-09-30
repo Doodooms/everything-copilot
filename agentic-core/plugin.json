@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agentic-core",
-  "description": "Canonical agents, skills, MCP integrations, and Expertise Pack authoring for Agentic Workflow.",
+  "description": "Canonical agents, skills, MCP integrations, and Expertise Pack authoring for Plugin Factory.",
   "version": "0.3.5",
   "author": {
     "name": "Doodooms"

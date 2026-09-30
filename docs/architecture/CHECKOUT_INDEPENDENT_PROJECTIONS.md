@@ -37,10 +37,13 @@ the launcher/module locations. Source content such as agents, skills,
 projection entrypoints and their implementation were not available as a
 self-contained invocation from that copied plugin.
 
-One `Doodooms/everything-copilot` slug remains in the ChatGPT Work handoff
-skill's documentation. It is not required by either projection algorithm and
-was left for a later repository-rename task. Antigravity projects that skill
-text as documentation; this does not create a runtime checkout dependency.
+When this projection study was written, the ChatGPT Work handoff skill still
+contained the `Doodooms/everything-copilot` slug. That historical observation
+explains why the slug appeared in the projection output at that time; it was
+not required by either projection algorithm. The active handoff prompt now
+uses the intended `Doodooms/plugin-factory` locator. Antigravity projects that
+skill text as documentation; neither locator creates a runtime checkout
+dependency. The GitHub repository rename remains a separate human action.
 
 ## Installed-plugin seam
 
