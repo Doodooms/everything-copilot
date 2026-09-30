@@ -57,6 +57,7 @@ def test_route_observer_uses_only_native_skill_metric_not_final_prose():
 
     assert observed.actual_trigger is True
     assert observed.actual_route == "plugin-engineering"
+    assert observed.capture_complete is None
     assert observed.requested_route == "plugin-engineering"
     assert observed.invoke_types == ("explicit",)
 
@@ -75,6 +76,7 @@ def test_route_observer_keeps_missing_or_unrecognized_telemetry_unknown():
 
     assert missing.actual_trigger is None
     assert missing.actual_route is None
+    assert missing.capture_complete is None
     assert malformed.actual_trigger is None
     assert malformed.actual_route is None
 
@@ -88,9 +90,9 @@ def test_spawn_agent_event_confirms_thread_delegation_but_role_stays_unknown():
                     "type": "collab_tool_call",
                     "tool": "spawn_agent",
                     "sender_thread_id": "thread-parent",
-                    "receiver_thread_id": "thread-child",
+                    "receiver_thread_ids": ["thread-child", "thread-helper"],
                     "prompt": "Use the architect role.",
-                    "state": "completed",
+                    "status": "completed",
                 },
             }
         ],
@@ -99,7 +101,11 @@ def test_spawn_agent_event_confirms_thread_delegation_but_role_stays_unknown():
 
     assert observed.delegation.confirmed is True
     assert observed.delegation.sender_thread_id == "thread-parent"
-    assert observed.delegation.receiver_thread_id == "thread-child"
+    assert observed.delegation.receiver_thread_ids == (
+        "thread-child",
+        "thread-helper",
+    )
+    assert observed.delegation.status == "completed"
     assert observed.delegation.requested_role == "architect"
     assert observed.delegation.observed_role is None
 
@@ -133,6 +139,7 @@ def test_case_observation_serializes_identity_measurements_and_unknowns():
         package_digest="sha256:package",
         canonical_revision="a" * 40,
         raw_reference="artifacts/run-1.jsonl",
+        completion_checks=({"id": "AC-PA-ROUTING", "status": "pass"},),
     ).as_dict()
 
     assert record["case_id"] == "case-1"
@@ -146,3 +153,24 @@ def test_case_observation_serializes_identity_measurements_and_unknowns():
     assert record["package_digest"] == "sha256:package"
     assert record["canonical_revision"] == "a" * 40
     assert record["raw_reference"] == "artifacts/run-1.jsonl"
+    assert record["completion"] == "completed"
+    assert record["completion_checks"] == [{"id": "AC-PA-ROUTING", "status": "pass"}]
+
+
+def test_recognized_other_skill_is_not_a_trigger_for_the_requested_route():
+    observed = observe_codex_events(
+        [_skill_metric("architecture")],
+        requested_route="plugin-engineering",
+    )
+
+    assert observed.actual_trigger is False
+    assert observed.actual_route == "architecture"
+    assert observed.capture_complete is None
+
+
+def test_absent_skill_events_stay_unknown_for_a_requested_route():
+    observed = observe_codex_events([], requested_route="plugin-engineering")
+
+    assert observed.actual_trigger is None
+    assert observed.actual_route is None
+    assert observed.capture_complete is None

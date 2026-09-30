@@ -171,10 +171,15 @@ def make_pilot_a_schedule(
 def execute_pilot_a_schedule(
     schedule: Sequence[CaseArm],
     *,
+    case_ids: Sequence[str],
     budget: PilotABudget,
     invoke: Callable[[CaseArm], Mapping[str, Any]],
 ) -> PilotAScheduleResult:
-    """Execute sequentially, enforcing the local cap and stopping on first failure."""
+    """Execute the frozen case IDs in helper order, stopping at the first failure.
+
+    ``case_ids`` must come from the canonical Pilot A specification. The schedule is
+    compared to the result of ``make_pilot_a_schedule(case_ids)`` before invocation.
+    """
 
     if not isinstance(budget, PilotABudget):
         raise TypeError("Pilot A requires a validated PilotABudget")
@@ -184,12 +189,11 @@ def execute_pilot_a_schedule(
         for pair in selected
     ):
         raise ValueError("Pilot A schedule contains an invalid case/arm pair")
-    if (
-        len(selected) != PILOT_A_MAX_INVOCATIONS
-        or len({(pair.case_id, pair.arm) for pair in selected})
-        != PILOT_A_MAX_INVOCATIONS
-    ):
-        raise ValueError("Pilot A schedule must contain 24 unique case/arm pairs")
+    expected_schedule = make_pilot_a_schedule(case_ids)
+    if selected != expected_schedule:
+        raise ValueError(
+            "schedule must match make_pilot_a_schedule for the 12 canonical cases"
+        )
     if len(selected) > budget.max_harness_invocations:
         return PilotAScheduleResult(
             status="blocked",
@@ -259,8 +263,8 @@ def execute_pilot_a_schedule(
 class DelegationObservation:
     confirmed: bool = False
     sender_thread_id: str | None = None
-    receiver_thread_id: str | None = None
-    state: str | None = None
+    receiver_thread_ids: tuple[str, ...] = ()
+    status: str | None = None
     requested_role: str | None = None
     observed_role: str | None = None
 
@@ -268,8 +272,12 @@ class DelegationObservation:
         return {
             "confirmed": self.confirmed,
             "sender_thread_id": self.sender_thread_id or "unknown",
-            "receiver_thread_id": self.receiver_thread_id or "unknown",
-            "state": self.state or "unknown",
+            "receiver_thread_ids": (
+                list(self.receiver_thread_ids)
+                if self.receiver_thread_ids
+                else "unknown"
+            ),
+            "status": self.status or "unknown",
             "requested_role": self.requested_role or "unknown",
             "observed_role": self.observed_role or "unknown",
         }
@@ -281,6 +289,7 @@ class CodexRouteObservation:
     actual_trigger: bool | None
     actual_route: str | None
     invoke_types: tuple[str, ...]
+    capture_complete: bool | None
     delegation: DelegationObservation
 
     def as_dict(self) -> dict[str, Any]:
@@ -291,6 +300,11 @@ class CodexRouteObservation:
             ),
             "actual_route": self.actual_route or "unknown",
             "invoke_types": list(self.invoke_types),
+            "capture_complete": (
+                self.capture_complete
+                if self.capture_complete is not None
+                else "unknown"
+            ),
             "delegation": self.delegation.as_dict(),
         }
 
@@ -321,26 +335,38 @@ def observe_codex_events(
         if item.get("type") != "collab_tool_call" or item.get("tool") != "spawn_agent":
             continue
         sender = _nonempty_text(item.get("sender_thread_id"))
-        receiver = _nonempty_text(item.get("receiver_thread_id"))
-        if sender is None or receiver is None:
+        receivers = item.get("receiver_thread_ids")
+        receiver_ids = (
+            tuple(value.strip() for value in receivers if _nonempty_text(value))
+            if isinstance(receivers, list)
+            else ()
+        )
+        if sender is None or not receiver_ids:
             continue
-        state = _nonempty_text(item.get("state"))
-        observed_role = _nonempty_text(item.get("role"))
+        status = _nonempty_text(item.get("status"))
         delegation = DelegationObservation(
             confirmed=True,
             sender_thread_id=sender,
-            receiver_thread_id=receiver,
-            state=state,
+            receiver_thread_ids=receiver_ids,
+            status=status,
             requested_role=requested_role,
-            observed_role=observed_role,
+            observed_role=None,
         )
         break
     ordered_skills = tuple(sorted(skill_names))
+    actual_route = ordered_skills[0] if len(ordered_skills) == 1 else None
+    if requested_route and requested_route in skill_names:
+        actual_trigger = True
+    elif requested_route and actual_route is not None:
+        actual_trigger = False
+    else:
+        actual_trigger = None
     return CodexRouteObservation(
         requested_route=requested_route,
-        actual_trigger=True if ordered_skills else None,
-        actual_route=ordered_skills[0] if len(ordered_skills) == 1 else None,
+        actual_trigger=actual_trigger,
+        actual_route=actual_route,
         invoke_types=tuple(sorted(invoke_types)),
+        capture_complete=None,
         delegation=delegation,
     )
 
@@ -421,6 +447,7 @@ class PilotACaseObservation:
     package_digest: str = "unknown"
     canonical_revision: str = "unknown"
     raw_reference: str = "unknown"
+    completion_checks: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         for name in ("run_id", "case_id", "arm", "completion"):
@@ -449,6 +476,8 @@ class PilotACaseObservation:
             not isinstance(item, str) or not item for item in self.validation_failures
         ):
             raise ValueError("validation_failures must contain non-empty text")
+        if any(not isinstance(check, Mapping) for check in self.completion_checks):
+            raise ValueError("completion_checks must contain objects")
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -475,6 +504,7 @@ class PilotACaseObservation:
             "latency_ms": self.latency_ms if self.latency_ms is not None else "unknown",
             "delegation": self.delegation.as_dict(),
             "validation_failures": list(self.validation_failures),
+            "completion_checks": [dict(check) for check in self.completion_checks],
             "package_digest": self.package_digest,
             "canonical_revision": self.canonical_revision,
             "raw_reference": self.raw_reference,

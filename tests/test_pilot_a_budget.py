@@ -73,6 +73,7 @@ def test_pilot_budget_enforces_local_harness_cap_and_allows_unknown_provider_cal
     result = execute_pilot_a_schedule(
         schedule,
         budget=budget,
+        case_ids=[f"case-{index}" for index in range(1, 13)],
         invoke=lambda pair: (
             called.append((pair.case_id, pair.arm))
             or {"status": "passed", "provider_model_calls": None}
@@ -102,6 +103,7 @@ def test_pilot_schedule_is_sequential_without_retries_and_stops_on_first_failure
     result = execute_pilot_a_schedule(
         schedule,
         budget=PilotABudget(max_harness_invocations=24),
+        case_ids=[f"case-{index}" for index in range(1, 13)],
         invoke=invoke,
     )
 
@@ -121,6 +123,7 @@ def test_pilot_budget_rejects_a_cap_smaller_than_the_frozen_schedule():
     result = execute_pilot_a_schedule(
         schedule,
         budget=PilotABudget(max_harness_invocations=23),
+        case_ids=[f"case-{index}" for index in range(1, 13)],
         invoke=lambda pair: called.append(pair) or {"status": "passed"},
     )
 
@@ -131,3 +134,90 @@ def test_pilot_budget_rejects_a_cap_smaller_than_the_frozen_schedule():
         == "local harness invocation budget is below the frozen schedule"
     )
     assert called == []
+
+
+def test_pilot_schedule_rejects_thirteen_case_ids_even_when_pair_count_is_24():
+    from harness_factory.pilot_a_observation import CaseArm
+
+    schedule = [
+        CaseArm(case_id=f"case-{index}", arm=arm)
+        for index in range(1, 12)
+        for arm in ("baseline", "candidate")
+    ]
+    schedule.extend(
+        [
+            CaseArm(case_id="case-12", arm="baseline"),
+            CaseArm(case_id="case-13", arm="baseline"),
+        ]
+    )
+
+    try:
+        execute_pilot_a_schedule(
+            schedule,
+            budget=PilotABudget(),
+            case_ids=[f"case-{index}" for index in range(1, 13)],
+            invoke=lambda _pair: {"status": "passed"},
+        )
+    except ValueError as exc:
+        assert "make_pilot_a_schedule" in str(exc)
+    else:
+        raise AssertionError("13 case IDs must not satisfy the frozen schedule")
+
+
+def test_pilot_schedule_rejects_noncanonical_arm_order():
+    from harness_factory.pilot_a_observation import CaseArm
+
+    schedule = list(make_pilot_a_schedule([f"case-{index}" for index in range(1, 13)]))
+    schedule[0], schedule[1] = (
+        CaseArm("case-1", "candidate"),
+        CaseArm("case-1", "baseline"),
+    )
+
+    try:
+        execute_pilot_a_schedule(
+            schedule,
+            budget=PilotABudget(),
+            case_ids=[f"case-{index}" for index in range(1, 13)],
+            invoke=lambda _pair: {"status": "passed"},
+        )
+    except ValueError as exc:
+        assert "make_pilot_a_schedule" in str(exc)
+    else:
+        raise AssertionError("noncanonical arm order must not be accepted")
+
+
+def test_pilot_schedule_rejects_interleaved_case_major_order():
+    from harness_factory.pilot_a_observation import CaseArm
+
+    case_ids = [f"case-{index}" for index in range(1, 13)]
+    schedule = [CaseArm(case_id=case_id, arm="baseline") for case_id in case_ids]
+    schedule.extend(CaseArm(case_id=case_id, arm="candidate") for case_id in case_ids)
+
+    try:
+        execute_pilot_a_schedule(
+            schedule,
+            budget=PilotABudget(),
+            case_ids=[f"case-{index}" for index in range(1, 13)],
+            invoke=lambda _pair: {"status": "passed"},
+        )
+    except ValueError as exc:
+        assert "make_pilot_a_schedule" in str(exc)
+    else:
+        raise AssertionError("interleaved arms must not be accepted")
+
+
+def test_pilot_schedule_rejects_reordered_case_blocks():
+    schedule = list(make_pilot_a_schedule([f"case-{index}" for index in range(1, 13)]))
+    schedule[0:2], schedule[2:4] = schedule[2:4], schedule[0:2]
+
+    try:
+        execute_pilot_a_schedule(
+            schedule,
+            budget=PilotABudget(),
+            case_ids=[f"case-{index}" for index in range(1, 13)],
+            invoke=lambda _pair: {"status": "passed"},
+        )
+    except ValueError as exc:
+        assert "make_pilot_a_schedule" in str(exc)
+    else:
+        raise AssertionError("reordered case blocks must not be accepted")
