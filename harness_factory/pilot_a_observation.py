@@ -260,6 +260,46 @@ def execute_pilot_a_schedule(
 
 
 @dataclass(frozen=True)
+class SkillTelemetryCaptureContract:
+    """Completeness evidence supplied by an OTLP capture producer.
+
+    No current Codex adapter produces or verifies this contract. Stage 0 must omit it,
+    keeping absent route telemetry unknown until a collector proves a closed capture.
+    """
+
+    capture_id: str
+    status: str
+    dropped_data_points: int | None
+    stream_closed: bool
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.capture_id, str) or not self.capture_id.strip():
+            raise ValueError("capture_id must be non-empty")
+        if self.status not in {"complete", "partial", "unknown"}:
+            raise ValueError("capture status must be complete, partial, or unknown")
+        if self.dropped_data_points is not None and (
+            type(self.dropped_data_points) is not int or self.dropped_data_points < 0
+        ):
+            raise ValueError("dropped_data_points must be non-negative or unknown")
+        if type(self.stream_closed) is not bool:
+            raise TypeError("stream_closed must be a boolean")
+        if self.status == "complete" and (
+            self.dropped_data_points != 0 or not self.stream_closed
+        ):
+            raise ValueError(
+                "a complete capture must be closed and prove zero dropped data points"
+            )
+
+    @property
+    def is_complete(self) -> bool:
+        return (
+            self.status == "complete"
+            and self.dropped_data_points == 0
+            and self.stream_closed
+        )
+
+
+@dataclass(frozen=True)
 class DelegationObservation:
     confirmed: bool = False
     sender_thread_id: str | None = None
@@ -290,7 +330,7 @@ class CodexRouteObservation:
     actual_route: str | None
     invoke_types: tuple[str, ...]
     capture_complete: bool | None
-    delegation: DelegationObservation
+    delegations: tuple[DelegationObservation, ...]
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -305,7 +345,7 @@ class CodexRouteObservation:
                 if self.capture_complete is not None
                 else "unknown"
             ),
-            "delegation": self.delegation.as_dict(),
+            "delegations": [item.as_dict() for item in self.delegations],
         }
 
 
@@ -314,14 +354,19 @@ def observe_codex_events(
     *,
     requested_route: str | None = None,
     requested_role: str | None = None,
+    capture_contract: SkillTelemetryCaptureContract | None = None,
 ) -> CodexRouteObservation:
     """Read only known Codex JSONL collaboration items and documented OTLP metrics."""
 
     if isinstance(events, (str, bytes, Mapping)):
         raise TypeError("events must be an iterable of decoded event objects")
+    if capture_contract is not None and not isinstance(
+        capture_contract, SkillTelemetryCaptureContract
+    ):
+        raise TypeError("capture_contract must be a SkillTelemetryCaptureContract")
     skill_names: set[str] = set()
     invoke_types: set[str] = set()
-    delegation = DelegationObservation(requested_role=requested_role)
+    delegations: list[DelegationObservation] = []
     for event in events:
         if not isinstance(event, Mapping):
             continue
@@ -344,20 +389,24 @@ def observe_codex_events(
         if sender is None or not receiver_ids:
             continue
         status = _nonempty_text(item.get("status"))
-        delegation = DelegationObservation(
-            confirmed=True,
-            sender_thread_id=sender,
-            receiver_thread_ids=receiver_ids,
-            status=status,
-            requested_role=requested_role,
-            observed_role=None,
+        delegations.append(
+            DelegationObservation(
+                confirmed=True,
+                sender_thread_id=sender,
+                receiver_thread_ids=receiver_ids,
+                status=status,
+                requested_role=requested_role,
+                observed_role=None,
+            )
         )
-        break
     ordered_skills = tuple(sorted(skill_names))
     actual_route = ordered_skills[0] if len(ordered_skills) == 1 else None
+    capture_complete = (
+        capture_contract.is_complete if capture_contract is not None else None
+    )
     if requested_route and requested_route in skill_names:
         actual_trigger = True
-    elif requested_route and actual_route is not None:
+    elif requested_route and capture_complete is True:
         actual_trigger = False
     else:
         actual_trigger = None
@@ -366,8 +415,8 @@ def observe_codex_events(
         actual_trigger=actual_trigger,
         actual_route=actual_route,
         invoke_types=tuple(sorted(invoke_types)),
-        capture_complete=None,
-        delegation=delegation,
+        capture_complete=capture_complete,
+        delegations=tuple(delegations),
     )
 
 
@@ -442,12 +491,13 @@ class PilotACaseObservation:
     model_turns: int | None = None
     tokens: Mapping[str, int] | None = None
     latency_ms: int | None = None
-    delegation: DelegationObservation = DelegationObservation()
+    delegations: tuple[DelegationObservation, ...] = ()
     validation_failures: tuple[str, ...] = ()
     package_digest: str = "unknown"
     canonical_revision: str = "unknown"
     raw_reference: str = "unknown"
     completion_checks: tuple[Mapping[str, Any], ...] = ()
+    capture_complete: bool | None = None
 
     def __post_init__(self) -> None:
         for name in ("run_id", "case_id", "arm", "completion"):
@@ -462,6 +512,11 @@ class PilotACaseObservation:
             self.actual_trigger is not None and type(self.actual_trigger) is not bool
         ):
             raise ValueError("trigger observations must be booleans or unknown")
+        if (
+            self.capture_complete is not None
+            and type(self.capture_complete) is not bool
+        ):
+            raise ValueError("capture_complete must be a boolean or unknown")
         if type(self.invocation_count) is not int or self.invocation_count < 0:
             raise ValueError("invocation_count must be a non-negative integer")
         _optional_nonnegative_integer(self.provider_model_calls, "provider_model_calls")
@@ -478,6 +533,10 @@ class PilotACaseObservation:
             raise ValueError("validation_failures must contain non-empty text")
         if any(not isinstance(check, Mapping) for check in self.completion_checks):
             raise ValueError("completion_checks must contain objects")
+        if any(
+            not isinstance(item, DelegationObservation) for item in self.delegations
+        ):
+            raise ValueError("delegations must contain DelegationObservation values")
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -487,6 +546,11 @@ class PilotACaseObservation:
             "expected_trigger": self.expected_trigger,
             "actual_trigger": (
                 self.actual_trigger if self.actual_trigger is not None else "unknown"
+            ),
+            "capture_complete": (
+                self.capture_complete
+                if self.capture_complete is not None
+                else "unknown"
             ),
             "expected_route": self.expected_route or "unknown",
             "actual_route": self.actual_route or "unknown",
@@ -502,7 +566,7 @@ class PilotACaseObservation:
             else "unknown",
             "tokens": dict(self.tokens) if self.tokens is not None else "unknown",
             "latency_ms": self.latency_ms if self.latency_ms is not None else "unknown",
-            "delegation": self.delegation.as_dict(),
+            "delegations": [item.as_dict() for item in self.delegations],
             "validation_failures": list(self.validation_failures),
             "completion_checks": [dict(check) for check in self.completion_checks],
             "package_digest": self.package_digest,

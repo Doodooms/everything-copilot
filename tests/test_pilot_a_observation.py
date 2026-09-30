@@ -8,6 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from harness_factory.pilot_a_observation import (
+    SkillTelemetryCaptureContract,
     observe_codex_events,
     pilot_a_metrics,
 )
@@ -94,20 +95,34 @@ def test_spawn_agent_event_confirms_thread_delegation_but_role_stays_unknown():
                     "prompt": "Use the architect role.",
                     "status": "completed",
                 },
-            }
+            },
+            {
+                "type": "item.started",
+                "item": {
+                    "type": "collab_tool_call",
+                    "tool": "spawn_agent",
+                    "sender_thread_id": "thread-parent",
+                    "receiver_thread_ids": ["thread-reviewer"],
+                    "prompt": "Use the reviewer role.",
+                    "status": "in_progress",
+                },
+            },
         ],
         requested_role="architect",
     )
 
-    assert observed.delegation.confirmed is True
-    assert observed.delegation.sender_thread_id == "thread-parent"
-    assert observed.delegation.receiver_thread_ids == (
+    assert len(observed.delegations) == 2
+    assert observed.delegations[0].confirmed is True
+    assert observed.delegations[0].sender_thread_id == "thread-parent"
+    assert observed.delegations[0].receiver_thread_ids == (
         "thread-child",
         "thread-helper",
     )
-    assert observed.delegation.status == "completed"
-    assert observed.delegation.requested_role == "architect"
-    assert observed.delegation.observed_role is None
+    assert observed.delegations[0].status == "completed"
+    assert observed.delegations[0].requested_role == "architect"
+    assert observed.delegations[0].observed_role is None
+    assert observed.delegations[1].receiver_thread_ids == ("thread-reviewer",)
+    assert observed.as_dict()["delegations"][1]["status"] == "in_progress"
 
 
 def test_pilot_metrics_separate_standard_false_positive_rate_from_legacy_discovery_rate():
@@ -140,11 +155,14 @@ def test_case_observation_serializes_identity_measurements_and_unknowns():
         canonical_revision="a" * 40,
         raw_reference="artifacts/run-1.jsonl",
         completion_checks=({"id": "AC-PA-ROUTING", "status": "pass"},),
+        capture_complete=None,
     ).as_dict()
 
     assert record["case_id"] == "case-1"
     assert record["arm"] == "baseline"
     assert record["actual_trigger"] == "unknown"
+    assert record["capture_complete"] == "unknown"
+    assert record["delegations"] == []
     assert record["expected_route"] == "unknown"
     assert record["provider_model_calls"] == "unknown"
     assert record["model_turns"] == "unknown"
@@ -163,7 +181,7 @@ def test_recognized_other_skill_is_not_a_trigger_for_the_requested_route():
         requested_route="plugin-engineering",
     )
 
-    assert observed.actual_trigger is False
+    assert observed.actual_trigger is None
     assert observed.actual_route == "architecture"
     assert observed.capture_complete is None
 
@@ -174,3 +192,90 @@ def test_absent_skill_events_stay_unknown_for_a_requested_route():
     assert observed.actual_trigger is None
     assert observed.actual_route is None
     assert observed.capture_complete is None
+
+
+def test_complete_capture_without_target_is_a_proven_non_invocation():
+    observed = observe_codex_events(
+        [_skill_metric("architecture")],
+        requested_route="plugin-engineering",
+        capture_contract=SkillTelemetryCaptureContract(
+            capture_id="capture-1",
+            status="complete",
+            dropped_data_points=0,
+            stream_closed=True,
+        ),
+    )
+
+    assert observed.actual_trigger is False
+    assert observed.capture_complete is True
+
+
+def test_incomplete_capture_without_target_remains_unknown():
+    observed = observe_codex_events(
+        [_skill_metric("architecture")],
+        requested_route="plugin-engineering",
+        capture_contract=SkillTelemetryCaptureContract(
+            capture_id="capture-2",
+            status="partial",
+            dropped_data_points=1,
+            stream_closed=False,
+        ),
+    )
+
+    assert observed.actual_trigger is None
+    assert observed.capture_complete is False
+
+
+def test_complete_capture_with_no_skill_event_proves_non_invocation():
+    observed = observe_codex_events(
+        [],
+        requested_route="plugin-engineering",
+        capture_contract=SkillTelemetryCaptureContract(
+            capture_id="capture-3",
+            status="complete",
+            dropped_data_points=0,
+            stream_closed=True,
+        ),
+    )
+
+    assert observed.actual_trigger is False
+    assert observed.capture_complete is True
+
+
+def test_case_record_can_store_all_observed_delegations():
+    from harness_factory.pilot_a_observation import (
+        DelegationObservation,
+        PilotACaseObservation,
+    )
+
+    record = PilotACaseObservation(
+        run_id="run-2",
+        case_id="case-2",
+        arm="candidate",
+        expected_trigger=True,
+        actual_trigger=True,
+        expected_route="plugin-engineering",
+        actual_route="plugin-engineering",
+        completion="completed",
+        invocation_count=1,
+        capture_complete=True,
+        delegations=(
+            DelegationObservation(
+                confirmed=True,
+                sender_thread_id="parent",
+                receiver_thread_ids=("child-a", "child-b"),
+                status="completed",
+            ),
+            DelegationObservation(
+                confirmed=True,
+                sender_thread_id="parent",
+                receiver_thread_ids=("child-c",),
+                status="completed",
+            ),
+        ),
+    ).as_dict()
+
+    assert len(record["delegations"]) == 2
+    assert record["capture_complete"] is True
+    assert record["delegations"][0]["receiver_thread_ids"] == ["child-a", "child-b"]
+    assert record["delegations"][1]["receiver_thread_ids"] == ["child-c"]
