@@ -1,0 +1,710 @@
+{
+  "manifest": {
+    "architecture": {
+      "decisions": [
+        {
+          "id": "ADR-PA-01",
+          "requirements": [
+            "REQ-PA-PACK"
+          ],
+          "statement": "Use a vertical Expertise Pack compiled by the current canonical Pack v1 pipeline; keep all four migration roles Pack-owned."
+        },
+        {
+          "id": "ADR-PA-02",
+          "requirements": [
+            "REQ-PA-ROUTING"
+          ],
+          "statement": "One canonical 12-case routing JSON owns prompts/oracles; derive Waza task data from it."
+        },
+        {
+          "id": "ADR-PA-03",
+          "requirements": [
+            "REQ-PA-OBSERVATION"
+          ],
+          "statement": "Recognize source-backed Codex skill telemetry and collab JSONL events only; absent skill evidence and unidentifiable specialist roles remain unknown."
+        },
+        {
+          "id": "ADR-PA-04",
+          "requirements": [
+            "REQ-PA-BUDGET"
+          ],
+          "statement": "Declare required enforcement dimensions; enforce the bounded invocation count locally and retain fail-closed behavior for unsupported provider-call requirements."
+        },
+        {
+          "id": "ADR-PA-05",
+          "requirements": [
+            "REQ-PA-ISOLATION"
+          ],
+          "statement": "Use a disposable local-only seed Git repository containing only generated Pack artifacts and agent sidecars; preserve HarnessRunManager invariants."
+        }
+      ],
+      "revision": 1,
+      "spec_revision": 1,
+      "status": "ready"
+    },
+    "base_revision": "5ab9d0e7a1e4a7da467237e22e12b1149da76145",
+    "convergence": {
+      "status": "gaps_found"
+    },
+    "description": "Implement the local migration-readiness Expertise Pack and deterministic Stage 0 Codex/Harness Factory plumbing for the later bounded routing experiment.",
+    "id": "task_8",
+    "implementation": {
+      "status": "complete",
+      "revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+      "current_tasks": [],
+      "evidence": [
+        {
+          "task_id": "TASK-8-01",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "pass",
+          "acceptance_criteria": [
+            "AC-PA-PACK",
+            "AC-PA-OBSERVATION",
+            "AC-PA-ISOLATION",
+            "AC-PA-BUDGET"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-SCRATCH-20260930",
+            "EVIDENCE-PA-PACK-20260930"
+          ]
+        },
+        {
+          "task_id": "TASK-8-02",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "pass",
+          "acceptance_criteria": [
+            "AC-PA-PACK",
+            "AC-PA-OBSERVATION"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-PACK-20260930"
+          ]
+        },
+        {
+          "task_id": "TASK-8-03",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "pass",
+          "acceptance_criteria": [
+            "AC-PA-PACK",
+            "AC-PA-ROUTING"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-PACK-20260930",
+            "EVIDENCE-PA-WAZA-20260930"
+          ]
+        },
+        {
+          "task_id": "TASK-8-04",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "pass",
+          "acceptance_criteria": [
+            "AC-PA-OBSERVATION",
+            "AC-PA-BUDGET",
+            "AC-PA-METRICS"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-RUFF-20260930"
+          ]
+        },
+        {
+          "task_id": "TASK-8-05",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "pass",
+          "acceptance_criteria": [
+            "AC-PA-ISOLATION",
+            "AC-PA-STATIC"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-SCRATCH-20260930",
+            "EVIDENCE-PA-PROJECTION-20260930"
+          ]
+        },
+        {
+          "task_id": "TASK-8-06",
+          "spec_revision": 1,
+          "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+          "status": "partial",
+          "acceptance_criteria": [
+            "AC-PA-STATIC"
+          ],
+          "validation_evidence_refs": [
+            "EVIDENCE-PA-TESTS-20260930",
+            "EVIDENCE-PA-QA-R3",
+            "EVIDENCE-PA-REVIEW-R1"
+          ]
+        }
+      ]
+    },
+    "lifecycle": {
+      "branch": "feat/plugin-factory-pilot-a-migration-readiness",
+      "branch_naming": {
+        "category": "feature",
+        "policy_sha256": "cd37677aa83827b21dc0c82afe12fc629070e28fca679ffad7dee3203599163c",
+        "policy_source": ".agentic-core/branch-naming.json",
+        "policy_version": "1",
+        "validation": "accepted"
+      },
+      "cleanup": "not_requested",
+      "commit_reason": "The reviewed implementation is committed locally; publication remains blocked because the approved GitHub App mutation transport is unavailable in this host.",
+      "commit_shas": [
+        "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17"
+      ],
+      "commit_status": "created",
+      "pull_request": null,
+      "worktree": "/tmp/plugin-factory-pilot-a",
+      "workspace_note": "Local Codex scratch project: /tmp/plugin-factory-pilot-a-codex-scratch-wup9mitg/project at 9023977723c318a819947fdeca51cae048da0a2f; no remote."
+    },
+    "open_blockers": [
+      {
+        "id": "GITHUB-APP-PUBLICATION",
+        "status": "blocked",
+        "reason": "The active session does not expose the repository-authorized Agentic Core GitHub App mutation MCP. The available hosted GitHub connector is forbidden by repository policy; no alternate credential path may be used.",
+        "owner": "Orchestrator",
+        "scope": "Push the local feature branch and create a PR to develop; do not merge.",
+        "evidence": "Tool inventory contained mcp__codex_apps__github_* tools only.",
+        "next_action": "Resume publication from this exact local branch/head in a session exposing the approved Agentic Core GitHub App mutation path."
+      }
+    ],
+    "plan": {
+      "approval": "Approved plan r1; ready for implementation and deterministic Stage 0.",
+      "revision": 1,
+      "sha256": "bd63dba4d09959110036f2d84976b5b20d1d4d8ad42dc1361a76ee670dba95c8",
+      "spec_revision": 1,
+      "status": "ready"
+    },
+    "plan_ref": {
+      "path": "docs/planner-history/task_8/plan-r1.md",
+      "revision": 1,
+      "spec_revision": 1,
+      "status": "approved"
+    },
+    "qa": {
+      "status": "pass",
+      "qa_run_id": "QA-RUN-PA-STAGE0-20260930-R3",
+      "spec_revision": 1,
+      "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+      "acceptance_criteria": [
+        "AC-PA-PACK",
+        "AC-PA-ROUTING",
+        "AC-PA-OBSERVATION",
+        "AC-PA-ISOLATION",
+        "AC-PA-BUDGET",
+        "AC-PA-METRICS",
+        "AC-PA-STATIC"
+      ],
+      "validation_evidence_refs": [
+        "EVIDENCE-PA-QA-R3"
+      ]
+    },
+    "required_gates": [
+      "architecture",
+      "plan",
+      "implementation",
+      "qa",
+      "review"
+    ],
+    "review": {
+      "status": "approve",
+      "review_id": "REVIEW-PA-STAGE0-20260930-R1",
+      "qa_run_id": "QA-RUN-PA-STAGE0-20260930-R3",
+      "spec_revision": 1,
+      "implementation_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+      "acceptance_criteria": [
+        "AC-PA-PACK",
+        "AC-PA-ROUTING",
+        "AC-PA-OBSERVATION",
+        "AC-PA-ISOLATION",
+        "AC-PA-BUDGET",
+        "AC-PA-METRICS",
+        "AC-PA-STATIC"
+      ],
+      "validation_evidence_refs": [
+        "EVIDENCE-PA-REVIEW-R1"
+      ]
+    },
+    "risk_level": "L2",
+    "selected_phases": [
+      "specification",
+      "architecture",
+      "planning",
+      "implementation",
+      "deterministic Stage 0 validation",
+      "quality assurance",
+      "review",
+      "local commit",
+      "GitHub App publication and PR"
+    ],
+    "skipped_phases": [
+      {
+        "phase": "model evaluation",
+        "reason": "Explicitly prohibited for this task; Stage 0 is deterministic only."
+      },
+      {
+        "phase": "Waza model evaluation and SkillOpt",
+        "reason": "Explicitly excluded; Waza is limited to frozen spec/static validation."
+      },
+      {
+        "phase": "Substrat runtime-proof track",
+        "reason": "Pilot A uses only local generated artifacts and a local scratch project; no external runtime-proof resources are involved."
+      }
+    ],
+    "specification": {
+      "acceptance_criteria": [
+        {
+          "id": "AC-PA-PACK",
+          "statement": "The Pack validates and compiles to Codex, declares no MCP/database/SQL/code execution/provider mutation, and keeps all four agents and its skill Pack-owned.",
+          "requirements": [
+            "REQ-PA-PACK"
+          ]
+        },
+        {
+          "id": "AC-PA-ROUTING",
+          "statement": "One canonical frozen corpus has six positive and six negative cases, stable digest 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7, and Waza output is generated from it without invented negative destination routes.",
+          "requirements": [
+            "REQ-PA-ROUTING"
+          ]
+        },
+        {
+          "id": "AC-PA-OBSERVATION",
+          "statement": "Fixture tests distinguish observed invocation, non-invocation, and unknown; specialist roles come from events or remain unknown; final response prose is not evidence.",
+          "requirements": [
+            "REQ-PA-OBSERVATION"
+          ]
+        },
+        {
+          "id": "AC-PA-ISOLATION",
+          "statement": "The local scratch Git project contains only the generated Pilot A plugin and project-local Codex agents, has no MCP configuration or remote, and does not require an external repository.",
+          "requirements": [
+            "REQ-PA-ISOLATION"
+          ]
+        },
+        {
+          "id": "AC-PA-BUDGET",
+          "statement": "A complete run is exactly 24 sequential harness invocations, one per case/arm, with zero automatic retries and an enforced stop on invocation/evidence failure; provider-call counts are never claimed as preflight-enforced.",
+          "requirements": [
+            "REQ-PA-BUDGET"
+          ]
+        },
+        {
+          "id": "AC-PA-METRICS",
+          "statement": "Results preserve expected/actual trigger and route, completion checks, usage telemetry, latency, delegations, validation failures, content/revision digests, raw artifact references, and separate standard and legacy false-positive rates.",
+          "requirements": [
+            "REQ-PA-OBSERVATION",
+            "REQ-PA-BUDGET"
+          ]
+        },
+        {
+          "id": "AC-PA-STATIC",
+          "statement": "All Stage 0 validations are deterministic and pass; no Codex/model trials, Waza model evaluation, or SkillOpt runs occur.",
+          "requirements": [
+            "REQ-PA-STAGE0",
+            "REQ-PA-ROUTING"
+          ]
+        },
+        {
+          "id": "AC-PA-RELEASE",
+          "statement": "Independent QA and Reviewer pass, a local commit exists, and the semantic branch has a PR to develop that remains unmerged.",
+          "requirements": [
+            "REQ-PA-LIFECYCLE"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "source": "User prompt and prior execution baseline",
+          "statement": "The isolated worktree at /tmp/plugin-factory-pilot-a is the approved Plugin Factory source workspace at the supplied canonical base."
+        }
+      ],
+      "constraints": [
+        "Use only /tmp/plugin-factory-pilot-a for Plugin Factory changes.",
+        "Do not modify, fetch into, switch, stash, clean, or normalize /home/pm/projets-persos/plugin-factory.",
+        "Keep Pilot A entirely local; do not access Substrat-owned runtime-proof resources.",
+        "Do not run Codex model trials, Waza model evaluations, or SkillOpt.",
+        "Pilot A-only later experiment policy: unoptimized routing must trigger at least 5/6 positive cases and 0/6 negatives; completion must pass at least 5/6 positive checks and never return READY when required evidence is absent; specialist events are compared to the frozen per-case role map, with unavailable capture recorded as unknown rather than PASS.",
+        "Do not merge the PR or use SSH, user credentials, or the hosted GitHub connector for repository mutations."
+      ],
+      "id": "SPEC-PLUGIN-FACTORY-PILOT-A",
+      "non_goals": [
+        "24-run model experiment",
+        "provider-side model-call cap claim",
+        "Waza Codex execution",
+        "Agentic Core/SWE extraction",
+        "external GitHub target repository",
+        "Substrat changes or infrastructure",
+        "SkillOpt optimization"
+      ],
+      "objective": "Implement Plugin Factory Pilot A through deterministic Stage 0 only, preparing the local Pack and minimum Codex evaluation plumbing without running model trials.",
+      "path": "todos/in_progress/2026-09-30/plugin-factory-pilot-a-stage-0.md",
+      "requirements": [
+        {
+          "id": "REQ-PA-PACK",
+          "statement": "Add the local migration-readiness vertical Pack with its coordinator, three Pack-owned reviewers, and bounded skill; declare no MCP or mutation capabilities."
+        },
+        {
+          "id": "REQ-PA-ROUTING",
+          "statement": "Keep exactly twelve frozen cases in one canonical JSON source and generate the Waza representation from that source."
+        },
+        {
+          "id": "REQ-PA-OBSERVATION",
+          "statement": "Derive route and specialist observations only from recognized Codex runtime events and retain unknown when evidence is insufficient."
+        },
+        {
+          "id": "REQ-PA-ISOLATION",
+          "statement": "Materialize the generated Codex Pack in a clean local scratch Git project with isolated project agents and no unrelated plugin or MCP state."
+        },
+        {
+          "id": "REQ-PA-BUDGET",
+          "statement": "Enforce one sequential 24-invocation schedule with zero automatic retries and failure stop; provider model-call count remains optional telemetry or unknown."
+        },
+        {
+          "id": "REQ-PA-STAGE0",
+          "statement": "Complete deterministic Pack, projection, observation, isolation, budget, and reproducibility validation without model execution."
+        },
+        {
+          "id": "REQ-PA-LIFECYCLE",
+          "statement": "Obtain independent QA and Reviewer evidence, create a local semantic branch commit, and publish the branch and PR through the authorized GitHub App path without merging."
+        }
+      ],
+      "revision": 1,
+      "semantic_model": {
+        "schema_version": 1,
+        "scope": "Pilot A migration-readiness assessment and Codex runtime evidence boundaries.",
+        "concepts": [
+          {
+            "id": "CONCEPT-PA-MIGRATION-REVIEW",
+            "term": "Migration readiness review",
+            "meaning": "An assessment of a concrete database schema or data migration against compatibility, rollout/recovery, integrity/backfill, and coexistence evidence.",
+            "kind": "assessment"
+          },
+          {
+            "id": "CONCEPT-PA-ASSESSMENT-STATUS",
+            "term": "Assessment status",
+            "meaning": "A bounded READY, CONDITIONAL, or BLOCKED outcome accompanied by evidence and unknowns; missing evidence is not fabricated into a fact.",
+            "kind": "result"
+          },
+          {
+            "id": "CONCEPT-PA-RUNTIME-OBSERVATION",
+            "term": "Runtime observation",
+            "meaning": "A route or delegation conclusion supported by recognized Codex runtime events and associated with a case and run; missing or unrecognized telemetry remains unknown.",
+            "kind": "evidence"
+          },
+          {
+            "id": "CONCEPT-PA-USAGE-DIMENSIONS",
+            "term": "Usage dimensions",
+            "meaning": "Harness invocations, provider model calls, and model turns are distinct; only the enforceable harness invocation limit is a preflight guarantee for this experiment.",
+            "kind": "measurement"
+          }
+        ],
+        "relations": [
+          {
+            "id": "REL-PA-REVIEW-EVIDENCE",
+            "source_concept": "CONCEPT-PA-MIGRATION-REVIEW",
+            "target_concept": "CONCEPT-PA-ASSESSMENT-STATUS",
+            "predicate": "is_supported_by"
+          },
+          {
+            "id": "REL-PA-EVENT-OBSERVATION",
+            "source_concept": "CONCEPT-PA-RUNTIME-OBSERVATION",
+            "target_concept": "CONCEPT-PA-MIGRATION-REVIEW",
+            "predicate": "records_runtime_evidence_for"
+          },
+          {
+            "id": "REL-PA-USAGE-SEPARATION",
+            "source_concept": "CONCEPT-PA-USAGE-DIMENSIONS",
+            "target_concept": "CONCEPT-PA-RUNTIME-OBSERVATION",
+            "predicate": "remains_distinct_from"
+          }
+        ],
+        "unknowns": [
+          {
+            "id": "UNKNOWN-PA-PROVIDER-CALLS",
+            "question": "Will trustworthy provider model-call telemetry be available during a later Codex run?"
+          },
+          {
+            "id": "UNKNOWN-PA-RUNTIME-DISCOVERY",
+            "question": "Will the installed Codex CLI discover the generated plugin, skills, and project agent sidecars at runtime?"
+          }
+        ]
+      },
+      "source_request": "User-provided Pilot A Stage 0 task attachment",
+      "status": "ready",
+      "normalization_notes": [
+        "Task requirements, acceptance criteria, and semantic model were normalized to the current SDD manifest schema without changing their meaning; stable IDs referenced by tasks remain unchanged."
+      ]
+    },
+    "status": "blocked",
+    "task_events_ref": "docs/tasks-history/task_8.jsonl",
+    "tasks": [
+      {
+        "id": "TASK-8-01",
+        "status": "completed",
+        "requirements": [
+          "REQ-PA-PACK",
+          "REQ-PA-OBSERVATION",
+          "REQ-PA-ISOLATION",
+          "REQ-PA-BUDGET"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-OBSERVATION",
+          "AC-PA-ISOLATION",
+          "AC-PA-BUDGET"
+        ]
+      },
+      {
+        "id": "TASK-8-02",
+        "status": "completed",
+        "requirements": [
+          "REQ-PA-PACK",
+          "REQ-PA-OBSERVATION"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-OBSERVATION"
+        ],
+        "depends_on": [
+          "TASK-8-01"
+        ]
+      },
+      {
+        "id": "TASK-8-03",
+        "status": "completed",
+        "requirements": [
+          "REQ-PA-PACK",
+          "REQ-PA-ROUTING"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-ROUTING"
+        ],
+        "depends_on": [
+          "TASK-8-02"
+        ]
+      },
+      {
+        "id": "TASK-8-04",
+        "status": "completed",
+        "requirements": [
+          "REQ-PA-OBSERVATION",
+          "REQ-PA-BUDGET"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-OBSERVATION",
+          "AC-PA-BUDGET",
+          "AC-PA-METRICS"
+        ],
+        "depends_on": [
+          "TASK-8-02"
+        ]
+      },
+      {
+        "id": "TASK-8-05",
+        "status": "completed",
+        "requirements": [
+          "REQ-PA-ISOLATION",
+          "REQ-PA-STAGE0"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-ISOLATION",
+          "AC-PA-STATIC"
+        ],
+        "depends_on": [
+          "TASK-8-03"
+        ]
+      },
+      {
+        "id": "TASK-8-06",
+        "status": "blocked",
+        "requirements": [
+          "REQ-PA-LIFECYCLE"
+        ],
+        "acceptance_criteria": [
+          "AC-PA-STATIC",
+          "AC-PA-RELEASE"
+        ],
+        "depends_on": [
+          "TASK-8-03",
+          "TASK-8-04",
+          "TASK-8-05"
+        ]
+      }
+    ],
+    "title": "Plugin Factory Pilot A migration-readiness Stage 0",
+    "updated_at": "2026-09-30T19:08:36Z",
+    "user_steering": [
+      {
+        "timestamp": "2026-09-30T19:03:54Z",
+        "source": "user",
+        "statement": "Pilot A remains local: canonical Plugin Factory source, generated package, isolated local Codex scratch project, deterministic Stage 0, then later bounded Codex trials. No external evaluation repository or GitHub target is required."
+      }
+    ],
+    "validation_evidence": [
+      {
+        "id": "EVIDENCE-PA-TESTS-20260930",
+        "check": "Focused deterministic suite: 84 passed, 7 subtests passed.",
+        "command": "PYTHONDONTWRITEBYTECODE=1 uv run --no-project --with pytest --with PyYAML --with typer python -m pytest -q tests/test_harness_factory.py tests/test_harness_execution.py tests/test_pilot_a_pack.py tests/test_pilot_a_workspace.py tests/test_pilot_a_observation.py tests/test_pilot_a_budget.py tests/test_pilot_a_codex_capture.py tests/test_pilot_a_runtime.py",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; Python 3.12.13; uv 0.11.11.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-ROUTING",
+          "AC-PA-OBSERVATION",
+          "AC-PA-ISOLATION",
+          "AC-PA-BUDGET",
+          "AC-PA-METRICS",
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-RUFF-20260930",
+        "check": "Ruff check and format check for all changed Python source, generators, and tests.",
+        "command": "uv run --no-project --with ruff ruff check <changed Python files>; uv run --no-project --with ruff ruff format --check <changed Python files>",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; Ruff 0.16.9; Python 3.12.13; uv 0.11.11.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-PACK-20260930",
+        "check": "Pack validation and supported-target compilation.",
+        "command": "uv run --no-project --with PyYAML --with typer python -m expertise validate migration-readiness; uv run --no-project --with PyYAML --with typer python -m expertise test migration-readiness",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; Python 3.12.13; Codex CLI 0.158.0.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-PACK"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-PROJECTION-20260930",
+        "check": "Two independent Codex target builds produced identical 11-file trees and target digests.",
+        "command": "Repeated `python -m expertise build migration-readiness --target codex --output <unique dist path>`; tree SHA-256 759fe7029f256a932060dcc4d7344274e01f16c5dc5de73342ac26afb550e1b5; target digest 558b5931839a7af5a0381d1432500168e6acf1b01f6626b46cfaafff46560581.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; Python 3.12.13.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-WAZA-20260930",
+        "check": "Fresh Waza static output matches the 13 tracked generated files; corpus cases digest is 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7.",
+        "command": "Called scripts.generate_migration_readiness_waza.generate_waza to a temporary output and compared sorted tree digest; Waza CLI was unavailable.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; Python 3.12.13; PyYAML.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-ROUTING",
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-SCRATCH-20260930",
+        "check": "Local Codex scratch project contains the exact generated 11-file Codex projection, four .codex/agents sidecars, no MCP files, no remote, and a clean local Git tree.",
+        "command": "create_pilot_a_seed_repository(expertise/packs/migration-readiness, /tmp/plugin-factory-pilot-a-codex-scratch-wup9mitg/project); scratch HEAD 9023977723c318a819947fdeca51cae048da0a2f.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Local Linux scratch path; no external repository or service.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-ISOLATION"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-DIFF-20260930",
+        "check": "Staged source diff check passed before the implementation commit.",
+        "command": "git diff --cached --check",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Isolated local worktree /tmp/plugin-factory-pilot-a.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-QA-R2",
+        "check": "Superseded QA R2 failed before corrections; findings were canonical digest enforcement, undersized-budget reservation, and artifact preflight.",
+        "subject_revision": "72f47b1cb9bb335413cc7d9c7b0cafa64647ff6a plus pre-correction diff",
+        "environment": "Isolated Pilot A worktree; fake Codex adapter only.",
+        "producer": "quality-assurance",
+        "spec_revision": 1,
+        "result": "fail"
+      },
+      {
+        "id": "EVIDENCE-PA-QA-R3",
+        "check": "Independent QA R3 passed current code; 84 tests and 7 subtests, Ruff/format/diff-check, adversarial checks for digest, budget, artifact paths, schedule, and event evidence.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Linux x86_64; fake Codex adapter; no model or Codex invocation.",
+        "producer": "quality-assurance",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-ROUTING",
+          "AC-PA-OBSERVATION",
+          "AC-PA-ISOLATION",
+          "AC-PA-BUDGET",
+          "AC-PA-METRICS",
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-REVIEW-R1",
+        "check": "Independent Reviewer approved Stage 0 diff; Semgrep 1.177.0 produced no findings or errors.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Static review; no Codex/model/Waza runtime/SkillOpt execution.",
+        "producer": "reviewer",
+        "spec_revision": 1,
+        "result": "pass",
+        "acceptance_criteria": [
+          "AC-PA-PACK",
+          "AC-PA-ROUTING",
+          "AC-PA-OBSERVATION",
+          "AC-PA-ISOLATION",
+          "AC-PA-BUDGET",
+          "AC-PA-METRICS",
+          "AC-PA-STATIC"
+        ]
+      },
+      {
+        "id": "EVIDENCE-PA-PUBLICATION",
+        "check": "Publish feature branch and open PR using the authorized Agentic Core GitHub App path.",
+        "subject_revision": "6f94cd1f4cabde0473d2bebe1cb5e66e50913e17",
+        "environment": "Active Codex host tool inventory exposes hosted GitHub connector only; repository policy disallows that path and user credentials.",
+        "producer": "orchestrator",
+        "spec_revision": 1,
+        "result": "blocked"
+      }
+    ]
+  },
+  "status": "blocked",
+  "task_id": "task_8",
+  "updated_at": "2026-09-30T19:08:36Z"
+}
