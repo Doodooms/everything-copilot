@@ -14,7 +14,7 @@ from harness_factory.pilot_a_observation import (
 )
 
 
-def _skill_metric(skill: str) -> dict[str, object]:
+def _skill_metric(skill: str, *, status: object = "ok") -> dict[str, object]:
     return {
         "resourceMetrics": [
             {
@@ -36,6 +36,10 @@ def _skill_metric(skill: str) -> dict[str, object]:
                                                     "value": {
                                                         "stringValue": "explicit"
                                                     },
+                                                },
+                                                {
+                                                    "key": "status",
+                                                    "value": {"stringValue": status},
                                                 },
                                             ]
                                         }
@@ -61,6 +65,8 @@ def test_route_observer_uses_only_native_skill_metric_not_final_prose():
     assert observed.capture_complete is None
     assert observed.requested_route == "plugin-engineering"
     assert observed.invoke_types == ("explicit",)
+    assert observed.skill_injections[0].status == "ok"
+    assert observed.as_dict()["skill_injections"][0]["status"] == "ok"
 
 
 def test_route_observer_keeps_missing_or_unrecognized_telemetry_unknown():
@@ -279,3 +285,59 @@ def test_case_record_can_store_all_observed_delegations():
     assert record["capture_complete"] is True
     assert record["delegations"][0]["receiver_thread_ids"] == ["child-a", "child-b"]
     assert record["delegations"][1]["receiver_thread_ids"] == ["child-c"]
+
+
+def test_failed_skill_injection_remains_an_observed_selection_attempt():
+    observed = observe_codex_events(
+        [_skill_metric("plugin-engineering", status="error")],
+        requested_route="plugin-engineering",
+    )
+
+    assert observed.actual_trigger is True
+    assert observed.skill_injections[0].status == "error"
+
+
+def test_missing_or_malformed_skill_injection_status_stays_unknown():
+    missing = observe_codex_events(
+        [_skill_metric("plugin-engineering", status=None)],
+        requested_route="plugin-engineering",
+    )
+    malformed = observe_codex_events(
+        [_skill_metric("plugin-engineering", status="failed")],
+        requested_route="plugin-engineering",
+    )
+
+    assert missing.actual_trigger is True
+    assert missing.skill_injections[0].status is None
+    assert malformed.actual_trigger is True
+    assert malformed.skill_injections[0].status is None
+
+
+def test_case_record_preserves_skill_injection_status():
+    from harness_factory.pilot_a_observation import (
+        PilotACaseObservation,
+        SkillInjectionObservation,
+    )
+
+    record = PilotACaseObservation(
+        run_id="run-3",
+        case_id="case-3",
+        arm="candidate",
+        expected_trigger=True,
+        actual_trigger=True,
+        expected_route="plugin-engineering",
+        actual_route="plugin-engineering",
+        completion="completed",
+        invocation_count=1,
+        skill_injections=(
+            SkillInjectionObservation(
+                skill="plugin-engineering", invoke_type="explicit", status="error"
+            ),
+        ),
+    ).as_dict()
+
+    assert record["skill_injections"][0] == {
+        "skill": "plugin-engineering",
+        "invoke_type": "explicit",
+        "status": "error",
+    }

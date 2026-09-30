@@ -324,11 +324,26 @@ class DelegationObservation:
 
 
 @dataclass(frozen=True)
+class SkillInjectionObservation:
+    skill: str
+    invoke_type: str | None
+    status: str | None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "skill": self.skill,
+            "invoke_type": self.invoke_type or "unknown",
+            "status": self.status or "unknown",
+        }
+
+
+@dataclass(frozen=True)
 class CodexRouteObservation:
     requested_route: str | None
     actual_trigger: bool | None
     actual_route: str | None
     invoke_types: tuple[str, ...]
+    skill_injections: tuple[SkillInjectionObservation, ...]
     capture_complete: bool | None
     delegations: tuple[DelegationObservation, ...]
 
@@ -340,6 +355,7 @@ class CodexRouteObservation:
             ),
             "actual_route": self.actual_route or "unknown",
             "invoke_types": list(self.invoke_types),
+            "skill_injections": [item.as_dict() for item in self.skill_injections],
             "capture_complete": (
                 self.capture_complete
                 if self.capture_complete is not None
@@ -367,13 +383,15 @@ def observe_codex_events(
     skill_names: set[str] = set()
     invoke_types: set[str] = set()
     delegations: list[DelegationObservation] = []
+    skill_injections: list[SkillInjectionObservation] = []
     for event in events:
         if not isinstance(event, Mapping):
             continue
-        for skill, invoke_type in _documented_skill_injections(event):
-            skill_names.add(skill)
-            if invoke_type:
-                invoke_types.add(invoke_type)
+        for injection in _documented_skill_injections(event):
+            skill_names.add(injection.skill)
+            if injection.invoke_type:
+                invoke_types.add(injection.invoke_type)
+            skill_injections.append(injection)
         item = event.get("item")
         if not isinstance(item, Mapping):
             continue
@@ -415,6 +433,7 @@ def observe_codex_events(
         actual_trigger=actual_trigger,
         actual_route=actual_route,
         invoke_types=tuple(sorted(invoke_types)),
+        skill_injections=tuple(skill_injections),
         capture_complete=capture_complete,
         delegations=tuple(delegations),
     )
@@ -422,10 +441,10 @@ def observe_codex_events(
 
 def _documented_skill_injections(
     event: Mapping[str, Any],
-) -> tuple[tuple[str, str | None], ...]:
+) -> tuple[SkillInjectionObservation, ...]:
     """Parse only the Codex skill metric in the documented OTLP JSON hierarchy."""
 
-    found: list[tuple[str, str | None]] = []
+    found: list[SkillInjectionObservation] = []
     resource_metrics = event.get("resourceMetrics")
     if not isinstance(resource_metrics, list):
         return ()
@@ -472,7 +491,14 @@ def _documented_skill_injections(
                             values[key] = text.strip()
                     skill = values.get("skill")
                     if skill:
-                        found.append((skill, values.get("invoke_type")))
+                        status = values.get("status")
+                        found.append(
+                            SkillInjectionObservation(
+                                skill=skill,
+                                invoke_type=values.get("invoke_type"),
+                                status=(status if status in {"ok", "error"} else None),
+                            )
+                        )
     return tuple(found)
 
 
@@ -492,6 +518,7 @@ class PilotACaseObservation:
     tokens: Mapping[str, int] | None = None
     latency_ms: int | None = None
     delegations: tuple[DelegationObservation, ...] = ()
+    skill_injections: tuple[SkillInjectionObservation, ...] = ()
     validation_failures: tuple[str, ...] = ()
     package_digest: str = "unknown"
     canonical_revision: str = "unknown"
@@ -567,6 +594,7 @@ class PilotACaseObservation:
             "tokens": dict(self.tokens) if self.tokens is not None else "unknown",
             "latency_ms": self.latency_ms if self.latency_ms is not None else "unknown",
             "delegations": [item.as_dict() for item in self.delegations],
+            "skill_injections": [item.as_dict() for item in self.skill_injections],
             "validation_failures": list(self.validation_failures),
             "completion_checks": [dict(check) for check in self.completion_checks],
             "package_digest": self.package_digest,
