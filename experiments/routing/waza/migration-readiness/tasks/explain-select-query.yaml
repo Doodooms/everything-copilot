@@ -1,0 +1,15 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: explain-select-query
+name: 'explain-select-query: Explain how a SQL SELECT statement with a GROUP BY clause works and give a simple example.'
+description: Frozen negative routing case for migration-readiness.
+tags:
+- pilot-a
+- negative
+- source-case:explain-select-query
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+inputs:
+  prompt: Explain how a SQL SELECT statement with a GROUP BY clause works and give a simple example.
+expected:
+  should_trigger: false

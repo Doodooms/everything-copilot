@@ -30,7 +30,12 @@ from harness_factory.adapters import (
     _codex_result,
     _read_token_usage,
 )
-from harness_factory.cli import main as harness_factory_main
+from harness_factory.cli import (
+    _run_adapter_scenario,
+)
+from harness_factory.cli import (
+    main as harness_factory_main,
+)
 from harness_factory.errors import (
     CapabilityUnavailableError,
     HarnessFactoryError,
@@ -466,6 +471,118 @@ class HarnessEvaluationTests(unittest.TestCase):
                     for value in values.values()
                 )
             )
+
+    def test_suite_run_allows_explicit_harness_invocation_budget(self):
+        source_suite = load_suite(
+            ROOT / "experiments/harness-evals/agentic-core-v0.2.0/suite.json"
+        )
+        suite_payload = source_suite.as_dict()
+        source_scenarios = suite_payload["scenarios"]
+        suite_payload["scenarios"] = [
+            {**scenario, "id": f"arm-{arm}-{scenario['id']}"}
+            for arm in range(2)
+            for scenario in source_scenarios
+        ] + [
+            {**scenario, "id": f"arm-2-{scenario['id']}"}
+            for scenario in source_scenarios[:6]
+        ]
+        suite = validate_suite(suite_payload)
+        self.assertEqual(len(suite.scenarios), 24)
+        profile = EvaluationProfile(
+            profile_id="pilot-profile",
+            source_path=Path("/unused/profile"),
+        )
+        calls = []
+
+        def invoke(scenario, _profile):
+            calls.append(scenario.scenario_id)
+            return HarnessResult(
+                run_id=uuid4().hex,
+                harness="codex",
+                status=ResultStatus.PASSED,
+                scenario=scenario.scenario_id,
+                base_revision=scenario.base_revision,
+                observations={},
+                assertions=(),
+                model_turns=1,
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_suite(
+                suite,
+                profile,
+                harness="codex",
+                budget=EvaluationRunBudget(
+                    max_runs=24,
+                    max_model_calls=None,
+                    max_tokens_if_known=None,
+                    max_failures_before_stop=1,
+                    required_enforcement=("harness_invocations",),
+                ),
+                invoke=invoke,
+                artifact_path=Path(directory) / "run.json",
+                run_id="c" * 32,
+            )
+
+        self.assertEqual(len(calls), 24)
+        self.assertEqual(result["usage"]["harness_invocations"], 24)
+        self.assertEqual(result["usage"]["model_calls"], "unknown")
+        self.assertFalse(result["model_call_limit_enforced"])
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(
+            result["budget"]["required_enforcement"], ["harness_invocations"]
+        )
+
+    def test_skill_telemetry_is_opt_in_and_codex_only(self):
+        adapter = Mock()
+        run = object()
+        plugin = Path("/plugin")
+        scenario = Mock()
+
+        _run_adapter_scenario(
+            adapter,
+            "codex",
+            run,
+            plugin,
+            scenario,
+        )
+        adapter.run_scenario.assert_called_once_with(
+            run,
+            plugin,
+            scenario,
+            capture_skill_telemetry=False,
+        )
+
+        adapter.reset_mock()
+        _run_adapter_scenario(
+            adapter,
+            "codex",
+            run,
+            plugin,
+            scenario,
+            capture_skill_telemetry=True,
+        )
+        adapter.run_scenario.assert_called_once_with(
+            run,
+            plugin,
+            scenario,
+            capture_skill_telemetry=True,
+        )
+
+        adapter.reset_mock()
+        _run_adapter_scenario(adapter, "copilot", run, plugin, scenario)
+        adapter.run_scenario.assert_called_once_with(run, plugin, scenario)
+        adapter.reset_mock()
+        with self.assertRaisesRegex(HarnessFactoryError, "only for Codex"):
+            _run_adapter_scenario(
+                adapter,
+                "copilot",
+                run,
+                plugin,
+                scenario,
+                capture_skill_telemetry=True,
+            )
+        adapter.run_scenario.assert_not_called()
 
 
 class HarnessProviderTests(unittest.TestCase):
@@ -936,7 +1053,12 @@ class HarnessValidationTests(unittest.TestCase):
             adapter = Mock()
             adapter.detect.return_value = Mock(cli_installed=False)
 
-            def run_suite_cli(preflight: Path, artifact: Path, known_agent: bool):
+            def run_suite_cli(
+                preflight: Path,
+                artifact: Path,
+                known_agent: bool,
+                invocation_only_budget: bool = False,
+            ):
                 arguments = [
                     "suite-run",
                     "--suite",
@@ -956,14 +1078,21 @@ class HarnessValidationTests(unittest.TestCase):
                     "--preflight-artifact",
                     str(preflight),
                     "--max-runs",
-                    "1",
-                    "--max-model-calls",
-                    "1",
-                    "--max-tokens-if-known",
-                    "25000",
+                    "24" if invocation_only_budget else "1",
                     "--max-failures-before-stop",
                     "1",
                 ]
+                if invocation_only_budget:
+                    arguments.extend(("--required-enforcement", "harness_invocations"))
+                else:
+                    arguments.extend(
+                        (
+                            "--max-model-calls",
+                            "1",
+                            "--max-tokens-if-known",
+                            "25000",
+                        )
+                    )
                 if known_agent:
                     arguments.extend(("--known-agent", "researcher"))
                 output = io.StringIO()
@@ -989,6 +1118,22 @@ class HarnessValidationTests(unittest.TestCase):
             self.assertEqual(omitted_status, 2)
             self.assertIn("unknown agent 'researcher'", omitted_result["message"])
             self.assertFalse(omitted_preflight.exists())
+
+            pilot_preflight = root / "pilot-preflight.json"
+            pilot_status, pilot_result = run_suite_cli(
+                pilot_preflight,
+                root / "pilot-artifact.json",
+                True,
+                invocation_only_budget=True,
+            )
+            self.assertEqual(pilot_status, 2)
+            self.assertIn("CLI is unavailable", pilot_result["message"])
+            self.assertEqual(
+                json.loads(pilot_preflight.read_text(encoding="utf-8"))["budget"][
+                    "required_enforcement"
+                ],
+                ["harness_invocations"],
+            )
 
     def test_adapter_prepare_uses_explicit_agent_catalog_and_rejects_omission(self):
         with tempfile.TemporaryDirectory() as directory:

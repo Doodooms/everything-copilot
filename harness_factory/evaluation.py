@@ -29,6 +29,15 @@ ALLOWED_COPILOT_REASONS = frozenset(
     }
 )
 _ARTIFACT_SCHEMA_VERSION = 2
+_BUDGET_ENFORCEMENT_DIMENSIONS = frozenset(
+    {"harness_invocations", "provider_model_calls"}
+)
+_LEGACY_BUDGET_FIELDS = {
+    "max_runs",
+    "max_model_calls",
+    "max_tokens_if_known",
+    "max_failures_before_stop",
+}
 _RUN_ID_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 _REVISION_PATTERN = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 _PROFILE_FIELDS = {
@@ -73,27 +82,59 @@ class SystemicEvaluationError(HarnessFactoryError):
 @dataclass(frozen=True)
 class RunBudget:
     max_runs: int
-    max_model_calls: int
+    max_model_calls: int | None
     max_tokens_if_known: int | None
     max_failures_before_stop: int
+    required_enforcement: tuple[str, ...] = ("provider_model_calls",)
 
     def __post_init__(self) -> None:
-        for name in ("max_runs", "max_model_calls", "max_failures_before_stop"):
+        for name in ("max_runs", "max_failures_before_stop"):
             value = getattr(self, name)
             if type(value) is not int or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
+        if self.max_model_calls is not None and (
+            type(self.max_model_calls) is not int or self.max_model_calls <= 0
+        ):
+            raise ValueError("max_model_calls must be a positive integer or null")
         if self.max_tokens_if_known is not None and (
             type(self.max_tokens_if_known) is not int or self.max_tokens_if_known <= 0
         ):
             raise ValueError("max_tokens_if_known must be a positive integer or null")
+        if not isinstance(self.required_enforcement, (tuple, list)):
+            raise TypeError("required_enforcement must be a sequence of dimensions")
+        required = tuple(self.required_enforcement)
+        if (
+            not required
+            or any(
+                not isinstance(name, str) or name not in _BUDGET_ENFORCEMENT_DIMENSIONS
+                for name in required
+            )
+            or len(set(required)) != len(required)
+        ):
+            raise ValueError("required_enforcement contains invalid dimensions")
+        if "provider_model_calls" in required and self.max_model_calls is None:
+            raise ValueError(
+                "max_model_calls is required when provider_model_calls enforcement is required"
+            )
+        object.__setattr__(self, "required_enforcement", required)
 
-    def as_dict(self) -> dict[str, int | None]:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "max_runs": self.max_runs,
             "max_model_calls": self.max_model_calls,
             "max_tokens_if_known": self.max_tokens_if_known,
             "max_failures_before_stop": self.max_failures_before_stop,
+            "required_enforcement": list(self.required_enforcement),
         }
+
+
+def _validated_run_budget(value: Mapping[str, Any]) -> RunBudget:
+    if not isinstance(value, Mapping) or frozenset(value) not in {
+        frozenset(_LEGACY_BUDGET_FIELDS),
+        frozenset(_LEGACY_BUDGET_FIELDS | {"required_enforcement"}),
+    }:
+        raise ValueError("budget fields are invalid")
+    return RunBudget(**value)
 
 
 @dataclass(frozen=True)
@@ -356,15 +397,8 @@ def save_preflight_record(path: Path, record: Mapping[str, Any]) -> None:
     ):
         raise HarnessFactoryError("preflight record contract identities are invalid")
     validate_run_target(record["harness"], record["copilot_reason"])
-    if not isinstance(record["budget"], Mapping) or set(record["budget"]) != {
-        "max_runs",
-        "max_model_calls",
-        "max_tokens_if_known",
-        "max_failures_before_stop",
-    }:
-        raise HarnessFactoryError("preflight record budget fields are invalid")
     try:
-        RunBudget(**record["budget"])
+        _validated_run_budget(record["budget"])
     except (TypeError, ValueError) as exc:
         raise HarnessFactoryError("preflight record budget values are invalid") from exc
     destination = Path(path)
@@ -386,7 +420,7 @@ def run_suite(
     artifact_path: Path,
     run_id: str | None = None,
 ) -> dict[str, Any]:
-    """Record a blocked run because no trusted adapter enforces provider-call limits."""
+    """Execute only with every declared required budget dimension enforceable."""
 
     if not isinstance(suite, ScenarioSuite):
         raise TypeError("suite must be loaded and validated before execution")
@@ -406,6 +440,7 @@ def run_suite(
         raise ValueError("run_id must be a lowercase 32-character UUID")
     started_at = _utc_now()
     model_call_limit_enforced = False
+    provider_calls_required = "provider_model_calls" in budget.required_enforcement
     results: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
     raw_artifact_references: list[str] = []
@@ -437,7 +472,7 @@ def run_suite(
     status = "completed"
 
     for scenario_index, scenario in enumerate(suite.scenarios):
-        if not model_call_limit_enforced:
+        if provider_calls_required and not model_call_limit_enforced:
             stop_reason = (
                 "provider model-call limit cannot be enforced by the selected harness"
             )
@@ -450,6 +485,7 @@ def run_suite(
         if (
             model_calls_complete
             and saw_model_calls
+            and budget.max_model_calls is not None
             and model_calls_total >= budget.max_model_calls
         ):
             stop_reason = "max_model_calls reached"
@@ -529,7 +565,7 @@ def run_suite(
                 )
                 status = "failed"
                 break
-            if not model_calls_complete:
+            if provider_calls_required and not model_calls_complete:
                 stop_reason = "provider model-call count unknown; stopped before another invocation"
                 status = "stopped"
                 break
@@ -624,13 +660,21 @@ def run_suite(
             stop_reason = "reported token usage exceeded max_tokens_if_known"
             status = "stopped"
             break
-        if result.model_calls is None and scenario_index + 1 < len(suite.scenarios):
+        if (
+            provider_calls_required
+            and result.model_calls is None
+            and scenario_index + 1 < len(suite.scenarios)
+        ):
             stop_reason = (
                 "provider model-call count unknown; stopped before another invocation"
             )
             status = "stopped"
             break
-        if model_calls_complete and model_calls_total > budget.max_model_calls:
+        if (
+            model_calls_complete
+            and budget.max_model_calls is not None
+            and model_calls_total > budget.max_model_calls
+        ):
             stop_reason = "reported provider model calls exceeded max_model_calls"
             status = "stopped"
             break
@@ -1083,16 +1127,8 @@ def _validate_artifact(value: Any) -> None:
         raise HarnessFactoryError(
             "evaluation artifact requires budget and usage objects"
         )
-    expected_budget = {
-        "max_runs",
-        "max_model_calls",
-        "max_tokens_if_known",
-        "max_failures_before_stop",
-    }
-    if set(value["budget"]) != expected_budget:
-        raise HarnessFactoryError("evaluation artifact budget fields are invalid")
     try:
-        RunBudget(**value["budget"])
+        run_budget = _validated_run_budget(value["budget"])
     except (TypeError, ValueError) as exc:
         raise HarnessFactoryError(
             "evaluation artifact budget values are invalid"
@@ -1122,16 +1158,21 @@ def _validate_artifact(value: Any) -> None:
         )
     if (
         value["usage"]["harness_invocations"] > 0
+        and "provider_model_calls" in run_budget.required_enforcement
         and not value["model_call_limit_enforced"]
     ):
         raise HarnessFactoryError(
-            "evaluation artifact has harness invocations without an enforced model-call limit"
+            "evaluation artifact has harness invocations without its required provider model-call limit"
         )
     if value["usage"]["harness_invocations"] == 0 and model_calls != 0:
         raise HarnessFactoryError(
             "evaluation artifact must record zero model calls before any invocation"
         )
-    if type(model_calls) is int and model_calls > value["budget"]["max_model_calls"]:
+    if (
+        type(model_calls) is int
+        and run_budget.max_model_calls is not None
+        and model_calls > run_budget.max_model_calls
+    ):
         raise HarnessFactoryError("evaluation artifact exceeds its model-call budget")
     for field in ("model_turns", "known_tokens_total"):
         count = value["usage"][field]

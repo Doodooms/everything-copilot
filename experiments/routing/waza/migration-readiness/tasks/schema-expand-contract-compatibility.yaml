@@ -1,0 +1,18 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: schema-expand-contract-compatibility
+name: 'schema-expand-contract-compatibility: Review this planned PostgreSQL expand-and-contract migration for readiness. The old and new application versions will overlap for one release; assess read/write compatibility, rollout ordering, and evidence still needed. Do not write SQL or migration code.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:schema-expand-contract-compatibility
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:schema-compatibility-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: Review this planned PostgreSQL expand-and-contract migration for readiness. The old and new application versions will overlap for one release; assess read/write compatibility, rollout ordering, and evidence still needed. Do not write SQL or migration code.
+expected:
+  should_trigger: true

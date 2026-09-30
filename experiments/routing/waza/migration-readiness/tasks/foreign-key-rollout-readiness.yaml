@@ -1,0 +1,19 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: foreign-key-rollout-readiness
+name: 'foreign-key-rollout-readiness: Evaluate readiness for adding a foreign-key constraint to a production database with existing rows and rolling application releases. Consider data-integrity checks, old-client compatibility, constraint rollout ordering, and explicit unknowns. Do not generate SQL.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:foreign-key-rollout-readiness
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:schema-compatibility-reviewer
+- expected-specialist-role:data-integrity-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: Evaluate readiness for adding a foreign-key constraint to a production database with existing rows and rolling application releases. Consider data-integrity checks, old-client compatibility, constraint rollout ordering, and explicit unknowns. Do not generate SQL.
+expected:
+  should_trigger: true

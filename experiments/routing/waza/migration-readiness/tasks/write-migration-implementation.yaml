@@ -1,0 +1,15 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: write-migration-implementation
+name: 'write-migration-implementation: Write and execute the SQL migration that renames the users.full_name column to display_name, including the backfill and rollback script.'
+description: Frozen negative routing case for migration-readiness.
+tags:
+- pilot-a
+- negative
+- source-case:write-migration-implementation
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+inputs:
+  prompt: Write and execute the SQL migration that renames the users.full_name column to display_name, including the backfill and rollback script.
+expected:
+  should_trigger: false

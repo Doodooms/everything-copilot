@@ -10,7 +10,7 @@ import tempfile
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Iterator, Mapping
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +39,7 @@ from .models import (
     RunMode,
     RunStatus,
 )
+from .pilot_a_codex_capture import PilotACodexMetricsCapture, _write_all
 from .runs import HarnessRun, HarnessRunManager
 from .validation import materialize_source
 
@@ -184,6 +185,7 @@ class HarnessAdapter(ABC):
         model_turns: int | None = None,
         model_calls: int | None = None,
         additional_observations: Mapping[str, Any] | None = None,
+        artifact_paths: tuple[Path, ...] = (),
     ) -> HarnessResult:
         normalized_output = output.strip()
         matched = normalized_output == scenario.expected_output
@@ -257,10 +259,15 @@ class HarnessAdapter(ABC):
             base_revision=run.base_revision,
             observations=observations,
             assertions=tuple(assertions),
-            artifacts=(
-                (str(usage_file),)
+            artifacts=tuple(
+                [str(usage_file)]
                 if usage_file is not None and usage_file.is_file()
-                else ()
+                else []
+            )
+            + tuple(
+                str(path)
+                for path in dict.fromkeys(artifact_paths)
+                if path.is_file() and not path.is_symlink()
             ),
             evidence=(f"cli:{self.executable_name}", f"base:{run.base_revision}"),
             token_usage=token_usage,
@@ -532,7 +539,11 @@ class CodexHarnessAdapter(CliHarnessAdapter):
         run: HarnessRun,
         plugin_path: Path,
         scenario: HarnessScenario,
+        *,
+        capture_skill_telemetry: bool = False,
     ) -> HarnessResult:
+        if type(capture_skill_telemetry) is not bool:
+            raise TypeError("capture_skill_telemetry must be a boolean")
         _require_read_only_validation_run(run, self.name)
         plugin_path = _require_plugin_path(run, plugin_path)
         declared_mcp_servers = _plugin_mcp_servers(plugin_path)
@@ -585,34 +596,56 @@ class CodexHarnessAdapter(CliHarnessAdapter):
         command.append(scenario.prompt)
 
         started = time.perf_counter()
-        with _codex_project_plugin(run, plugin_path):
+        stdout_artifact = run.state_directory / "codex-stdout.jsonl"
+        metrics_capture: PilotACodexMetricsCapture | None = None
+        completed: subprocess.CompletedProcess[str] | None = None
+        invocation_failure: tuple[int, str] | None = None
+        with ExitStack() as stack:
+            if capture_skill_telemetry:
+                metrics_capture = stack.enter_context(
+                    PilotACodexMetricsCapture(run.state_directory)
+                )
+            stack.enter_context(
+                _codex_project_plugin(
+                    run,
+                    plugin_path,
+                    metrics_capture=metrics_capture,
+                )
+            )
             try:
                 completed = _run_codex_exec(
                     command,
                     cwd=run.workspace,
                     environment=environment,
                     timeout=scenario.timeout_seconds,
+                    stdout_artifact_path=(
+                        stdout_artifact if capture_skill_telemetry else None
+                    ),
                 )
             except subprocess.TimeoutExpired:
-                elapsed = round((time.perf_counter() - started) * 1000)
-                return self.collect_result(
-                    run=run,
-                    scenario=scenario,
-                    returncode=124,
-                    output="",
-                    elapsed_ms=elapsed,
-                    errors=("harness timed out",),
-                )
+                invocation_failure = (124, "harness timed out")
             except OSError as exc:
-                elapsed = round((time.perf_counter() - started) * 1000)
-                return self.collect_result(
-                    run=run,
-                    scenario=scenario,
-                    returncode=127,
-                    output="",
-                    elapsed_ms=elapsed,
-                    errors=(f"harness could not start: {type(exc).__name__}",),
+                invocation_failure = (
+                    127,
+                    f"harness could not start: {type(exc).__name__}",
                 )
+
+        artifacts = [stdout_artifact] if capture_skill_telemetry else []
+        if metrics_capture is not None:
+            artifacts.extend(metrics_capture.artifact_paths)
+        if invocation_failure is not None:
+            elapsed = round((time.perf_counter() - started) * 1000)
+            return self.collect_result(
+                run=run,
+                scenario=scenario,
+                returncode=invocation_failure[0],
+                output="",
+                elapsed_ms=elapsed,
+                errors=(invocation_failure[1],),
+                artifact_paths=tuple(artifacts),
+            )
+        if completed is None:
+            raise HarnessFactoryError("Codex invocation completed without a result")
 
         response, usage, parse_error, model_turns = _codex_result(completed.stdout)
         mcp_tool_calls = _codex_mcp_tool_calls(completed.stdout)
@@ -630,6 +663,7 @@ class CodexHarnessAdapter(CliHarnessAdapter):
             usage_file=usage_file,
             errors=(parse_error,) if parse_error else (),
             model_turns=model_turns,
+            artifact_paths=tuple(artifacts),
             additional_observations=_codex_mcp_observations(
                 declared_mcp_servers,
                 mcp_tool_calls,
@@ -909,18 +943,79 @@ def _run_codex_exec(
     environment: dict[str, str],
     timeout: int,
     input_text: str | None = None,
+    stdout_artifact_path: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        command,
-        cwd=cwd,
-        input=input_text,
-        capture_output=True,
-        check=False,
-        encoding="utf-8",
-        errors="replace",
-        env=environment,
-        timeout=timeout,
-    )
+    if stdout_artifact_path is None:
+        return subprocess.run(
+            command,
+            cwd=cwd,
+            input=input_text,
+            capture_output=True,
+            check=False,
+            encoding="utf-8",
+            errors="replace",
+            env=environment,
+            timeout=timeout,
+        )
+
+    if (
+        stdout_artifact_path.parent.is_symlink()
+        or not stdout_artifact_path.parent.is_dir()
+    ):
+        raise HarnessFactoryError("Codex stdout artifact directory must be regular")
+    if stdout_artifact_path.exists() or stdout_artifact_path.is_symlink():
+        raise HarnessFactoryError("Codex stdout artifact path already exists")
+    try:
+        descriptor = os.open(
+            stdout_artifact_path,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+    except OSError as exc:
+        raise HarnessFactoryError(
+            "Codex stdout artifact path could not be created"
+        ) from exc
+    try:
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=cwd,
+                input=input_text,
+                capture_output=True,
+                check=False,
+                encoding=None,
+                errors=None,
+                env=environment,
+                timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as exc:
+            partial = exc.stdout
+            if isinstance(partial, str):
+                partial = partial.encode("utf-8")
+            if isinstance(partial, bytes):
+                _write_all(descriptor, partial)
+            raise
+        raw_stdout = completed.stdout
+        if isinstance(raw_stdout, str):
+            raw_stdout = raw_stdout.encode("utf-8")
+        if not isinstance(raw_stdout, bytes):
+            raise HarnessFactoryError("Codex stdout was not returned as bytes")
+        _write_all(descriptor, raw_stdout)
+        raw_stderr = completed.stderr
+        if isinstance(raw_stderr, bytes):
+            stderr = raw_stderr.decode("utf-8", errors="replace")
+        elif isinstance(raw_stderr, str):
+            stderr = raw_stderr
+        else:
+            stderr = ""
+        return subprocess.CompletedProcess(
+            args=completed.args,
+            returncode=completed.returncode,
+            stdout=raw_stdout.decode("utf-8", errors="replace"),
+            stderr=stderr,
+        )
+    finally:
+        os.close(descriptor)
 
 
 def _parse_codex_execution_output(
@@ -1420,7 +1515,12 @@ def _codex_project_plugin(run: HarnessRun, plugin_path: Path) -> Iterator[None]:
 
 
 @contextmanager
-def _codex_project_plugin(run: HarnessRun, plugin_path: Path) -> Iterator[None]:
+def _codex_project_plugin(
+    run: HarnessRun,
+    plugin_path: Path,
+    *,
+    metrics_capture: PilotACodexMetricsCapture | None = None,
+) -> Iterator[None]:
     manifest_path = plugin_path / "plugin.json"
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise HarnessFactoryError("Codex plugin requires a regular plugin.json")
@@ -1481,7 +1581,12 @@ def _codex_project_plugin(run: HarnessRun, plugin_path: Path) -> Iterator[None]:
         ).encode("utf-8"),
         codex_config_file: (
             f'[plugins."{plugin_name}@{marketplace_name}"]\nenabled = true\n'
-        ).encode(),
+            + (
+                metrics_capture.codex_config_line()
+                if metrics_capture is not None
+                else ""
+            )
+        ).encode("utf-8"),
     }
     directories = (
         run.workspace / ".agents",

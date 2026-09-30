@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "id": "migration-readiness",
+  "skill": "migration-readiness",
+  "description": "Frozen Stage 0 routing cases for database schema and data migration readiness.",
+  "cases": [
+    {
+      "id": "schema-expand-contract-compatibility",
+      "polarity": "positive",
+      "prompt": "Review this planned PostgreSQL expand-and-contract migration for readiness. The old and new application versions will overlap for one release; assess read/write compatibility, rollout ordering, and evidence still needed. Do not write SQL or migration code.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "schema-compatibility-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "rolling-client-column-removal",
+      "polarity": "positive",
+      "prompt": "We plan to remove a database column after a rolling deploy. Evaluate whether the old and new clients can safely coexist during deployment, what compatibility evidence is missing, and whether the plan is READY, CONDITIONAL, or BLOCKED. Do not implement the migration.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "schema-compatibility-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "backfill-invariant-readiness",
+      "polarity": "positive",
+      "prompt": "Assess readiness of a database backfill that copies account status into a new normalized table. Review source-to-target invariants, idempotency and reconciliation evidence, and list unknowns that could block rollout. Do not execute a backfill.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "data-integrity-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "dual-write-cutover-plan",
+      "polarity": "positive",
+      "prompt": "Review a database migration plan using temporary dual writes before cutover. Assess consistency risks, the evidence required before switching reads, rollback or forward-recovery options, and deployment dependencies. Return a bounded readiness result.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "schema-compatibility-reviewer",
+        "data-integrity-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "foreign-key-rollout-readiness",
+      "polarity": "positive",
+      "prompt": "Evaluate readiness for adding a foreign-key constraint to a production database with existing rows and rolling application releases. Consider data-integrity checks, old-client compatibility, constraint rollout ordering, and explicit unknowns. Do not generate SQL.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "schema-compatibility-reviewer",
+        "data-integrity-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "migration-recovery-evidence",
+      "polarity": "positive",
+      "prompt": "Review this database migration cutover for operational readiness. The schema is already expanded and a backfill is staged; assess verification checkpoints, rollback versus forward recovery, dependencies, and evidence required before the destructive cleanup phase.",
+      "expected_route": "migration-readiness",
+      "expected_specialist_roles": [
+        "data-integrity-reviewer",
+        "rollout-readiness-reviewer"
+      ]
+    },
+    {
+      "id": "explain-select-query",
+      "polarity": "negative",
+      "prompt": "Explain how a SQL SELECT statement with a GROUP BY clause works and give a simple example."
+    },
+    {
+      "id": "api-version-compatibility-only",
+      "polarity": "negative",
+      "prompt": "Review whether our public REST API v1 and v2 response fields are backward compatible. There is no database schema or data migration involved."
+    },
+    {
+      "id": "live-database-incident",
+      "polarity": "negative",
+      "prompt": "Production writes are currently failing after a deployment. Diagnose the live database incident and tell me which commands to run right now."
+    },
+    {
+      "id": "database-performance-tuning",
+      "polarity": "negative",
+      "prompt": "Our database query latency increased. Analyze the query plan and recommend indexes and performance tuning changes."
+    },
+    {
+      "id": "choose-database-product",
+      "polarity": "negative",
+      "prompt": "Choose between PostgreSQL, MySQL, and DynamoDB for a new greenfield product, based on our scale and team preferences."
+    },
+    {
+      "id": "write-migration-implementation",
+      "polarity": "negative",
+      "prompt": "Write and execute the SQL migration that renames the users.full_name column to display_name, including the backfill and rollback script."
+    }
+  ],
+  "metadata": {
+    "fixture_class": "migration_readiness_routing",
+    "stage": "static_stage_0",
+    "digest_scope": "canonical UTF-8 JSON serialization of cases with sorted keys and compact separators",
+    "cases_sha256": "8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7"
+  }
+}

@@ -1,0 +1,15 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: choose-database-product
+name: 'choose-database-product: Choose between PostgreSQL, MySQL, and DynamoDB for a new greenfield product, based on our scale and team preferences.'
+description: Frozen negative routing case for migration-readiness.
+tags:
+- pilot-a
+- negative
+- source-case:choose-database-product
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+inputs:
+  prompt: Choose between PostgreSQL, MySQL, and DynamoDB for a new greenfield product, based on our scale and team preferences.
+expected:
+  should_trigger: false

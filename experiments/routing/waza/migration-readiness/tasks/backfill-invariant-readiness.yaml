@@ -1,0 +1,18 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: backfill-invariant-readiness
+name: 'backfill-invariant-readiness: Assess readiness of a database backfill that copies account status into a new normalized table. Review source-to-target invariants, idempotency and reconciliation evidence, and list unknowns that could block rollout. Do not execute a backfill.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:backfill-invariant-readiness
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:data-integrity-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: Assess readiness of a database backfill that copies account status into a new normalized table. Review source-to-target invariants, idempotency and reconciliation evidence, and list unknowns that could block rollout. Do not execute a backfill.
+expected:
+  should_trigger: true

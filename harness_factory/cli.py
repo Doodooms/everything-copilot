@@ -6,6 +6,7 @@ import os
 import shutil
 import tempfile
 import uuid
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,8 @@ from .models import (
     RunMode,
     RunStatus,
 )
+from .pilot_a_observation import PilotABudget
+from .pilot_a_runtime import pilot_a_invocation_status, run_pilot_a_experiment
 from .runs import HarnessRunManager
 from .suites import load_suite
 from .validation import validate_source
@@ -154,10 +157,47 @@ def build_parser() -> argparse.ArgumentParser:
     suite_run.add_argument("--run-id")
     suite_run.add_argument("--timeout-seconds", type=int, default=90)
     suite_run.add_argument("--max-ai-credits", type=int, default=COPILOT_MIN_AI_CREDITS)
+    suite_run.add_argument(
+        "--capture-skill-telemetry",
+        action="store_true",
+        help="opt in to Codex skill telemetry and JSONL transcript artifacts",
+    )
     suite_run.add_argument("--max-runs", type=int, required=True)
-    suite_run.add_argument("--max-model-calls", type=int, required=True)
-    suite_run.add_argument("--max-tokens-if-known", type=int, required=True)
+    suite_run.add_argument("--max-model-calls", type=int)
+    suite_run.add_argument("--max-tokens-if-known", type=int)
+    suite_run.add_argument(
+        "--required-enforcement",
+        action="append",
+        choices=("harness_invocations", "provider_model_calls"),
+        help=(
+            "budget dimension that must be enforceable before execution; "
+            "defaults to provider_model_calls for compatibility"
+        ),
+    )
     suite_run.add_argument("--max-failures-before-stop", type=int, required=True)
+
+    pilot_a_run = commands.add_parser(
+        "pilot-a-run",
+        help="execute the frozen local Pilot A Codex routing schedule",
+    )
+    pilot_a_run.add_argument("--cases", type=Path, required=True)
+    pilot_a_run.add_argument("--baseline-profile", type=Path, required=True)
+    pilot_a_run.add_argument("--candidate-profile", type=Path, required=True)
+    pilot_a_run.add_argument("--repo-root", type=Path, required=True)
+    pilot_a_run.add_argument("--base-revision", required=True)
+    pilot_a_run.add_argument("--canonical-revision", default="unknown")
+    pilot_a_run.add_argument("--state-root", type=Path, required=True)
+    pilot_a_run.add_argument("--owner", required=True)
+    pilot_a_run.add_argument("--artifact", type=Path, required=True)
+    pilot_a_run.add_argument("--max-harness-invocations", type=int, default=24)
+    pilot_a_run.add_argument("--timeout-seconds", type=int, default=90)
+    pilot_a_run.add_argument(
+        "--known-agent",
+        action="append",
+        default=[],
+        help="known agent ID (repeat for each agent available to these profiles)",
+    )
+    pilot_a_run.set_defaults(capture_skill_telemetry=True)
 
     compare = commands.add_parser(
         "compare", help="compare two durable runs over identical scenario contracts"
@@ -237,6 +277,9 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "suite-run":
             return _suite_run(args, adapters[args.harness])
+
+        if args.command == "pilot-a-run":
+            return _pilot_a_run(args, adapters["codex"])
 
         if args.command == "compare":
             comparison = compare_run_artifacts(args.left, args.right)
@@ -376,11 +419,20 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
     suite = load_suite(args.suite)
     profile = load_profile(args.profile)
     validate_run_target(args.harness, args.copilot_reason)
+    if args.capture_skill_telemetry and args.harness != "codex":
+        raise HarnessFactoryError(
+            "skill telemetry capture is currently supported only for Codex"
+        )
     budget = RunBudget(
         max_runs=args.max_runs,
         max_model_calls=args.max_model_calls,
         max_tokens_if_known=args.max_tokens_if_known,
         max_failures_before_stop=args.max_failures_before_stop,
+        required_enforcement=tuple(
+            args.required_enforcement
+            if args.required_enforcement is not None
+            else ("provider_model_calls",)
+        ),
     )
     run_id = args.run_id or uuid.uuid4().hex
     if type(args.timeout_seconds) is not int or args.timeout_seconds <= 0:
@@ -457,7 +509,9 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
                 owner=record.owner,
                 status=RunStatus.RUNNING,
             )
-            result = adapter.run_scenario(
+            result = _run_adapter_scenario(
+                adapter,
+                args.harness,
                 running,
                 plugin_path,
                 HarnessScenario(
@@ -470,6 +524,7 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
                     forbidden_observations=scenario.forbidden,
                     optional_observations=scenario.optional,
                 ),
+                capture_skill_telemetry=args.capture_skill_telemetry,
             )
             final_status = (
                 RunStatus.COMPLETED
@@ -510,6 +565,234 @@ def _suite_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
     )
     _emit(artifact)
     return 0 if artifact["status"] == "completed" else 3
+
+
+def _run_adapter_scenario(
+    adapter: HarnessAdapter,
+    harness: str,
+    run: Any,
+    plugin_path: Path,
+    scenario: HarnessScenario,
+    *,
+    capture_skill_telemetry: bool = False,
+):
+    if capture_skill_telemetry and harness != "codex":
+        raise HarnessFactoryError(
+            "skill telemetry capture is currently supported only for Codex"
+        )
+    if harness == "codex":
+        return adapter.run_scenario(
+            run,
+            plugin_path,
+            scenario,
+            capture_skill_telemetry=capture_skill_telemetry,
+        )
+    return adapter.run_scenario(run, plugin_path, scenario)
+
+
+def _pilot_a_run(args: argparse.Namespace, adapter: HarnessAdapter) -> int:
+    baseline = load_profile(args.baseline_profile)
+    candidate = load_profile(args.candidate_profile)
+    profiles = {"baseline": baseline, "candidate": candidate}
+    profile_digests = {}
+    for arm, profile in profiles.items():
+        validation = validate_source(
+            profile.source_path,
+            "codex",
+            known_agents=frozenset(args.known_agent),
+        )
+        profile_digests[arm] = validation.source_digest
+    capabilities = adapter.detect()
+    if not capabilities.cli_installed:
+        raise CapabilityUnavailableError(
+            "Codex CLI is unavailable; no Pilot A invocation was launched"
+        )
+    if type(args.timeout_seconds) is not int or args.timeout_seconds <= 0:
+        raise HarnessFactoryError("timeout-seconds must be positive")
+    budget = PilotABudget(max_harness_invocations=args.max_harness_invocations)
+    if budget.max_harness_invocations != 24:
+        raise HarnessFactoryError("Pilot A requires all 24 scheduled invocations")
+    if args.artifact == args.cases or args.artifact in {
+        args.baseline_profile,
+        args.candidate_profile,
+    }:
+        raise HarnessFactoryError("Pilot A artifact path must differ from its inputs")
+    manager = HarnessRunManager(args.repo_root, args.state_root)
+    resolved_revision = manager.resolve_revision(args.base_revision)
+    if resolved_revision != args.base_revision:
+        raise HarnessFactoryError("Pilot A base_revision is not its pinned SHA")
+    artifact_reservation = _reserve_pilot_a_artifact(args.artifact)
+    invocation_started = False
+
+    def invoke(pair: Any, case: Mapping[str, Any], profile: EvaluationProfile):
+        nonlocal invocation_started
+        invocation_started = True
+        try:
+            record = manager.create_run(
+                harness="codex",
+                base_revision=resolved_revision,
+                mode=RunMode.VALIDATION,
+                owner=args.owner,
+            )
+            if profile.source_mode == "base_revision":
+                source_relative = profile.source_path
+            else:
+                source_relative = Path(".pilot-a-profile-input")
+                profile_input = record.workspace / source_relative
+                if profile_input.exists() or profile_input.is_symlink():
+                    raise HarnessFactoryError(
+                        "Pilot A profile input path already exists"
+                    )
+                shutil.copytree(profile.source_path, profile_input, symlinks=True)
+            plugin_path = adapter.prepare(
+                record,
+                source_relative,
+                known_agents=frozenset(args.known_agent),
+            )
+            running = manager.transition(
+                record.run_id,
+                owner=record.owner,
+                status=RunStatus.RUNNING,
+            )
+            result = _run_adapter_scenario(
+                adapter,
+                "codex",
+                running,
+                plugin_path,
+                HarnessScenario(
+                    scenario_id=pair.case_id,
+                    prompt=case["prompt"],
+                    expected_output="__PILOT_A_RESPONSE_MATCHING_NOT_APPLICABLE__",
+                    timeout_seconds=args.timeout_seconds,
+                ),
+                capture_skill_telemetry=True,
+            )
+            status, _ = pilot_a_invocation_status(result, ())
+            manager.transition(
+                record.run_id,
+                owner=record.owner,
+                status=(
+                    RunStatus.COMPLETED if status == "passed" else RunStatus.FAILED
+                ),
+            )
+            return result
+        except (HarnessFactoryError, OSError, ValueError, TypeError) as exc:
+            try:
+                current = manager.get_run(record.run_id)
+                if current.status in {RunStatus.PREPARED, RunStatus.RUNNING}:
+                    manager.transition(
+                        record.run_id,
+                        owner=record.owner,
+                        status=RunStatus.FAILED,
+                    )
+            except (HarnessFactoryError, UnboundLocalError):
+                pass
+            raise HarnessFactoryError(
+                f"Pilot A Codex invocation failed: {type(exc).__name__}: {exc}"
+            ) from exc
+
+    try:
+        artifact = run_pilot_a_experiment(
+            args.cases,
+            state_root=args.state_root,
+            profiles=profiles,
+            profile_digests=profile_digests,
+            budget=budget,
+            canonical_revision=args.canonical_revision,
+            invoke=invoke,
+        )
+    except BaseException:
+        if invocation_started:
+            artifact_reservation.close()
+        else:
+            artifact_reservation.discard()
+        raise
+    artifact_reservation.write(artifact)
+    _emit(artifact)
+    return 0 if artifact["status"] == "completed" else 3
+
+
+class _PilotAArtifactReservation:
+    def __init__(self, path: Path, stream, identity: tuple[int, int]):
+        self.path = path
+        self.stream = stream
+        self.identity = identity
+
+    def write(self, payload: Mapping[str, Any]) -> None:
+        self._write_payload(payload, close=True)
+
+    def _write_payload(self, payload: Mapping[str, Any], *, close: bool) -> None:
+        self._verify_path()
+        try:
+            self.stream.seek(0)
+            self.stream.truncate()
+            json.dump(
+                payload, self.stream, ensure_ascii=False, indent=2, sort_keys=True
+            )
+            self.stream.write("\n")
+            self.stream.flush()
+            os.fsync(self.stream.fileno())
+        finally:
+            if close:
+                self.stream.close()
+
+    def close(self) -> None:
+        if not self.stream.closed:
+            self.stream.close()
+
+    def discard(self) -> None:
+        self.close()
+        try:
+            self._verify_path()
+        except HarnessFactoryError:
+            return
+        self.path.unlink()
+
+    def _verify_path(self) -> None:
+        try:
+            current = self.path.lstat()
+        except OSError as exc:
+            raise HarnessFactoryError("Pilot A result reservation disappeared") from exc
+        if self.path.is_symlink() or (current.st_dev, current.st_ino) != self.identity:
+            raise HarnessFactoryError("Pilot A result path changed after reservation")
+
+
+def _reserve_pilot_a_artifact(path: Path) -> _PilotAArtifactReservation:
+    target = Path(path)
+    if target.exists() or target.is_symlink():
+        raise HarnessFactoryError("Pilot A result artifact path is already in use")
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.parent.is_symlink() or not target.parent.is_dir():
+            raise HarnessFactoryError(
+                "Pilot A result artifact parent is not a directory"
+            )
+        flags = os.O_CREAT | os.O_EXCL | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(target, flags, 0o600)
+        file_identity = os.fstat(descriptor)
+        stream = os.fdopen(descriptor, "r+", encoding="utf-8")
+        reservation = _PilotAArtifactReservation(
+            target,
+            stream,
+            (file_identity.st_dev, file_identity.st_ino),
+        )
+        try:
+            reservation._write_payload(
+                {"status": "in_progress", "artifact": "Pilot A result reservation"},
+                close=False,
+            )
+        except BaseException:
+            reservation.discard()
+            raise
+        return reservation
+    except FileExistsError as exc:
+        raise HarnessFactoryError(
+            "Pilot A result artifact path is already in use"
+        ) from exc
+    except OSError as exc:
+        raise HarnessFactoryError(
+            "Pilot A result artifact path is not writable"
+        ) from exc
 
 
 def _smoke(args: argparse.Namespace, adapter: HarnessAdapter) -> int:

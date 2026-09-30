@@ -1,0 +1,41 @@
+schema_version: 1
+id: migration-readiness
+type: vertical
+name: Database Migration Readiness
+version: 0.1.0
+description: Bounded readiness assessment for database schema and data migrations across rolling releases.
+compatibility:
+  targets:
+    - portable
+    - codex
+  agent_plugins: ">=1.0.0"
+trust:
+  publisher: Plugin Factory
+  source: Pilot A canonical Pack
+  approval_required: true
+capabilities:
+  - id: database.migration.readiness
+    description: Assess readiness evidence for database schema and data migrations without implementing or executing them.
+dependencies: []
+agents:
+  contributions:
+    - id: migration-readiness-coordinator
+      source: agents/migration-readiness-coordinator.agent.md
+      capabilities: [database.migration.readiness]
+    - id: schema-compatibility-reviewer
+      source: agents/schema-compatibility-reviewer.agent.md
+      capabilities: [database.migration.readiness]
+    - id: data-integrity-reviewer
+      source: agents/data-integrity-reviewer.agent.md
+      capabilities: [database.migration.readiness]
+    - id: rollout-readiness-reviewer
+      source: agents/rollout-readiness-reviewer.agent.md
+      capabilities: [database.migration.readiness]
+  extensions: []
+skills:
+  - id: migration-readiness
+    path: skills/migration-readiness
+    capabilities: [database.migration.readiness]
+mcp_config: null
+mcp_servers: []
+projections: []

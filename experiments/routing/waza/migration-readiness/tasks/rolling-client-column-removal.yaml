@@ -1,0 +1,18 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: rolling-client-column-removal
+name: 'rolling-client-column-removal: We plan to remove a database column after a rolling deploy. Evaluate whether the old and new clients can safely coexist during deployment, what compatibility evidence is missing, and whether the plan is READY, CONDITIONAL, or BLOCKED. Do not implement the migration.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:rolling-client-column-removal
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:schema-compatibility-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: We plan to remove a database column after a rolling deploy. Evaluate whether the old and new clients can safely coexist during deployment, what compatibility evidence is missing, and whether the plan is READY, CONDITIONAL, or BLOCKED. Do not implement the migration.
+expected:
+  should_trigger: true

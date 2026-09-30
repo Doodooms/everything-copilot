@@ -1,0 +1,15 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: api-version-compatibility-only
+name: 'api-version-compatibility-only: Review whether our public REST API v1 and v2 response fields are backward compatible. There is no database schema or data migration involved.'
+description: Frozen negative routing case for migration-readiness.
+tags:
+- pilot-a
+- negative
+- source-case:api-version-compatibility-only
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+inputs:
+  prompt: Review whether our public REST API v1 and v2 response fields are backward compatible. There is no database schema or data migration involved.
+expected:
+  should_trigger: false

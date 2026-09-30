@@ -1,0 +1,15 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: live-database-incident
+name: 'live-database-incident: Production writes are currently failing after a deployment. Diagnose the live database incident and tell me which commands to run right now.'
+description: Frozen negative routing case for migration-readiness.
+tags:
+- pilot-a
+- negative
+- source-case:live-database-incident
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+inputs:
+  prompt: Production writes are currently failing after a deployment. Diagnose the live database incident and tell me which commands to run right now.
+expected:
+  should_trigger: false

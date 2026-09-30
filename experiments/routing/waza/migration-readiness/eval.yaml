@@ -1,0 +1,19 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+name: migration-readiness-static-stage-0
+description: Generated Waza view of the frozen Pilot A migration-readiness routing corpus; no model evaluation is implied.
+skill: migration-readiness
+version: '1.0'
+config:
+  trials_per_task: 1
+  timeout_seconds: 600
+  parallel: false
+  inject_skill_body: false
+metrics:
+- name: routing_decision
+  weight: 1.0
+  threshold: 1.0
+  description: Compare skill invocation with each task's should_trigger expectation. This generated static oracle is not a runtime result.
+graders: []
+tasks:
+- tasks/*.yaml

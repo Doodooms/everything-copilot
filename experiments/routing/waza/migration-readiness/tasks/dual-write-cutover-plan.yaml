@@ -1,0 +1,19 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: dual-write-cutover-plan
+name: 'dual-write-cutover-plan: Review a database migration plan using temporary dual writes before cutover. Assess consistency risks, the evidence required before switching reads, rollback or forward-recovery options, and deployment dependencies. Return a bounded readiness result.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:dual-write-cutover-plan
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:schema-compatibility-reviewer
+- expected-specialist-role:data-integrity-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: Review a database migration plan using temporary dual writes before cutover. Assess consistency risks, the evidence required before switching reads, rollback or forward-recovery options, and deployment dependencies. Return a bounded readiness result.
+expected:
+  should_trigger: true

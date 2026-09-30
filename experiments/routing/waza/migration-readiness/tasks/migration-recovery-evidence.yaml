@@ -1,0 +1,18 @@
+# GENERATED FROM experiments/routing/specs/migration-readiness.json
+# cases-sha256: 8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+id: migration-recovery-evidence
+name: 'migration-recovery-evidence: Review this database migration cutover for operational readiness. The schema is already expanded and a backfill is staged; assess verification checkpoints, rollback versus forward recovery, dependencies, and evidence required before the destructive cleanup phase.'
+description: Frozen positive routing case for migration-readiness.
+tags:
+- pilot-a
+- positive
+- source-case:migration-recovery-evidence
+- family:migration-readiness-routing
+- cases-sha256:8581b32eb37d09114dd63ba4da0a0ed4c57f1847a5920aaf195735528af84df7
+- expected-route:migration-readiness
+- expected-specialist-role:data-integrity-reviewer
+- expected-specialist-role:rollout-readiness-reviewer
+inputs:
+  prompt: Review this database migration cutover for operational readiness. The schema is already expanded and a backfill is staged; assess verification checkpoints, rollback versus forward recovery, dependencies, and evidence required before the destructive cleanup phase.
+expected:
+  should_trigger: true
