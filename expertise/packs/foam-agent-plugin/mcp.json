@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "foam": {
+      "type": "stdio",
+      "command": "foam",
+      "args": [
+        "mcp",
+        "--workspace",
+        "__FOAM_WORKSPACE__",
+        "--allow-writes"
+      ]
+    }
+  }
+}

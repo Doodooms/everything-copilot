@@ -1,0 +1,76 @@
+schema_version: 1
+id: foam-agent-plugin
+type: vertical
+name: Foam Agent Plugin
+version: 0.1.0
+description: Explicit, verified note workflows over a bound Foam workspace.
+compatibility:
+  targets:
+  - codex
+  - portable
+  agent_plugins: '>=1.0.0'
+trust:
+  publisher: Doodooms
+  source: Plugin Factory Foam Agent Plugin V0
+  approval_required: true
+capabilities:
+- id: foam.inbox
+  description: Process Foam Inbox entries only after each destination is durable.
+- id: foam.ideas
+  description: Materialize ideas as Foam notes while preserving uncertainty.
+- id: foam.sources
+  description: Capture source notes with stable provenance and uncertainty.
+dependencies: []
+agents:
+  contributions: []
+  extensions: []
+skills:
+- id: process-inbox
+  path: skills/process-inbox
+  capabilities:
+  - foam.inbox
+- id: materialize-idea
+  path: skills/materialize-idea
+  capabilities:
+  - foam.ideas
+- id: capture-source
+  path: skills/capture-source
+  capabilities:
+  - foam.sources
+mcp_config: mcp.json
+mcp_servers:
+- id: foam
+  capabilities:
+  - foam.inbox
+  - foam.ideas
+  - foam.sources
+  permissions:
+  - read
+  - write
+  tools:
+  - list_resources
+  - get_resource
+  - read_resource
+  - create_resource
+  - update_resource
+  - delete_resource
+  - move_resource
+  - list_queries
+  - get_query
+  - run_query
+  - get_outline
+  - get_connections
+  - get_orphans
+  - get_deadends
+  - get_placeholders
+  - traverse_graph
+  - get_graph_summary
+  - get_workspace_info
+  - search_resources
+  - search_by_property
+  - list_tags
+  - search_by_tag
+  - add_tags
+  - remove_tags
+  - rename_tag
+projections: []
