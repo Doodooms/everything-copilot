@@ -1,4 +1,4 @@
-"""Build a Codex or Copilot agent projection from an explicit plugin source."""
+"""Build a target projection from an explicit Agent Plugin source."""
 
 from __future__ import annotations
 
