@@ -1,3 +1,4 @@
+# Legacy exchange example only; use only as supplied legacy input, never as required local task state.
 id: task_1
 title: Ensure data module uses approved external splits
 description: Read approved splits from the repository's configured annotation path.

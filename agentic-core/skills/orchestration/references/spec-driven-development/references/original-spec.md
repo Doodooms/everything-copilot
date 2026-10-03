@@ -1,3 +1,7 @@
+# Historical source specification (non-authoritative)
+
+This document is retained for provenance only. Current Agentic Core behavior is defined by the live orchestration and SDD workflows alongside it. Any historic instruction here to create local manifests, harness history, task history, or provide their paths is superseded: the Control Plane owns durable Task, Attempt, event, artifact, replay, lease, and provenance state, and local workflows that do not depend on that state must proceed without it.
+
 # Mission
 
 Implémente un skill `spec-driven-development` destiné à l’agent `orchestrator`.

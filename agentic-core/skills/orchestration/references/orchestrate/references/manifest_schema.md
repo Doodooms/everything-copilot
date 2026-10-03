@@ -1,19 +1,21 @@
-# Orchestration and history schema
+# Legacy orchestration exchange schema
 
-Use these files only for a coordinated task that needs durable cross-agent state. A trivial or single-agent task may use the native session todos without creating a repository history.
+The Control Plane is the sole owner of durable Task, Attempt, event, artifact, replay, lease, and provenance state. This schema, its examples, and helper support explicitly requested legacy exchange or validation artifacts only; they do not define active local task storage. Agentic Core MUST NOT create these repository-local files as a substitute for Control Plane state. Workflows that do not depend on durable task state proceed with local tools and the active handoff/session.
+
+Do not request absolute paths to these files. Use the schemas only when a concrete task supplies or explicitly asks to validate a legacy artifact.
 
 ## File ownership
 
 | Path | Owner | Source of truth |
 |---|---|---|
-| `docs/harness-history/<task-id>/manifest.json` | Orchestrator | Current approved specification reference, phase/gate status, lifecycle pointers, and links to derived artifacts |
-| `docs/harness-history/<task-id>/events.jsonl` | Orchestrator | Append-only decisions and specialist handoff summaries |
-| `docs/planner-history/<task-id>/plan-r<revision>.md` | Planner | Approved task definitions, dependency DAG, file scopes, phase checks, and validation plan |
-| `docs/tasks-history/<task-id>.jsonl` | Orchestrator | Append-only state transitions for plan task IDs and specialist attempts |
+| `docs/harness-history/<task-id>/manifest.json` | Legacy exchange format | Historical specification reference, phase/gate status, lifecycle pointers, and derived-artifact links |
+| `docs/harness-history/<task-id>/events.jsonl` | Legacy exchange format | Historical decisions and specialist handoff summaries |
+| `docs/planner-history/<task-id>/plan-r<revision>.md` | Legacy exchange format | Historical task definitions, dependency DAG, file scopes, phase checks, and validation plan |
+| `docs/tasks-history/<task-id>.jsonl` | Legacy exchange format | Historical task-status and attempt transitions |
 
-The manifest MUST reference the current plan path/revision and task ledger. Do not copy plan/task descriptions into the manifest or duplicate full specification text into event records. Record stable IDs and evidence paths instead.
+For a supplied legacy artifact set, the manifest references its plan revision and task ledger. Do not copy plan/task descriptions into the manifest or duplicate full specification text into event records. These references describe the legacy exchange format only.
 
-New manifest payloads, persisted manifest records, events, task transitions, and handoff packets MUST validate against the matching JSON Schema in [`../schemas/`](../schemas/) before they are persisted or passed to another owner. The schemas are the language-neutral contract; use the `uv`-managed `jsonschema` validator rather than maintaining a second field definition in prose. Existing pre-schema history remains historical input and is not silently rewritten.
+When explicitly producing or validating a legacy exchange artifact, validate it against the matching JSON Schema in [`../schemas/`](../schemas/) before passing it to another owner. The schemas define that exchange format; they do not authorize local persistence as active task state. Existing pre-schema history remains historical input and is not silently rewritten.
 
 ## Manifest
 
@@ -85,7 +87,7 @@ Product acceptance remains specification-owned. The plan MUST NOT change or weak
 
 ## Task status event
 
-Append one JSON object per line to `docs/tasks-history/<task-id>.jsonl`. New events include `schema_version` and `event_id` and validate against `task-transition.schema.json`:
+For a supplied legacy task-history artifact, each line is one JSON object. New exchange records include `schema_version` and `event_id` and validate against `task-transition.schema.json`:
 
 ```json
 {
@@ -103,9 +105,9 @@ Append one JSON object per line to `docs/tasks-history/<task-id>.jsonl`. New eve
 
 Allowed statuses: `planned`, `queued`, `running`, `completed`, `partial`, `failed`, `blocked`, `unknown`, `cancelled`. An attempt follows observed transitions; terminal failures are retained, and retry starts a new `attempt_id`. Every outcome references actual evidence or the observed reason no result exists. Do not interpret time elapsed alone as proof of crash; when a session resumes and the host cannot establish a `running` attempt's state, append `unknown`.
 
-Native todos are a session UI compiled from top-level plan phases/tasks. Use meaningful dependency links, update a todo after recording the corresponding durable event, and do not mark completion before evidence exists.
+Native todos support active-session work tracking. Update a todo from observed progress and do not mark completion before evidence exists.
 
-Run the helper as `uv run --script <absolute-path-to-orchestrator.py> ...`; its `record-manifest`, `append-harness-event`, and `append-task-event` operations validate the object before writing. `record-manifest` accepts either the raw manifest or its validated persisted wrapper and synchronizes the explicit `--status` argument. Pass `--repo <absolute-repository-path>` when Git or artifact references need local verification. For a handoff file, call `<absolute-path-to-validate_exchange.py> --kind handoff --input <packet.json>` through `uv run --script` and retain its actual exit/result with the task record.
+The packaged `orchestrator.py` helper only proposes a repository-approved branch name; it has no task-state persistence commands. For a handoff file explicitly supplied for validation, call the packaged `validate_exchange.py --kind handoff --input <packet.json>` and retain the result with the consuming workflow.
 
 ## GitHub and hooks
 

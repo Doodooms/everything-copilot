@@ -13,7 +13,7 @@ description: 'WHAT: Perform isolated, evidence-heavy repository and external tec
 - **primary source** : The authoritative specification, maintainer documentation, standard, paper, or repository artifact closest to the claim.
 - **verified finding** : A claim checked against an identified source, with version and context preserved where they affect applicability.
 - **uncertainty** : An unresolved ambiguity, evidence gap, source disagreement, or inference that limits confidence in a finding.
-- **supported artifact** : The exact `SPEC-*`, `REQ-*`, `AC-*`, `ADR-*`, `TASK-*`, defect, or decision whose resolution requires a research result.
+- **supported artifact** : The exact `SPEC-*`, `REQ-*`, `AC-*`, `ADR-*`, `TASK-*`, defect, or decision whose resolution requires a research result, when such an artifact ID is supplied. A standalone research question needs no fabricated ID.
 
 </definitions>
 

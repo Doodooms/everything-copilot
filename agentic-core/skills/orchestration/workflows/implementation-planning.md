@@ -48,5 +48,5 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 
 1. Return specification/architecture revisions, task graph, phases, dependency edges, file ownership, validation commands, risks, assumptions, skipped work with rationale, and the next owner.
 2. Confirm all acceptance criteria have an owning task or are explicitly marked existing behavior/not applicable with evidence.
-3. Use #tool:todo to update planning todos from the returned evidence; leave implementation state to the Orchestrator and task ledger.
+3. Use #tool:todo to update planning todos from the returned evidence; leave durable implementation state to the Control Plane when connected and required. Do not create a local task ledger.
 </workflow>

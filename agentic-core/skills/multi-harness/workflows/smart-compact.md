@@ -47,12 +47,12 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 ## Step 3 - Choose the action at a safe boundary.
 
 1. Continue when the host-reported remaining capacity covers the next bounded phase plus the handoff/output reserve.
-2. If it does not, finish or stop at the earliest safe boundary, update canonical task state, and compact before starting the next phase. If implementation has valuable unresolved state, record the exact files, decisions, validation, blockers, and next action first; never compact away state needed to continue safely.
+2. If it does not, finish or stop at the earliest safe boundary and compact before starting the next phase. Update Control Plane task state only when connected and required by the workflow; otherwise preserve the exact files, decisions, validation, blockers, and next action in the active handoff/session. Do not create local task-history files to prepare for compaction; never compact away state needed to continue safely.
 3. Use the host's supported compaction command or native behavior. A successful compact command means the host acted; it does not prove that a new session inherited state.
 
 ## Step 4 - Return the observation and decision.
 
-1. Report the source, timestamp, knowledge state (`host_reported`, `local_estimate`, or `unknown`), used/capacity/remaining values when observed, next-phase estimate and method, reserve basis, selected action, and durable handoff reference. Keep context-window occupancy separate from plan allowance, weekly/rolling usage, and billed credits.
+1. Report the source, timestamp, knowledge state (`host_reported`, `local_estimate`, or `unknown`), used/capacity/remaining values when observed, next-phase estimate and method, reserve basis, selected action, and Control Plane handoff reference when one exists. Keep context-window occupancy separate from plan allowance, weekly/rolling usage, and billed credits.
    - Host references:
      - [Codex CLI status and compaction](https://developers.openai.com/codex/cli/slash-commands/)
      - [Copilot CLI context management](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/context-management)

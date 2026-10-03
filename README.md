@@ -1,6 +1,6 @@
 # Plugin Factory
 
-Plugin Factory packages reusable agent cognition as plugins and provides tooling to manage Expertise Packs. Its canonical internal agent and skill layer is `agentic-core`; project-specific customizations remain workspace-local.
+Plugin Factory is the current repository name for the Plugin Platform. `factory/` owns deterministic, content-neutral plugin tooling; `agentic-core/` is the canonical self-hosted Agent Plugin, including `plugin-engineering`. See [Plugin Platform ownership](./docs/architecture/PLUGIN_PLATFORM_BOUNDARIES.md).
 
 ## Repository milestones
 
@@ -10,7 +10,12 @@ Plugin Factory packages reusable agent cognition as plugins and provides tooling
 
 ## Layout
 
+- `factory/projection/`: explicit-source Codex, Copilot, and Claude Agent Plugin projectors and projection provenance.
+- `expertise/`: the distinct Expertise Pack parser, PackIR, validators, and target compilers.
+- `harness_factory/`: isolated harness capability detection, static validation, and bounded run adapters.
 - `agentic-core/plugin.json`, `mcp.json`: installable Core plugin and its bundled MCP servers.
+- `agentic-core/agents/*.md`: canonical portable Agentic Core agent sources.
+- `agentic-core/com.github.copilot/agents/`: generated Copilot-compatible outputs; do not edit as source.
 - `agentic-core/README.md`: GitHub App MCP Docker setup and agent access boundaries.
 - `agentic-core/com.github.copilot/agents/`: Copilot agent definitions.
 - `agentic-core/skills/`: discoverable domain skills, internal workflows, references, assets, and validation tools.
@@ -18,11 +23,11 @@ Plugin Factory packages reusable agent cognition as plugins and provides tooling
 - `harness_factory/`: isolated Copilot/Codex capability detection, static validation, and bounded run adapters.
 - `.github/copilot-instructions.md`: workspace-wide agent invariants and risk policy.
 
-`agentic-core` is the current packaged baseline. Additional vertical Expertise Packs remain separate from the Core package.
+Additional vertical Expertise Packs remain separate from the Core package. Pack compilation remains separate from full-plugin projection.
 
 ## Codex custom agents
 
-The Core plugin's canonical agent definitions use Copilot frontmatter. Run `uv run --no-project --with pyyaml python scripts/install_codex_agents.py` to validate and render those nine definitions through `expertise/targets/codex.py` into `~/.codex/agents/*.toml`. The adapter preserves descriptions and instructions, maps the Codex model and reasoning fields, and omits Copilot-only tool and invocation metadata. Codex loads custom agent files for spawned sessions, so open a new session after installation.
+The canonical Core agents are portable Markdown in `agentic-core/agents/`. Factory generates target-specific Copilot and Codex agent files from that explicit plugin source. The packaged Core Codex command remains available for standalone runtime compatibility; its presence does not make packaged projection code the canonical Factory implementation. No runtime installation occurs during projection.
 
 The Core plugin launches the official GitHub App MCP server in a dedicated Docker container over stdio. Host environment prerequisites and the read-only private-key mount are documented in [`agentic-core/README.md`](./agentic-core/README.md).
 

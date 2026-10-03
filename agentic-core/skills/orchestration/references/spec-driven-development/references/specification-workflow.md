@@ -13,9 +13,9 @@ This skill adapts the Spec Kit sequence (specify, clarify, plan, tasks, implemen
 
 1. Extract the objective, observable behavior, rationale, constraints, non-goals, assumptions, acceptance criteria, and user-owned open decisions from the request and relevant repository evidence.
 2. Clarify only when unresolved intent materially changes behavior, scope, acceptance, architecture possibilities, or risk. Do not ask the user to decide technical details that can be established from repository evidence or Researcher findings.
-3. Assign stable IDs to the canonical specification, requirements, and acceptance criteria. Preserve IDs across revisions when the underlying meaning is unchanged; assign a new ID when meaning materially changes.
-4. Make the specification `ready` only when requirements are coherent, criteria are observable and linked to requirements, and required user decisions are resolved.
-5. Persist the normalized specification in the existing task manifest/state. Keep the original request and clarifications available as provenance under the repository's current audit conventions.
+3. In a Control Plane-backed workflow that allocates specification artifacts, consume its `SPEC-*`, `REQ-*`, and `AC-*` IDs. Preserve IDs across revisions when meaning is unchanged; use newly allocated IDs when meaning materially changes. In standalone local work, do not assign or request these IDs: state the required behaviors and falsifiable observations directly in the active handoff/session.
+4. Make a Control Plane specification `ready` only when requirements are coherent, criteria are observable and linked to requirements, and required user decisions are resolved. For a standalone handoff, ensure its behavior statements and observable outcomes are clear and user decisions are resolved without requiring ID links.
+5. When connected and required by the workflow, persist the normalized specification as a Control Plane artifact linked to its Task. Otherwise return it in the active handoff/session and proceed; do not create a local manifest or history file as a substitute store. Keep the original request and clarifications available as provenance in the Control Plane when connected.
 
 ## Criterion quality
 
@@ -59,7 +59,7 @@ flowchart TD
     review_gate{"Reviewer required by assurance policy?"}
     reviewer["Reviewer: final acceptance"]
     convergence["SDD: reconcile convergence"]
-    resume["Orchestrator: resume manifest/lifecycle"]
+    resume["Orchestrator: resume workflow/lifecycle"]
     intent --> draft --> ready
     ready -->|no| clarify --> revised --> clarified
     clarified -->|no| blocked
@@ -87,7 +87,7 @@ The diagram is a DAG for one materialized delivery attempt. Clarifications, reme
 
 ```mermaid
 flowchart TD
-    impl1["Implementer: TASK-004 against SPEC@rev1"]
+    impl1["Implementer: bounded scope against SPEC@rev1; supplied TASK when CP-backed"]
     finding["Implementer: report intent/architecture mismatch"]
     orchestrator["Orchestrator: resolve material change"]
     spec2["SDD: approve SPEC@rev2 and propagate staleness"]

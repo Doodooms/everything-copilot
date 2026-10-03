@@ -8,7 +8,30 @@ The Orchestrator can also use `skills/orchestration/workflows/chatgpt-work-hando
 
 ## Packaged lifecycle CLI
 
-Run `uv run --script /absolute/path/to/agentic-core/runtime/pluginctl_cli.py` from any working directory, passing explicit `--store-root` and (when needed) `--workspace-root` paths. The script declares Python 3.10+ and PyYAML 6.x; a direct `python` invocation works when PyYAML is already installed. The runtime includes the canonical `expertise` package; keep it synchronized with the repository source by running `python scripts/sync_pluginctl_runtime.py --write` after changing `expertise/`.
+Run `uv run --script /absolute/path/to/agentic-core/runtime/pluginctl_cli.py` from any working directory, passing explicit `--store-root` and (when needed) `--workspace-root` paths. The script declares Python 3.10+ and PyYAML 6.x; a direct `python` invocation works when PyYAML is already installed. The runtime includes the package's canonical `expertise` implementation and does not require the Plugin Factory repository at build or runtime.
+
+## Local Expertise Pack authoring
+
+Scaffold and smoke-test an Expertise Pack directly in its workspace without a Control Plane connection, manifest, or history paths. From the workspace root:
+
+```bash
+uv run --no-project --with PyYAML python -c 'from pathlib import Path; from runtime.expertise.cli import main; raise SystemExit(main(["scaffold", "local-workflow-check", "--name", "Local Workflow Check", "--description", "A locally authored Expertise Pack.", "--capability", "local.check", "--skill-id", "local-check", "--skill-description", "Check local authoring.", "--publisher", "Local Workspace", "--source", "Workspace authoring", "--target", "portable"], repo_root=Path.cwd()))'
+uv run --no-project --with PyYAML python -c 'from pathlib import Path; from runtime.expertise.cli import main; raise SystemExit(main(["test", "local-workflow-check"], repo_root=Path.cwd()))'
+```
+
+The scaffold is written under `expertise/packs/local-workflow-check/`; the test validates and smoke-compiles its declared targets in memory.
+
+## Rebuild agent projections
+
+From the Plugin Factory repository root, regenerate and verify the Copilot, Codex, or Claude projection from the canonical Agentic Core source. These commands write only under the selected output directory; Codex profile installation is a separate explicit operation.
+
+```bash
+uv run --no-project --with pyyaml python scripts/project_plugin_agents.py copilot --source-root agentic-core --output-dir agentic-core/com.github.copilot/agents
+uv run --no-project --with pyyaml python scripts/project_plugin_agents.py copilot --source-root agentic-core --output-dir agentic-core/com.github.copilot/agents --check
+uv run --no-project --with pyyaml python scripts/project_plugin_agents.py codex --source-root agentic-core --output-dir agentic-core/projections/codex
+uv run --no-project --with pyyaml python scripts/project_plugin_agents.py claude --source-root agentic-core --output-dir agentic-core/projections/claude
+uv run --no-project --with pyyaml python scripts/project_plugin_agents.py claude --source-root agentic-core --output-dir agentic-core/projections/claude --check
+```
 
 ## GitHub App MCP
 

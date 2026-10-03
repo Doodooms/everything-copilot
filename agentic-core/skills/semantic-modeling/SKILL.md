@@ -10,7 +10,7 @@ license: MIT
 
 <critical_rules>
 
-- MUST keep approved product intent and canonical terminology in the Orchestrator-owned specification.
+- MUST keep approved product intent and canonical terminology in the Orchestrator-owned specification when one exists; for standalone local work, use the active request/context and return the semantic result in the current handoff.
 - MUST NOT invent product facts, decide unresolved user tradeoffs, or model distinctions that cannot affect downstream reasoning.
 
 </critical_rules>
@@ -32,7 +32,7 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
 
 <rules>
 
-- The current SDD `SPEC.semantic_model` is the only canonical project problem-space model; this skill MUST NOT create a parallel ontology or task store.
+- The supplied Control Plane `SPEC.semantic_model` is the canonical project problem-space model when available. For disconnected local work, use the active request/context and return the semantic delta in the current handoff; MUST NOT write local task/spec state or create a parallel ontology/store.
 - Distinguish problem-space semantics from technical topology; unresolved product meaning returns to the Orchestrator, and solution structure belongs to Architect.
 - DO select the [problem-space workflow](./workflows/problem-space.md) only when a material semantic distinction is needed.
 
@@ -58,18 +58,18 @@ Consume the Orchestrator-assigned `risk_level`; MUST NOT reclassify or downgrade
 
 ## Step 1 - Establish the semantic boundary.
 
-1. Consume the approved objective, current SPEC revision, assigned `risk_level`, and existing semantic/context artifacts; inspect only evidence relevant to the proposed distinctions.
+1. Consume the approved objective from a supplied current Control Plane SPEC when available, otherwise from the active request/context; also consume assigned `risk_level` and existing semantic/context artifacts. Inspect only evidence relevant to the proposed distinctions.
 2. Separate observed facts, approved decisions, assumptions, hypotheses, and unknowns. Return unresolved user-owned decisions to the Orchestrator.
 
 ## Step 2 - Model only decision-relevant distinctions.
 
 1. Use the [semantic foundations](./references/semantic-foundations.md) when a distinction affects the task.
-2. Propose only the needed concepts, identity, relationships, states, events, transitions, invariants, contracts, terminology, assumptions, and unknowns in the existing `SPEC.semantic_model`.
+2. Propose only the needed concepts, identity, relationships, states, events, transitions, invariants, contracts, terminology, assumptions, and unknowns in the supplied `SPEC.semantic_model` when available; otherwise return the semantic delta in the active handoff without creating local specification state.
 3. Treat use cases and diagrams as views of the model, not competing sources of truth. Do not require a model for trivial or non-semantic work.
 
-## Step 3 - Return a specification-ready delta.
+## Step 3 - Return the semantic result.
 
-1. Return stable semantic IDs, definitions, evidence/provenance, linked REQ/AC IDs where material, unresolved questions, and the smallest next decision.
-2. The Orchestrator owns approval and writes the result into the canonical specification. Update `CONTEXT.md` or an ADR only when the current handoff authorizes that documentation.
+1. Return stable domain-semantic IDs, definitions, evidence/provenance, and unresolved questions. Link supplied Control Plane REQ/AC IDs only where material; do not request or mint those IDs for standalone work.
+2. The Orchestrator owns approval and records the result in the canonical Control Plane specification when one exists; otherwise the current handoff/session carries the proposal. Update `CONTEXT.md` or an ADR only when the current handoff authorizes that documentation.
 
 </workflow>
