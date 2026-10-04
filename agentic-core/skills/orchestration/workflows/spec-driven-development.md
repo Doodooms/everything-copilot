@@ -36,13 +36,13 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 <workflow>
 ## Step 1 - Establish or revise the canonical problem definition.
 
-1. Read the Orchestrator composition packet, current manifest/state, explicit `mode` (`specify`, `revise`, or `converge`), assigned `risk_level`, and exact parent `resume_point`; return `blocked` if required inputs are missing.
+1. Read the Orchestrator composition packet, any supplied current Control Plane task context, explicit `mode` (`specify`, `revise`, or `converge`), assigned `risk_level`, and exact parent `resume_point`. Do not return `blocked` merely because no Control Plane task exists; use the request and current handoff for workflows that do not depend on durable task state.
 2. In `specify` or `revise` mode, normalize the objective, user intent, requirements, rationale, constraints, non-goals, acceptance criteria, assumptions, and open user decisions. Use the [specification workflow](../references/spec-driven-development/references/specification-workflow.md) and [specification template](../references/spec-driven-development/assets/specification-template.md).
 3. For material domain changes, establish the sparse `SPEC.semantic_model` before architecture hardens. Load `semantic-modeling` and select `problem-space` only when meaning, identity, relations, lifecycle, invariants, or epistemic status affects the requirements; do not require it for trivial or non-semantic work.
-4. Assign stable `SPEC-*`, `REQ-*`, and `AC-*` IDs. Each `AC-*` MUST reference existing `REQ-*` IDs and a falsifiable observation where practical. Link semantic IDs only where material; do not force every semantic item into traceability.
-5. Keep the Orchestrator-assigned `risk_level` and selected `required_gates` in the canonical manifest, not in product requirements. Specialists MUST NOT downgrade risk; evidence may justify escalation. Risk changes assurance depth, never authority or configured approvals.
+4. Consume `SPEC-*`, `REQ-*`, and `AC-*` only when supplied or allocated by the Control Plane for this workflow. Each supplied `AC-*` MUST reference an existing `REQ-*` and a falsifiable observation where practical. For standalone local work, keep requirements and observable outcomes in the active handoff/session without assigning or requesting IDs. Link semantic IDs only where material; do not force every semantic item into traceability.
+5. Keep the Orchestrator-assigned `risk_level` and selected `required_gates` in Control Plane task state when connected; do not place them in product requirements. Without that dependency, retain these decisions in the active handoff/session. Specialists MUST NOT downgrade risk; evidence may justify escalation. Risk changes assurance depth, never authority or configured approvals.
 6. Set the specification to `blocked` while a required user-owned decision is unresolved. For material changes, increment its revision and mark only affected downstream artifacts stale; use [the artifact lifecycle](../references/spec-driven-development/references/artifact-lifecycle.md).
-7. In `specify` or `revise` mode, return the proposed/current specification and affected artifact IDs now; do not derive architecture, planning, or implementation before the Orchestrator resumes at the supplied point. If no task record exists, return the normalized specification for the Orchestrator's one canonical manifest; do not create another task root.
+7. In `specify` or `revise` mode, return the proposed/current specification and affected supplied/allocated artifact IDs now; do not derive architecture, planning, or implementation before the Orchestrator resumes at the supplied point. If no Control Plane task record exists, return the normalized request, behavior statements, and observable outcomes in the handoff/session without creating a local task record or requesting state paths or IDs.
 8. In `converge` mode, use only the supplied current state and evidence; proceed directly to Step 4 without redispatching specialists.
 
 ## Step 2 - Derive only necessary solution and delivery artifacts.
@@ -55,7 +55,7 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 
 ## Step 3 - Run only selected implementation and assurance gates.
 
-1. Dispatch Implementer for approved code/configuration changes with the smallest task slice, current SPEC/REQ/AC/ADR IDs, constraints, and validation obligations. Implementer uses `tdd` as its inner loop and records checks with command, subject code revision, environment, result, and producer.
+1. Dispatch Implementer for approved code/configuration changes with the smallest task slice, supplied SPEC/REQ/AC/ADR IDs when available, otherwise the active request/context, constraints, and validation obligations. Implementer uses `tdd` as its inner loop and records checks with command, subject code revision, environment, result, and producer.
 2. Reuse fresh sufficient validation evidence when the code revision, check target, and relevant environment are unchanged. QA reruns only when independent execution is required or evidence is insufficient; a distinct falsification question justifies an additional check.
 3. Dispatch `quality-assurance` only when `qa` is in `required_gates`; it independently falsifies the current behavior and may diagnose unknown runtime failures. QA failures return as defect packets to the evidence-indicated owner; repeat only affected gates.
 4. Dispatch Reviewer only when `review` is in `required_gates`, and only after every required prerequisite passes. Reviewer consumes current implementation and QA evidence, performs final technical acceptance, and MUST NOT repeat a full QA campaign. Load `security-review` only when the changed trust boundary requires static/design analysis.
@@ -63,9 +63,9 @@ Consume the Orchestrator-assigned `risk_level` through the parent domain skill; 
 
 ## Step 4 - Reconcile current convergence and return to the parent.
 
-1. Reconcile current SPEC revision, REQ/AC coverage, affected semantic IDs, selected architecture/plan/implementation/QA/review gates, implementation evidence, blockers, and staleness using the [convergence contract](../references/spec-driven-development/references/convergence.md).
-2. Run the packaged [SDD state validator](../references/spec-driven-development/scripts/validate_sdd_state.py) against the canonical manifest/state:
-   `PYTHONDONTWRITEBYTECODE=1 python ../references/spec-driven-development/scripts/validate_sdd_state.py <absolute-task-state-path>`
-   Use `--coverage` for the traceability matrix and `--invalidate <source>` only when a material upstream revision changed.
+1. Reconcile supplied current SPEC revision and REQ/AC coverage when available; otherwise reconcile the active request and observable behavior statements against selected architecture/plan/implementation/QA/review gates, implementation evidence, blockers, and staleness using the [convergence contract](../references/spec-driven-development/references/convergence.md).
+2. When this workflow has a supplied Control Plane state artifact in the validator's supported exchange format, run the packaged [SDD state validator](../references/spec-driven-development/scripts/validate_sdd_state.py) against that artifact:
+   `PYTHONDONTWRITEBYTECODE=1 python ../references/spec-driven-development/scripts/validate_sdd_state.py <supplied-state-artifact>`
+   Use `--coverage` for the traceability matrix and `--invalidate <source>` only when a material upstream revision changed. Otherwise reconcile against the current specification and handoff evidence; do not create or request a local task-state file just to run the validator.
 3. If gaps remain, return their categories, evidence, owner, and smallest next gate; do not claim convergence. On convergence, return the structured handoff to `orchestrate` at the supplied `resume_point`, leaving branch, worktree, PR, merge, and cleanup lifecycle with the parent.
 </workflow>

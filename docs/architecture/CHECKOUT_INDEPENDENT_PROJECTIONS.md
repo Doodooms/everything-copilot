@@ -1,5 +1,7 @@
 # Checkout-independent Codex and Antigravity projections
 
+> **Current ownership update (2026-10-03):** This report preserves evidence from its original implementation state. Its statements below about projectors living in the Agentic Core package and the repository lacking a root Factory boundary are historical. Current ownership is documented in [Plugin Platform ownership and projection](./PLUGIN_PLATFORM_BOUNDARIES.md).
+
 ## Result and scope
 
 This change packages the existing Codex and Antigravity projectors with the

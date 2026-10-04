@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Validate and inspect SDD fields embedded in an Orchestrator task manifest."""
+"""Validate an explicitly supplied SDD task-state exchange artifact.
+
+This validator does not require workflows to create a local manifest or task
+history file.
+"""
 
 from __future__ import annotations
 
@@ -1282,10 +1286,10 @@ def coverage_matrix(payload: Any) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate SDD lifecycle fields embedded in an Orchestrator task state."
+        description="Inspect a supplied SDD task-state exchange artifact without modifying it."
     )
     parser.add_argument(
-        "state_file", type=Path, help="task-state or manifest JSON file"
+        "state_file", type=Path, help="supplied task-state or manifest JSON artifact"
     )
     parser.add_argument(
         "--invalidate",
@@ -1293,28 +1297,17 @@ def main(argv: list[str] | None = None) -> int:
         help="return a copy with artifacts downstream of this source marked stale",
     )
     parser.add_argument(
-        "--write",
-        action="store_true",
-        help="write the invalidated state back to state_file (requires --invalidate)",
-    )
-    parser.add_argument(
         "--coverage",
         action="store_true",
         help="emit the requirement-to-evidence coverage matrix",
     )
     args = parser.parse_args(argv)
-    if args.write and not args.invalidate:
-        parser.error("--write requires --invalidate")
-
     try:
         payload = json.loads(args.state_file.read_text(encoding="utf-8"))
         if args.invalidate:
             payload = propagate_staleness(payload, args.invalidate)
             rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
-            if args.write:
-                args.state_file.write_text(rendered, encoding="utf-8")
-            else:
-                sys.stdout.write(rendered)
+            sys.stdout.write(rendered)
             return 0
         errors = validate_state(payload)
         if errors:

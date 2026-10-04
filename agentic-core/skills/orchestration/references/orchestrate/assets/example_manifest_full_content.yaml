@@ -1,3 +1,4 @@
+# Legacy exchange example only; use only as supplied legacy input, never as required local task state.
 id: task_2
 title: Refactor model heads into a dedicated package
 description: Move the approved model-head implementation and update its callers.

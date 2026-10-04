@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: "WHAT: Coordinate dependency-aware software delivery, canonical task state, specialist handoffs, and repository lifecycle. USE FOR: non-trivial delivery, planning, cross-agent coordination, material changes, migrations, or authorized Git conflict handling. DO NOT USE FOR: architecture decisions, implementation, QA execution, final review, or operational mutations."
+description: "WHAT: Coordinate dependency-aware software delivery, Control Plane task state when needed, specialist handoffs, and repository lifecycle. USE FOR: non-trivial delivery, planning, cross-agent coordination, material changes, migrations, or authorized Git conflict handling. DO NOT USE FOR: architecture decisions, implementation, QA execution, final review, or operational mutations."
 user-invocable: true
 metadata:
   creation-date: 2026-09-26
@@ -10,7 +10,8 @@ license: MIT
 
 <critical_rules>
 
-- MUST preserve approved intent, canonical task state, ownership boundaries, and explicit Git authorization.
+- MUST preserve approved intent, connected Control Plane task state when required, ownership boundaries, and explicit Git authorization.
+- MUST NOT require local manifests or history files as a substitute for Control Plane state; workflows that do not depend on durable task state proceed with local tools and the active handoff/session.
 - MUST NOT treat a workflow as a tool, delegate beyond authority, or claim convergence without current evidence.
 
 </critical_rules>
@@ -39,7 +40,7 @@ Assess impact/blast radius, reversibility, security or data exposure, external c
 ## Step 1 - Assess risk and choose a delivery procedure.
 
 1. DO assess task risk using `<risk_assessment>`, then select the narrowest procedure whose `invoke_for` matches and `avoid_for` does not:
-   - Record the assigned risk level and required gates in the canonical task state before dispatch.
+   - Record the assigned risk level and required gates in Control Plane task state when connected and required by the workflow; otherwise retain them in the active handoff/session.
    - [orchestrate](./workflows/orchestrate.md) for material changes, multi-agent coordination, and handoffs.
    - [spec-driven-development](./workflows/spec-driven-development.md) for non-trivial requirements, cross-component changes, migrations, or convergence.
    - [implementation-planning](./workflows/implementation-planning.md) for dependency-aware phases, tasks, sequencing, and validation.
@@ -49,7 +50,7 @@ Assess impact/blast radius, reversibility, security or data exposure, external c
 
 ## Step 2 - Execute the selected workflow.
 
-1. Follow the selected workflow directly; load only supporting references or assets at their point of use and preserve the supplied scope, task state, role owners, and resume point.
+1. Follow the selected workflow directly; load only supporting references or assets at their point of use and preserve supplied scope, Control Plane state when relevant, role owners, and resume point.
 
 ## Step 3 - Return the delivery handoff.
 

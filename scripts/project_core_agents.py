@@ -1,27 +1,20 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-if str(ROOT / "agentic-core") not in sys.path:
-    sys.path.insert(0, str(ROOT / "agentic-core"))
+from factory.projection.core_agents import project_copilot_projection
 
-from core_agents import (
-    CORE_AGENT_ROOT,
-    load_core_agents,
-    render_copilot_agent,
-)
+CORE_AGENT_ROOT = ROOT / "agentic-core"
 
 
 def project_copilot_agents(source_root: Path = CORE_AGENT_ROOT) -> dict[str, bytes]:
-    projected = {
-        f"{name}.agent.md": render_copilot_agent(agent)
-        for name, agent in load_core_agents(source_root).items()
-    }
+    projected = project_copilot_projection(source_root).files
     expected = {
         "architect.agent.md",
         "challenger.agent.md",
@@ -39,7 +32,8 @@ def project_copilot_agents(source_root: Path = CORE_AGENT_ROOT) -> dict[str, byt
 
 
 def _run(output_dir: Path, source_root: Path, check: bool) -> int:
-    projected = project_copilot_agents(source_root)
+    projection = project_copilot_projection(source_root)
+    projected = projection.files
     if check:
         mismatches = [
             filename
@@ -53,12 +47,14 @@ def _run(output_dir: Path, source_root: Path, check: bool) -> int:
                 print(f"- {output_dir / filename}")
             return 1
         print(f"Copilot Core-agent projection is current ({len(projected)} agents)")
+        print(json.dumps(projection.provenance, ensure_ascii=False, sort_keys=True))
         return 0
 
     output_dir.mkdir(parents=True, exist_ok=True)
     for filename, content in projected.items():
         (output_dir / filename).write_bytes(content)
     print(f"Copilot Core-agent projection generated ({len(projected)} agents)")
+    print(json.dumps(projection.provenance, ensure_ascii=False, sort_keys=True))
     return 0
 
 

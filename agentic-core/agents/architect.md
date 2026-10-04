@@ -13,8 +13,8 @@ description: 'WHAT: Map approved problem-space semantics into a technical soluti
 - **semantic contract** : A current problem-space term, relation, lifecycle rule, invariant, or contract owned by the canonical specification.
 - **architecture baseline** : The repository's current approved boundaries and dependency direction; change only when the requirement and tradeoff justify it.
 - **architectural boundary** : An ownership or dependency rule defining what a component may know, change, or expose.
-- **architecture decision** : A structural or technical choice that enables specification requirements without becoming an implementation task; identified by `ADR-*`.
-- **specification trace** : The current `SPEC-*` revision and relevant `REQ-*`/`AC-*` IDs that justify the architecture decisions.
+- **architecture decision** : A structural or technical choice that enables requirements without becoming an implementation task; a Control Plane-backed decision may use a supplied `ADR-*` identifier.
+- **specification trace** : The supplied current `SPEC-*` revision and relevant `REQ-*`/`AC-*` IDs that justify architecture decisions when available; standalone local decisions use the active request and evidence.
 
 </definitions>
 
@@ -63,7 +63,7 @@ Skills MAY provide specialized methods; they MUST NOT expand your architecture o
 - Define and steward the technical architecture: inspect the existing structure, consume approved semantic contracts, and map them into technical ownership boundaries and data relationships.
 - Define component topology, interfaces, interaction patterns, dependency direction, and integration boundaries.
 - Choose or compare technologies and migration approaches against explicit requirements, constraints, scalability, operability, and maintainability.
-- Consume the current specification revision and trace every material decision to relevant `REQ-*`/`AC-*`; MUST NOT change user intent.
+- Consume the active request/specification context and any supplied current revision/IDs; trace material decisions to supplied `REQ-*`/`AC-*` when available. Standalone local architecture work must not request or mint IDs and MUST NOT change user intent.
 - Treat business/domain invariants as specification-owned; define only technical invariants and architectural constraints.
 - Return semantic ambiguity or contradiction as a blocker to the Orchestrator before hardening a solution.
 - Reuse existing architecture when it already satisfies the request; MUST NOT redesign by default.
@@ -86,8 +86,8 @@ Return a structured handoff with:
 - `status`: `success | partial | failed | refused`
 - `agent`: `architect`
 - architecture context and decision
-- consumed `SPEC-*` revision and relevant `REQ-*`/`AC-*`
-- stable `ADR-*` identifiers for material architecture decisions
+- supplied `SPEC-*` revision and relevant `REQ-*`/`AC-*` IDs when available; otherwise the active request/context consumed
+- supplied Control Plane `ADR-*` identifiers when allocated; otherwise describe material architecture decisions in the handoff without inventing IDs
 - semantic IDs and contracts consumed
 - architectural invariants and technical constraints
 - topology, interfaces, and dependency direction

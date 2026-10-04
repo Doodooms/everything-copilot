@@ -881,7 +881,14 @@ class AgenticCoreSourceTests(unittest.TestCase):
             CORE / "skills/semantic-modeling/workflows/problem-space.md"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("SPEC.semantic_model` is the only canonical", semantic_skill)
+        self.assertIn(
+            "The supplied Control Plane `SPEC.semantic_model` is the canonical project problem-space model when available",
+            semantic_skill,
+        )
+        self.assertIn(
+            "For disconnected local work, use the active request/context",
+            semantic_skill,
+        )
         self.assertIn("MAY propose durable glossary or ADR updates", semantic_skill)
         self.assertIn("materially costly", semantic_skill)
         self.assertIn("future readers would not infer", semantic_skill)
@@ -1034,7 +1041,7 @@ class AgenticCoreSourceTests(unittest.TestCase):
             else:
                 self.assertNotIn("github/*", tools)
 
-    def test_installed_skill_script_docs_use_skill_relative_paths_and_explicit_workspace_paths(
+    def test_installed_skill_scripts_and_control_plane_validation_are_conditional(
         self,
     ):
         orchestrate_path = CORE / "skills/orchestration/workflows/orchestrate.md"
@@ -1049,18 +1056,21 @@ class AgenticCoreSourceTests(unittest.TestCase):
             self.assertNotIn("agentic-core/skills/", text, str(path))
             self.assertNotIn("./.venv", text, str(path))
 
-        for path in (orchestrate_path, artifact_path):
-            text = path.read_text(encoding="utf-8")
-            self.assertIn("agentskills.io/skill-creation/using-scripts", text)
-
         orchestrate = orchestrate_path.read_text(encoding="utf-8")
         sdd = sdd_path.read_text(encoding="utf-8")
-        self.assertIn("scripts/orchestrator.py", orchestrate)
-        self.assertIn("--history-dir", orchestrate)
-        self.assertIn("agentskills.io/skill-creation/using-scripts", orchestrate)
+        artifact = artifact_path.read_text(encoding="utf-8")
+        self.assertIn("propose-branch --repo-root", orchestrate)
+        self.assertIn("Workspace-local plugin, skill, and agent authoring", orchestrate)
+        self.assertIn("Use the repository and its local tools directly", orchestrate)
+        self.assertIn("Do not ask for a manifest", orchestrate)
         self.assertIn("scripts/validate_sdd_state.py", sdd)
-        self.assertIn("absolute-task-state-path", sdd)
-        self.assertIn("absolute", sdd.lower())
+        self.assertIn("Without that dependency", sdd)
+        self.assertIn("active handoff/session", sdd)
+        self.assertIn("https://agentskills.io/skill-creation/using-scripts", artifact)
+        self.assertIn(
+            "Run it only when such an artifact is part of the concrete workflow",
+            artifact,
+        )
 
 
 if __name__ == "__main__":

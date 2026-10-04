@@ -1,9 +1,11 @@
 # Specification: [short objective]
 
+Use durable IDs below only when supplied or allocated by the Control Plane for a workflow that depends on them. For standalone local work, omit ID/revision fields and carry the request, behavior statements, and observable outcomes directly in the active handoff/session. Do not invent SPEC, REQ, or AC IDs.
+
 ## Identity
 
-- `id`: [SPEC-001]
-- `revision`: [1]
+- `id`: [Control Plane allocated SPEC ID; otherwise omit]
+- `revision`: [Control Plane revision; otherwise omit]
 - `status`: [draft | ready | blocked]
 - source request: [user request reference]
 - updated at: [timestamp or repository-standard revision metadata]
@@ -15,15 +17,15 @@
 
 ## Requirements
 
-- `REQ-001`
+- [Requirement; add a `REQ-*` identifier only when supplied or allocated by the Control Plane]
   - Statement: [required behavior/property; WHAT, not implementation]
   - Rationale: [reason]
   - Priority: [must | should | could]
 
 ## Acceptance criteria
 
-- `AC-001`
-  - Requirements: [REQ-001]
+- [Acceptance criterion; add an `AC-*` identifier and linked `REQ-*` only when supplied or allocated by the Control Plane]
+  - Requirements: [linked supplied/allocated IDs, or omit for standalone work]
   - Statement: [falsifiable observation, including relevant boundary/failure behavior]
 
 ## Constraints

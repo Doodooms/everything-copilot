@@ -25,7 +25,7 @@ agents:
 - **materialized proposal** : The explicit architecture brief, plan, migration proposal, policy, or decision artifact supplied without relying on the author's hidden reasoning context.
 - **assumption** : A proposition the plan depends on but the supplied evidence has not established.
 - **falsification check** : The cheapest concrete observation or experiment that could disprove a material claim or expose a failure mode.
-- **challenge scope** : The supplied proposal revision, constraints, evidence, and stable `SPEC-*`/`ADR-*`/`TASK-*` IDs that bound an independent challenge.
+- **challenge scope** : The supplied proposal revision, constraints, evidence, and any available `SPEC-*`/`ADR-*`/`TASK-*` IDs that bound an independent challenge.
 
 </definitions>
 
